@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fórum - SIIF</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Seu CSS Centralizado -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="page-container">
+
+        <!-- Navbar Padronizada -->
+        <nav class="navbar navbar-expand-lg navbar-custom">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="tela_inicial.html">
+                    <img src="" alt="Logo"> <!-- Adicione o src da sua logo -->
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="bi bi-list text-white fs-1"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="tela_inicial.html"><i class="bi bi-house-door-fill"></i> Página Inicial</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="forum.html"><i class="bi bi-chat-left-dots-fill"></i> Fóruns</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"><i class="bi bi-megaphone-fill"></i> Divulgação</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="tela_materiais.html"><i class="bi bi-file-earmark-text-fill"></i> Materiais</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"><i class="bi bi-geo-alt-fill"></i> Mapa</a>
+                        </li>
+                    </ul>
+                    <a href="#" class="profile-link ms-lg-auto">
+                        <span>Olá, Fulano de tal</span>
+                        <div class="profile-pic">
+                            <img src="" alt="Perfil"> <!-- Adicione o src da foto -->
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Conteúdo principal branco -->
+        <main>
+            <div class="row g-4">
+                <!-- Coluna da Esquerda (Sidebar) -->
+                <aside class="col-lg-3 d-none d-lg-block">
+                    <div class="forum-left-sidebar">
+                        <a href="#" class="sidebar-link">
+                            <i class="bi bi-person-circle"></i>
+                            <span>Perfil</span>
+                        </a>
+                        <a href="#" class="sidebar-link active d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="bi bi-bell-fill"></i>
+                                <span class="truncate">Notificações</span>
+                            </div>
+                            <span class="notification-badge">230</span>
+                        </a>
+                        <a href="#" class="sidebar-link">
+                            <i class="bi bi-bookmark-fill"></i>
+                            <span>Posts salvos</span>
+                        </a>
+                        <div class="mt-4">
+                            <a href="janela_postar.html" class="btn btn-light w-100 fw-bold new-post-btn">
+                                Novo Post
+                            </a>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Coluna Central (Posts) -->
+                <div class="col-lg-6 col-md-8">
+                    <!-- Barra de Busca -->
+                    <div class="search-container mb-4">
+                        <input type="text" class="form-control forum-search" placeholder="Buscar no fórum...">
+                        <i class="bi bi-search search-icon-forum"></i>
+                    </div>
+
+                    <!-- Card de Postagem -->
+                    <article class="forum-post-card">
+                        <div class="post-header">
+                            <div class="d-flex align-items-center gap-2">
+                                <img class="contact-avatar" src="https://placehold.co/40x40/ccc/fff?text=A1" alt="Avatar"> <!-- Placeholder Avatar -->
+                                <div>
+                                    <h3 class="post-author">Aluno 1</h3>
+                                </div>
+                            </div>
+                            <!-- Menu de Opções do Post -->
+                            <div class="post-options-container">
+                                <input type="checkbox" id="post-options-1" class="comment-options-toggle">
+                                <label for="post-options-1" class="post-options-label-white">
+                                    <i class="bi bi-three-dots-vertical fs-5"></i>
+                                </label>
+                                <div class="comment-options-menu">
+                                    <a href="#" class="comment-option-item">
+                                        <i class="bi bi-bookmark-fill text-success"></i>
+                                        <span>Salvar Post</span>
+                                    </a>
+                                    <a href="#" class="comment-option-item">
+                                        <i class="bi bi-flag-fill text-danger"></i>
+                                        <span class="text-danger">Denunciar</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="post-body">
+                            <p>Alguém tem fotos do Lajedo? Estou precisando para meu TCC :/</p>
+                            <img class="img-fluid rounded" src="https://images.unsplash.com/photo-1593492283935-985856b3a38e?q=80&w=1932&auto=format&fit=crop" alt="Imagem Lajedo">
+                        </div>
+
+                        <div class="post-footer">
+                            <button class="post-action-btn">
+                                <span class="fw-bold">2</span>
+                                <span>Relevante</span>
+                            </button>
+                            <button class="post-action-btn" type="button" data-bs-toggle="collapse" data-bs-target="#comments-post-1" aria-expanded="true" aria-controls="comments-post-1">
+                                <span class="fw-bold">2</span>
+                                <span>Comentários</span>
+                            </button>
+                            <button class="post-action-btn">
+                                <i class="bi bi-share-fill"></i>
+                                <span>Compartilhar</span>
+                            </button>
+                        </div>
+
+                        <!-- Seção de Comentários (Collapse) -->
+                        <div class="collapse show comments-section" id="comments-post-1">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">Comentários</h5>
+                                <a href="janela_comentarios.html" class="btn btn-sm new-comment-btn">Comentar</a>
+                            </div>
+
+                            <div class="vstack gap-3">
+                                <!-- Comentário 1 -->
+                                <div class="single-comment">
+                                    <img class="contact-avatar-sm" src="https://placehold.co/32x32/ddd/fff?text=A11" alt="Avatar"> <!-- Placeholder Avatar -->
+                                    <div class="flex-grow-1">
+                                        <p class="fw-bold text-success mb-0">Aluno 11</p>
+                                        <p class="mb-0">Procura no site oficial. Tem várias!</p>
+                                    </div>
+                                    <!-- Menu de Opções do Comentário -->
+                                    <div class="post-options-container">
+                                        <input type="checkbox" id="comment-options-1" class="comment-options-toggle">
+                                        <label for="comment-options-1" class="post-options-label-gray">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </label>
+                                        <div class="comment-options-menu">
+                                            <a href="#" class="comment-option-item">
+                                                <i class="bi bi-bookmark-fill text-success"></i>
+                                                <span>Salvar</span>
+                                            </a>
+                                            <a href="#" class="comment-option-item">
+                                                <i class="bi bi-flag-fill text-danger"></i>
+                                                <span class="text-danger">Denunciar</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Comentário 2 -->
+                                <div class="single-comment">
+                                    <img class="contact-avatar-sm" src="https://placehold.co/32x32/eee/fff?text=A404" alt="Avatar"> <!-- Placeholder Avatar -->
+                                    <div class="flex-grow-1">
+                                        <p class="fw-bold text-success mb-0">Aluno 404</p>
+                                        <p class="mb-0">Não</p>
+                                    </div>
+                                    <!-- Menu de Opções do Comentário -->
+                                    <div class="post-options-container">
+                                        <input type="checkbox" id="comment-options-2" class="comment-options-toggle">
+                                        <label for="comment-options-2" class="post-options-label-gray">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </label>
+                                        <div class="comment-options-menu">
+                                            <a href="#" class="comment-option-item">
+                                                <i class="bi bi-trash-fill text-danger"></i>
+                                                <span class="text-danger">Excluir</span>
+                                            </a>
+                                            <a href="#" class="comment-option-item">
+                                                <i class="bi bi-flag-fill text-danger"></i>
+                                                <span class="text-danger">Denunciar</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Outro Card de Postagem (exemplo) -->
+                    <article class="forum-post-card">
+                        <div class="post-header">
+                            <div class="d-flex align-items-center gap-2">
+                                <img class="contact-avatar" src="https://placehold.co/40x40/aaa/fff?text=A12" alt="Avatar"> <!-- Placeholder Avatar -->
+                                <div>
+                                    <h3 class="post-author">Aluno 12</h3>
+                                </div>
+                            </div>
+                            <div class="post-options-container">
+                                <input type="checkbox" id="post-options-2" class="comment-options-toggle">
+                                <label for="post-options-2" class="post-options-label-white">
+                                    <i class="bi bi-three-dots-vertical fs-5"></i>
+                                </label>
+                                 <div class="comment-options-menu">
+                                    <a href="#" class="comment-option-item">
+                                        <i class="bi bi-bookmark-fill text-success"></i>
+                                        <span>Salvar Post</span>
+                                    </a>
+                                    <a href="#" class="comment-option-item">
+                                        <i class="bi bi-flag-fill text-danger"></i>
+                                        <span class="text-danger">Denunciar</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="post-body">
+                            <p>Jackson vai mesmo deixar o campus????<br>Eu ainda nem superei Wigna!! :(</p>
+                        </div>
+                        <div class="post-footer">
+                             <button class="post-action-btn">
+                                <span class="fw-bold">1</span>
+                                <span>Relevante</span>
+                            </button>
+                            <button class="post-action-btn" type="button" data-bs-toggle="collapse" data-bs-target="#comments-post-2" aria-expanded="false" aria-controls="comments-post-2">
+                                <span class="fw-bold">0</span>
+                                <span>Comentários</span>
+                            </button>
+                            <button class="post-action-btn">
+                                <i class="bi bi-share-fill"></i>
+                                <span>Compartilhar</span>
+                            </button>
+                        </div>
+                         <div class="collapse comments-section" id="comments-post-2">
+                             <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">Comentários</h5>
+                                <a href="janela_comentarios.html" class="btn btn-sm new-comment-btn">Comentar</a>
+                            </div>
+                            <p class="text-center text-muted fst-italic">Seja o primeiro a comentar!</p>
+                         </div>
+                    </article>
+
+                </div>
+
+                <!-- Coluna da Direita (Filtros) -->
+                 <aside class="col-lg-3 d-none d-lg-block">
+                    <div class="forum-right-sidebar">
+                        <div class="mb-4">
+                            <h5 class="sidebar-title">Ordenar por:</h5>
+                            <div class="form-check">
+                                <input class="form-check-input custom-checkbox" type="checkbox" value="" id="check-relevancia-desktop">
+                                <label class="form-check-label" for="check-relevancia-desktop">Relevância</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input custom-checkbox" type="checkbox" value="" id="check-recente-desktop" checked>
+                                <label class="form-check-label" for="check-recente-desktop">Mais recente</label>
+                            </div>
+                        </div>
+                        <div>
+                            <h5 class="sidebar-title">Exibir publicações:</h5>
+                             <div class="form-check">
+                                <input class="form-check-input custom-checkbox" type="checkbox" value="" id="check-prof-desktop">
+                                <label class="form-check-label" for="check-prof-desktop">Professores</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input custom-checkbox" type="checkbox" value="" id="check-estudantes-desktop">
+                                <label class="form-check-label" for="check-estudantes-desktop">Estudantes</label>
+                            </div>
+                             <div class="form-check">
+                                <input class="form-check-input custom-checkbox" type="checkbox" value="" id="check-servidores-desktop">
+                                <label class="form-check-label" for="check-servidores-desktop">Servidores</label>
+                            </div>
+                        </div>
+                    </div>
+                     <!-- Botão de Filtro Mobile (visível só em telas menores) -->
+                    <button class="btn btn-success d-lg-none mt-3 w-100" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFiltros" aria-controls="offcanvasFiltros">
+                        <i class="bi bi-filter"></i> Filtros
+                    </button>
+                </aside>
+            </div>
+        </main>
+    </div>
+
+     <!-- Offcanvas para Filtros Mobile -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasFiltros" aria-labelledby="offcanvasFiltrosLabel">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title sidebar-title" id="offcanvasFiltrosLabel">Filtros</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body">
+         <div class="mb-4">
+            <h5 class="sidebar-title">Ordenar por:</h5>
+            <div class="form-check">
+                <input class="form-check-input custom-checkbox" type="checkbox" value="" id="check-relevancia-mobile">
+                <label class="form-check-label" for="check-relevancia-mobile">Relevância</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input custom-checkbox" type="checkbox" value="" id="check-recente-mobile" checked>
+                <label class="form-check-label" for="check-recente-mobile">Mais recente</label>
+            </div>
+        </div>
+        <div>
+            <h5 class="sidebar-title">Exibir publicações:</h5>
+             <div class="form-check">
+                <input class="form-check-input custom-checkbox" type="checkbox" value="" id="check-prof-mobile">
+                <label class="form-check-label" for="check-prof-mobile">Professores</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input custom-checkbox" type="checkbox" value="" id="check-estudantes-mobile">
+                <label class="form-check-label" for="check-estudantes-mobile">Estudantes</label>
+            </div>
+             <div class="form-check">
+                <input class="form-check-input custom-checkbox" type="checkbox" value="" id="check-servidores-mobile">
+                <label class="form-check-label" for="check-servidores-mobile">Servidores</label>
+            </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Botão de Ajuda Fixo -->
+    <a href="tela_suporte.html" class="help-btn"><i class="bi bi-headset"></i></a>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

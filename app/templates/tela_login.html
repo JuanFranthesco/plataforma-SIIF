@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SIIF</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+    /* --- Reset Básico e Configurações Globais --- */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+/* --- Estilos do Body --- */
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #D1D1D1;
+    color: #FFFFFF;
+    display: flex;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+
+/* --- Container Principal do Login --- */
+
+.login-container {
+    display: flex;
+    width: 900px;
+    max-width: 100%;
+    height: 600px;
+    background-color: #386641;
+    border-radius: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+
+/* --- Painéis (Esquerda e Direita) --- */
+
+.info-panel,
+.login-panel {
+    flex: 1;
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* --- Estilos do Painel de Informações (Esquerda) --- */
+
+.info-panel {
+    position: relative;
+    justify-content: space-between;
+}
+
+.info-panel::before {
+    content: '';
+    position: absolute;
+    left: 50px;
+    top: 50px;
+    bottom: 50px;
+    width: 2px;
+    background-color: rgba(255, 255, 255, 0.2);
+    z-index: 0;
+}
+
+.info-panel .logo,
+.info-panel .description {
+    position: relative;
+    z-index: 1;
+    padding-left: 30px;
+}
+
+.logo .logo-image {
+    width: 100px;
+    margin-bottom: 15px;
+}
+
+.logo h1 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin: 0 0 5px 0;
+}
+
+.logo p {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: #FFFFFF;
+    opacity: 0.8;
+}
+
+.info-panel .description {
+    max-width: 280px;
+}
+
+.description p {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #FFFFFF;
+    line-height: 1.5;
+}
+
+.info-panel .illustration {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+}
+
+.info-panel .illustration img {
+    max-width: 100%;
+    height: auto;
+}
+
+
+/* --- Estilos do Painel de Login (Direita) --- */
+
+.login-panel {
+    justify-content: center;
+    position: relative;
+}
+
+.login-panel h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 30px;
+    color: #FFFFFF;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    color: #FFFFFF;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: none;
+    border-radius: 10px;
+    background-color: #E7E7E4;
+    font-size: 1rem;
+    color: #000000;
+}
+
+.input-group input:focus {
+    outline: 2px solid #5ab394;
+}
+
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-icon-svg {
+    position: absolute;
+    right: 15px;
+    width: 20px;
+    height: 20px;
+    fill: #888;
+    opacity: 0.7;
+}
+
+.login-button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    background-color: #D1D1D1;
+    color: #386641;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.login-button:hover {
+    background-color: #c1c1c1;
+}
+
+
+/* Estilo para as duas imagens de crédito */
+
+.developer-credit {
+    position: absolute;
+    bottom: 50px;
+    right: 50px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.developer-credit .credit-text-image {
+    width: 90px;
+    height: auto;
+}
+
+.developer-credit .credit-logo-image {
+    width: 35px;
+    height: auto;
+}
+
+
+/* --- Responsividade --- */
+
+@media (max-width: 850px) {
+    .login-container {
+        flex-direction: column;
+        height: auto;
+    }
+    .info-panel {
+        display: none;
+    }
+    .login-panel {
+        border-radius: 30px;
+    }
+}
+</style>
+</head>
+
+<body>
+    <main class="login-container">
+        <section class="info-panel">
+            <div class="logo">
+                <img src="img/siif-logo.png" alt="Logo do SIIF" class="logo-image">
+                <h1>INSTITUTO FEDERAL</h1>
+                <p>Rio Grande do Norte - Campus Apodi</p>
+            </div>
+            <div class="description">
+                <p>Um software desenvolvido pela IN4 focado na melhoria da interação.</p>
+            </div>
+            <div class="illustration">
+                <img src="img/ilustracao.png" alt="Ilustração de pessoas interagindo com a plataforma SIIF.">
+            </div>
+        </section>
+
+        <section class="login-panel">
+            <h2>Login</h2>
+            <form>
+                <div class="input-group">
+                    <label for="usuario">Usuário:</label>
+                    <input type="text" id="usuario" name="usuario" value="2022984901" required>
+                </div>
+                <div class="input-group">
+                    <label for="senha">Senha:</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="senha" name="senha" value="1234" required>
+                        <svg class="password-icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/>
+                        </svg>
+                    </div>
+                </div>
+                <button type="submit" class="login-button">Acessar</button>
+            </form>
+            <div class="developer-credit">
+                <img src="img/credito-texto.png" alt="Desenvolvido por" class="credit-text-image">
+                <img src="img/credito-logo-in4.png" alt="Logo IN4" class="credit-logo-image">
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>

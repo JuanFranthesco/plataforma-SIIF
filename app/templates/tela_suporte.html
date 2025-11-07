@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Central de Ajuda</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Seu CSS Centralizado -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- O <style> foi removido daqui e movido para style.css -->
+</head>
+
+<body>
+  <div class="page-container">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+      <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="#">
+          <img src="" alt="Logo" width="45" height="45" class="me-2 rounded-circle"> <!-- Adicione o src da sua logo -->
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+           <!-- Usei o ícone de lista do bootstrap que é mais padrão -->
+          <i class="bi bi-list text-white fs-1"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <!-- Corrigi o link ativo para esta página -->
+            <li class="nav-item"><a class="nav-link" href="tela_inicial.html"><i class="bi bi-house-door-fill"></i> Página Inicial</a></li>
+            <li class="nav-item"><a class="nav-link" href="tela_foruns.html"><i class="bi bi-chat-left-dots-fill"></i> Fóruns</a></li>
+            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-megaphone-fill"></i> Divulgação</a></li>
+            <li class="nav-item"><a class="nav-link" href="tela_materiais.html"><i class="bi bi-file-earmark-text-fill"></i> Materiais</a></li>
+            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-geo-alt-fill"></i> Mapa</a></li>
+          </ul>
+
+          <a href="#" class="profile-link ms-lg-auto">
+            <span>Olá, Fulano de tal</span>
+            <div class="profile-pic">
+              <img src="" alt="Perfil"> <!-- Adicione o src da foto -->
+            </div>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Conteúdo -->
+    <main>
+      <h1>Como podemos te ajudar?</h1>
+      <div class="search-container">
+        <input type="text" class="form-control" placeholder="Digite o assunto que precisa de ajuda... Ex: onde encontrar os materiais">
+        <button><i class="bi bi-search"></i> Pesquisar</button>
+      </div>
+
+      <section class="faq-section">
+        <h5>Perguntas frequentes</h5>
+        <div class="faq-grid">
+          <div class="faq-card">
+            <p>Não consigo acessar com meu e-mail institucional, o que pode ser?</p>
+            <i class="bi bi-chevron-right"></i>
+          </div>
+          <div class="faq-card">
+            <p>Como visualizar detalhes sobre um bloco ou laboratório no mapa?</p>
+            <i class="bi bi-chevron-right"></i>
+          </div>
+          <div class="faq-card">
+            <p>Posso criar novos tópicos ou apenas responder?</p>
+            <i class="bi bi-chevron-right"></i>
+          </div>
+          <div class="faq-card">
+            <p>Posso favoritar materiais para acesso rápido?</p>
+            <i class="bi bi-chevron-right"></i>
+          </div>
+        </div>
+      </section>
+
+      <section class="contact-section">
+        <div class="contact-card">
+          <i class="bi bi-envelope-fill"></i>
+          <h3>E-mail</h3>
+          <p>Suporte</p>
+          <p>contato@ifrn.edu.br</p>
+        </div>
+        <div class="contact-card">
+          <i class="bi bi-whatsapp"></i>
+          <h3>Whatsapp</h3>
+          <p>Suporte</p>
+          <p>(84) 9 8888-8888</p>
+        </div>
+        <div class="contact-card">
+          <i class="bi bi-telephone-fill"></i>
+          <h3>Telefone</h3>
+          <p>Suporte</p>
+          <p>(84) 9 9999-9999</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

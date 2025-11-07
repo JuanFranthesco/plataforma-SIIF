@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Página Inicial - SIIF</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Seu CSS Centralizado -->
+  <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+  <div class="page-container">
+    
+    <!-- Navbar Padronizada (copiada da central de ajuda) -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+          <img src="" alt="Logo">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <i class="bi bi-list text-white fs-1"></i> 
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" href="tela_inicial.html"><i class="bi bi-house-door-fill"></i> Página Inicial</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="tela_foruns.html"><i class="bi bi-chat-left-dots-fill"></i> Fóruns</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#"><i class="bi bi-megaphone-fill"></i> Divulgação</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="tela_materiais.html"><i class="bi bi-file-earmark-text-fill"></i> Materiais</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#"><i class="bi bi-geo-alt-fill"></i> Mapa</a>
+            </li>
+          </ul>
+          <a href="#" class="profile-link ms-lg-auto">
+            <span>Olá, Fulano de tal</span>
+            <div class="profile-pic">
+              <img src="" alt="Perfil">
+            </div>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <div class="row g-4 mb-4">
+        
+        <div class="col-lg-6 col-md-12">
+          <div class="noticias">
+            <h3><i class="bi bi-megaphone-fill"></i> Notícias recentes</h3>
+            <div class="noticia-card">
+              A 2° Fase da OBMEP acontecerá no dia 25 de Outubro! Confira o seu local de prova.
+            </div>
+            <div class="noticia-card">
+              Como está o pace? Prepare-se, a 1° Corrida do Campus está chegando!
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+          <div class="card-home"> 
+            <div>
+              <img src="tela_materiais.html" alt="Imagem OBMEP">
+              <p>Prepare-se para a OBMEP, acesse a aba materiais na nossa plataforma!</p>
+            </div>
+            <button><i class="bi bi-file-earmark-text-fill"></i> Materiais OBMEP</button>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="col-lg-3 col-md-6">
+          <div class="card-home">
+            <div>
+              <img src="" alt="Imagem Fóruns">
+              <p>Está com dúvidas? Chama na aba fóruns, algum dos nossos usuários irá te responder!</p>
+            </div>
+            <button><i class="bi bi-chat-left-dots-fill"></i> Fóruns</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        
+        <div class="col-lg-5 col-md-12">
+          <div class="eventos">
+            <h3><i class="bi bi-calendar-event-fill"></i> Próximos eventos</h3>
+            <div class="eventos-lista">
+              <div class="evento">
+                <strong>25<br>OUT</strong>
+                <span>OBMEP</span>
+              </div>
+              <div class="evento">
+                <strong>09<br>NOV</strong>
+                <span>DIA 1 ENEM</span>
+              </div>
+              <div class="evento">
+                <strong>16<br>NOV</strong>
+                <span>DIA 2 ENEM</span>
+              </div>
+              <div class="evento">
+                <strong>17<br>NOV</strong>
+                <span>SEMANA<br>DA CONSCIÊNCIA<br>NEGRA</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mapa -->
+        <div class="col-lg-7 col-md-12">
+          <div class="mapa">
+            <h3>Mapa IFRN - Campus Apodi</h3>
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3947.630045809502!2d-37.802476526106635!3d-5.653788495884474!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7b9fa06d0116b61%3A0x3cdd8b59326b4957!2sIFRN%20-%20Campus%20Apodi!5e0!3m2!1spt-BR!2sbr!4v1699051291871!5m2!1spt-BR!2sbr" 
+              allowfullscreen=""
+              loading="lazy">
+            </iframe>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Botão de Ajuda flutuante -->
+  <a href="tela_suporte.html" class="help-btn"><i class="bi bi-headset"></i></a>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

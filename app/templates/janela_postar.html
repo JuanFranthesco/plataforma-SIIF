@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Janela Comentar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0; /* Fundo cinza para simular o fundo pontilhado */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .janela-container {
+            width: 350px; /* Largura aproximada */
+            max-width: 90%;
+            background-color: white;
+            border: 2px solid #ccc; /* Borda cinza */
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            padding: 15px;
+        }
+
+        .janela-titulo {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            position: absolute;
+            top: -35px;
+            left: 0;
+        }
+
+        .janela-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding-bottom: 10px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+        }
+
+        .icone-perfil {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+            /* Ícone de pessoa simulado com um círculo interno branco */
+            position: relative;
+        }
+        .icone-perfil::before {
+            content: "";
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: white;
+            top: 5px;
+        }
+        .icone-perfil::after {
+            content: "";
+            position: absolute;
+            width: 18px;
+            height: 8px;
+            border-radius: 10px 10px 0 0;
+            background-color: white;
+            bottom: 3px;
+        }
+
+        .close-btn {
+            cursor: pointer;
+            font-size: 1.5em;
+            color: #444;
+            line-height: 1; /* Alinha o X */
+            padding-left: 10px;
+        }
+
+        .janela-body {
+            /* O min-height não é mais necessário, mas vamos mantê-lo para referência visual */
+            margin-top: 5px;
+        }
+        
+        .janela-textarea {
+            width: 100%;
+            min-height: 150px; /* Altura da área de texto */
+            border: none;
+            resize: none; /* Impede que o usuário redimensione o campo */
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-size: 1em;
+            line-height: 1.5;
+            outline: none; /* Remove a borda de foco padrão */
+        }
+
+        .janela-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-top: 10px;
+            border-top: 1px solid #eee; /* Linha sutil de separação */
+            margin-top: 10px;
+        }
+
+        .btn-midia {
+            color: #38761d; /* Verde escuro */
+            font-size: 0.9em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .icon-image {
+            margin-right: 5px;
+        }
+        .icon-image::before {
+            font-size: 1.1em;
+            line-height: 1;
+        }
+
+        .btn-principal {
+            color: #38761d; /* Verde escuro */
+            font-size: 1em;
+            cursor: pointer;
+            text-decoration: none; /* Remove sublinhado padrão */
+            border-bottom: 2px solid #38761d; /* Linha verde inferior */
+            padding-bottom: 2px;
+            display: flex;
+            align-items: center;
+        }
+
+        .icon-pen {
+            margin-right: 5px;
+        }
+        .icon-pen::before {
+            font-size: 1.1em;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="janela-container">
+
+    <div class="janela-header">
+        <div class="input-wrapper">
+            <div class="icone-perfil"></div>
+            </div>
+        <a href="foruns.html" class="close-btn">&times;</a>
+    </div>
+
+    <div class="janela-body">
+        <textarea 
+            class="janela-textarea" 
+            placeholder="No que está pensando?"
+            aria-label="Campo para escrever seu comentário ou postagem"
+        ></textarea>
+    </div>
+
+    <div class="janela-footer">
+        <a href="#" class="btn-midia">
+        <i class="fi fi-br-picture"></i>
+            <span class="icon-image"></span>Mídia
+        </a>
+        
+        <a href="#" class="btn-principal">
+        <i class="fi fi-rr-edit"></i>
+            <span class="icon-pen"></span>Postar
+        </a>
+    </div>
+</div>
+
+</body>
+</html>
