@@ -1,18 +1,13 @@
-# Ambiente Virtual
 venv/
 .venv/
 
-# Banco de Dados Local
 site.db
 *.sqlite3
 
-# Arquivos de Cache do Python
 __pycache__/
 *.pyc
 
-# Pasta de Migração (só o cache)
 migrations/versions/*.pyc
 
-# Arquivos de Sistema
 .DS_Store
 Thumbs.db
