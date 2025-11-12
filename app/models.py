@@ -68,10 +68,16 @@ class Noticia(db.Model):
     titulo = db.Column(db.String(200), nullable=False)
     conteudo = db.Column(db.Text, nullable=False)
     imagem_url = db.Column(db.String(300), nullable=True)
- 
+    arquivo_url = db.Column(db.String(300), nullable=True)
+    link_externo = db.Column(db.String(300), nullable=True)
+    campus = db.Column(db.String(100), nullable=True)
+    categoria = db.Column(db.String(100), nullable=True)
     data_postagem = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     autor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    def __repr__(self): return f'<Notícia {self.titulo}>'
+
+    def __repr__(self):
+        return f'<Notícia {self.titulo}>'
+
 
 # ===================================================================
 # TELA: Tela de Materiais
