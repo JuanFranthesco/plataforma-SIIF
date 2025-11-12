@@ -1,640 +1,521 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Divulgação - Instituição</title>
-    <link rel="stylesheet" href="styles.css"> 
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-        <style>
-            /* Variáveis de Cores (Baseado no seu CSS: #386641) */
-:root {
-    --color-primary: #386641; /* Verde Escuro */
-    --color-secondary: #588157; /* Verde Médio para hover e destaque */
-    --color-background: #E7E7E4; /* Fundo principal (Cinza Claro) */
-    --color-light: #fff;
-    --color-text: #333;
-    --color-text-dark: #222;
-    --color-border: #ccc;
-    --color-shadow: rgba(0, 0, 0, 0.1);
-}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Divulgação - SIIF</title>
 
-/* ====== GERAL ====== */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Poppins", sans-serif;
-}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-body {
-    background-color: var(--color-background);
-    color: var(--color-text);
-    line-height: 1.6;
-}
+    <link rel="stylesheet" href="style.css">
 
-/* Foco Acessível (Garantia de alto contraste para navegação por teclado) */
-a:focus, button:focus, input:focus, select:focus {
-    outline: 3px solid #FFD700; /* Amarelo/Ouro de alto contraste */
-    outline-offset: 2px;
-}
-
-/* ====== LINK DE PULAR CONTEÚDO ====== */
-.skip-link {
-    position: absolute;
-    top: -40px;
-    left: 0;
-    background: var(--color-primary);
-    color: var(--color-light);
-    padding: 10px 15px;
-    z-index: 100;
-    text-decoration: none;
-    border-radius: 0 0 6px 6px;
-    transition: top 0.3s;
-}
-
-.skip-link:focus {
-    top: 0;
-}
-
-/* Acessibilidade: Screen Reader Only (sr-only) */
-.sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0,0,0,0);
-    border: 0;
-}
-
-/* ====== NAVBAR ====== */
-.navbar {
-    background-color: var(--color-primary);
-    color: var(--color-light);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 40px;
-    height: 70px;
-    box-shadow: 0 2px 4px var(--color-shadow);
-}
-
-.navbar-logo img {
-    height: 45px;
-}
-
-.navbar-menu {
-    display: flex;
-    gap: 25px;
-}
-
-.navbar-menu a {
-    color: var(--color-light);
-    text-decoration: none;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding-bottom: 5px;
-    transition: 0.3s;
-}
-
-.navbar-menu a:hover,
-.navbar-menu a:focus {
-    opacity: 0.8;
-}
-
-.navbar-menu a.active {
-    border-bottom: 2px solid var(--color-light);
-}
-
-.navbar-user {
-    display: flex;
-    align-items: center;
-    background-color: var(--color-light);
-    color: var(--color-primary);
-    border-radius: 40px;
-    padding: 6px 14px;
-    font-weight: 500;
-    gap: 10px;
-}
-
-.navbar-user img {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-}
-
-/* ====== CONTEÚDO PRINCIPAL E TÍTULO ====== */
-.main-content {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-}
-
-.main-title {
-    /* CORREÇÃO AQUI: De var(--color-text-dark) para var(--color-primary) */
-    color: var(--color-primary); 
-    font-size: 2.5rem;
-    margin-bottom: 30px;
-    font-weight: 600;
-}
-/* ====== FILTROS E PESQUISA (TOPO) ====== */
-.filter-search-container {
-    display: flex;
-    flex-direction: column; /* Mobile First: Empilha */
-    gap: 20px;
-    margin-bottom: 30px;
-}
-
-/* Formulário de Filtros (Bloco Cinza) */
-.filters-form {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background-color: var(--color-light); 
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 1px 4px var(--color-shadow);
-}
-
-.filters-form select {
-    padding: 10px;
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
-    background-color: var(--color-light);
-    min-width: 100px;
-    font-size: 1rem;
-    color: var(--color-text);
-}
-
-.filters-form .btn-search {
-    background-color: var(--color-primary);
-    color: var(--color-light);
-    border: none;
-    padding: 10px 15px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.3s;
-}
-
-.filters-form .btn-search:hover {
-    background-color: var(--color-secondary);
-}
-
-/* Formulário de Pesquisa Lateral (Bloco Verde) */
-.search-form {
-    display: flex;
-    align-items: center;
-    background-color: var(--color-primary);
-    padding: 15px;
-    border-radius: 8px;
-}
-
-.search-form input[type="search"] {
-    flex-grow: 1;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 6px 0 0 6px;
-    outline: none;
-    font-size: 1rem;
-}
-
-.search-form button {
-    background-color: var(--color-light); /* Fundo claro para o ícone */
-    color: var(--color-primary);
-    border: none;
-    padding: 10px 15px;
-    border-radius: 0 6px 6px 0;
-    cursor: pointer;
-    transition: opacity 0.3s;
-}
-
-.search-form button:hover {
-    opacity: 0.8;
-}
-
-/* ====== LAYOUT PRINCIPAL (GRID) ====== */
-.content-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 30px;
-}
-
-/* ====== COLUNA PRINCIPAL - Cards de Destaque ====== */
-
-.highlight-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin-bottom: 40px;
-}
-
-.card {
-    background-color: var(--color-light);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px var(--color-shadow);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: 200px;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.card h3 {
-    color: var(--color-text-dark);
-    font-size: 1.2rem;
-    margin-bottom: 10px;
-}
-
-.card p {
-    font-size: 0.95rem;
-    color: #666;
-    margin-bottom: 15px;
-}
-
-.btn-more {
-    background-color: var(--color-primary);
-    color: var(--color-light);
-    padding: 8px 15px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: 500;
-    align-self: flex-start;
-    transition: background-color 0.3s;
-}
-
-.btn-more:hover {
-    background-color: var(--color-secondary);
-}
-
-/* Postar Notícia */
-.post-news {
-    margin-bottom: 40px;
-}
-
-.post-news h2 {
-    font-size: 1.5rem;
-    margin-bottom: 15px;
-}
-
-.post-buttons {
-    display: flex;
-    gap: 15px;
-}
-
-.btn-attach {
-    background-color: var(--color-light); 
-    color: var(--color-text);
-    border: 1px solid var(--color-border);
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-/* Corrigindo o visual do botão "Anexar arquivo" para ser verde (conforme a imagem) */
-.btn-attach:last-child {
-    background-color: var(--color-primary);
-    color: var(--color-light);
-    border: 1px solid var(--color-primary);
-}
-
-.btn-attach:hover {
-    background-color: #ddd;
-}
-.btn-attach:last-child:hover {
-    background-color: var(--color-secondary);
-}
-
-
-/* Últimas Notícias (Cards Simples) */
-.latest-news {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-
-.latest-news article {
-    background-color: var(--color-light);
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px var(--color-shadow);
-    flex: 1 1 calc(50% - 10px); 
-    min-width: 200px;
-    position: relative;
-    transition: border-left 0.3s;
-    border-left: 5px solid transparent;
-}
-
-.latest-news article:hover {
-    border-left: 5px solid var(--color-primary);
-}
-
-.latest-news h3 {
-    font-size: 1.1rem;
-    color: var(--color-text-dark);
-    margin-bottom: 5px;
-}
-
-.latest-news p {
-    font-size: 0.9rem;
-    color: #666;
-}
-
-/* ====== COLUNA SECUNDÁRIA (SIDEBAR) ====== */
-
-.secondary-column {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-/* Estilo para as caixas escuras da sidebar (Eventos e Calendário) */
-.upcoming-events, .calendar {
-    background-color: var(--color-primary); 
-    color: var(--color-light); 
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px var(--color-shadow);
-}
-
-.upcoming-events h2, .calendar h2 {
-    font-size: 1.5rem;
-    margin-bottom: 15px;
-    color: var(--color-light);
-}
-
-/* Próximos Eventos - Lista */
-.upcoming-events ul {
-    list-style: none;
-    padding: 0;
-}
-
-.upcoming-events li {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--color-secondary);
-    font-weight: 500;
-}
-
-.upcoming-events li:last-child {
-    border-bottom: none;
-}
-
-/* CORREÇÃO APLICADA: Links dos eventos são brancos */
-.upcoming-events li a {
-    color: var(--color-light); /* Garante a cor branca */
-    text-decoration: none;
-    font-weight: 500;
-    transition: opacity 0.3s;
-}
-
-.upcoming-events li a:hover {
-    opacity: 0.8; 
-}
-
-.upcoming-events li span {
-    font-size: 0.9rem;
-    opacity: 0.8;
-}
-
-/* Calendário */
-.calendar h2 {
-    text-align: center;
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-bottom: 15px;
-}
-
-.calendar table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: center;
-    font-size: 0.9rem;
-}
-
-.calendar th {
-    font-weight: 500;
-    padding-bottom: 5px;
-    color: #A3B18A; 
-}
-
-.calendar td {
-    padding: 5px 0;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 500;
-}
-
-.calendar td:hover {
-    background-color: var(--color-secondary);
-}
-
-/* ==================================== */
-/* MEDIA QUERIES (Responsividade)       */
-/* ==================================== */
-
-/* TELA DE TABLET (768px e acima) */
-@media (min-width: 768px) {
-    /* Navbar ajusta o padding */
-    .navbar {
-        padding: 12px 20px;
-    }
-    
-    /* Filtros e Busca ficam lado a lado */
-    .filter-search-container {
-        flex-direction: row;
-        align-items: flex-start;
-        justify-content: space-between;
-    }
-
-    .filters-form {
-        flex-basis: 60%; 
-    }
-
-    .search-form {
-        flex-basis: 35%; 
-        flex-shrink: 0;
-    }
-    
-    .highlight-cards {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
-}
-
-/* TELA DE DESKTOP (992px e acima) */
-@media (min-width: 992px) {
-    .main-content {
-        padding: 40px 20px;
-    }
-
-    /* Layout principal com Sidebar em Grid (2/3 vs 1/3) */
-    .content-grid {
-        grid-template-columns: 2fr 1fr; 
-        gap: 40px;
-    }
-    
-    .highlight-cards {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-        </style>
 </head>
-<body>
-    <a href="#conteudo-principal" class="skip-link">Pular para o conteúdo principal</a>
 
-    <header class="navbar" role="banner">
-        <div class="navbar-logo">
-            <img src="logo.png" alt="Logotipo da instituição">
-        </div>
+<body class="role-admin">
+    <div class="page-container">
 
-        <nav class="navbar-menu" aria-label="Menu principal">
-            <a href="#"><i class="fa-solid fa-house"></i> Página Inicial</a>
-            <a href="#"><i class="fa-regular fa-comments"></i> Fóruns</a>
-            <a href="#" class="active" aria-current="page"><i class="fa-solid fa-bullhorn"></i> Divulgação</a>
-            <a href="#"><i class="fa-solid fa-box-archive"></i> Materiais</a>
-            <a href="#"><i class="fa-solid fa-location-dot"></i> Mapa</a>
+        <nav class="navbar navbar-expand-lg navbar-custom">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="tela_inicial.html">
+                    <img src="LOGO.png" alt="Logo SIIF">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="bi bi-list text-white fs-1"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="tela_inicial.html"><i class="bi bi-house-door-fill"></i> Página
+                                Inicial</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="tela_foruns.html"><i class="bi bi-chat-left-dots-fill"></i>
+                                Fóruns</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="tela_divulgação.html"><i class="bi bi-megaphone-fill"></i>
+                                Divulgação</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="tela_materiais.html"><i class="bi bi-file-earmark-text-fill"></i>
+                                Materiais</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="tela_mapa.html"><i class="bi bi-geo-alt-fill"></i> Mapa</a>
+                        </li>
+                    </ul>
+                    <a href="tela_perfil.html" class="profile-link ms-lg-auto"> <span>Olá, Fulano de tal</span>
+                        <div class="profile-pic">
+                            <img src="image.png" alt="Perfil">
+                        </div>
+                    </a>
+                </div>
+            </div>
         </nav>
 
-        <div class="navbar-user" aria-label="Informações do usuário logado">
-            <span>Olá, Fulano de tal</span>
-            <img src="perfil.jpg" alt="Foto do usuário Fulano de tal">
-        </div>
-    </header>
+        <main id="conteudo-principal" role="main">
+            <a href="#conteudo-principal" class="visually-hidden-focusable skip-link">Pular para o conteúdo
+                principal</a>
 
-    <main id="conteudo-principal" class="main-content" role="main">
-        <h1 class="main-title">Divulgação</h1>
+            <h1>Divulgação</h1>
 
-        <section class="filter-search-container" aria-label="Filtros e Busca de Divulgação">
-            
-            <form class="filters-form" role="search">
-                
-                <label for="filtrar-campus" class="sr-only">Filtrar por Campus</label>
-                <select id="filtrar-campus" name="campus" aria-label="Filtrar Campus">
-                    <option value="">Campus</option>
-                    <option value="mossoro">Mossoró</option>
-                    <option value="paudosferros">Pau dos Ferros</option>
-                </select>
+            <section class="row g-3 mb-4">
+                <div class="col-lg-6">
+                    <form class="divulgacao-filters shadow-sm">
+                        <label for="filtrar-campus" class="visually-hidden">Filtrar por Campus</label>
+                        <select id="filtrar-campus" name="campus" class="form-select" aria-label="Filtrar Campus">
+                            <option value="">Todos os Campus</option>
+                            <option value="mossoro">Mossoró</option>
+                            <option value="paudosferros">Pau dos Ferros</option>
+                        </select>
+                        <label for="filtrar-categoria" class="visually-hidden">Filtrar por Categoria</label>
+                        <select id="filtrar-categoria" name="categoria" class="form-select"
+                            aria-label="Filtrar Categoria">
+                            <option value="">Todas as Categorias</option>
+                            <option value="eventos">Eventos</option>
+                            <option value="pesquisa">Pesquisa</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary filter-btn">Buscar</button>
+                    </form>
+                </div>
+                <div class="col-lg-6">
+                    <form class="divulgacao-search shadow-sm" role="search">
+                        <label for="pesquisar" class="visually-hidden">Campo de Pesquisa</label>
+                        <input type="search" id="pesquisar" class="form-control"
+                            placeholder="Pesquisar notícias e eventos...">
+                        <button type="submit" class="btn-search-icon" aria-label="Executar Pesquisa"><i
+                                class="bi bi-search"></i></button>
+                    </form>
+                </div>
+            </section>
 
-                <label for="filtrar-categoria" class="sr-only">Filtrar por Categoria</label>
-                <select id="filtrar-categoria" name="categoria" aria-label="Filtrar Categoria">
-                    <option value="">Todos</option>
-                    <option value="eventos">Eventos</option>
-                    <option value="pesquisa">Pesquisa</option>
-                </select>
+            <div class="row g-4">
 
-                <button type="submit" class="btn-search">Buscar</button>
-            </form>
+                <div class="col-lg-8">
 
-            <form class="search-form" role="search" aria-label="Pesquisa de Notícias e Eventos">
-                <label for="pesquisar" class="sr-only">Campo de Pesquisa</label>
-                <input type="search" id="pesquisar" placeholder="Pesquisar">
-                <button type="submit" aria-label="Executar Pesquisa"><i class="fas fa-search"></i></button>
-            </form>
-        </section>
+                    <section class="mb-4" aria-labelledby="highlights-title">
+                        <h2 id="highlights-title" class="visually-hidden">Notícias e Eventos em Destaque</h2>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <article class="divulgacao-card card h-100 shadow-sm">
+                                    <div class="card-body d-flex flex-column">
+                                        <h3 class="card-title">Seminário de Inovação</h3>
+                                        <p class="card-text">Evento sobre as mais novas tecnologias através de palestras
+                                            e presença.</p>
 
-        <div class="content-grid">
-            
-            <div class="primary-column">
-                
-                <section class="highlight-cards" aria-labelledby="highlights-title">
-                    <h2 id="highlights-title" class="sr-only">Notícias e Eventos em Destaque</h2>
+                                        <button type="button" class="btn btn-divulgacao mt-auto" data-bs-toggle="modal"
+                                            data-bs-target="#modalVerNoticia"
+                                            data-noticia-titulo="Seminário de Inovação"
+                                            data-noticia-conteudo="Este é o conteúdo completo sobre o Seminário de Inovação. Evento sobre as mais novas tecnologias através de palestras e presença. Detalhes adicionais, datas e links irão aqui.">
+                                            Ver mais
+                                        </button>
+                                    </div>
+                                </article>
+                            </div>
+                            <div class="col-md-4">
+                                <article class="divulgacao-card card h-100 shadow-sm">
+                                    <div class="card-body d-flex flex-column">
+                                        <h3 class="card-title">Pesquisa em IA</h3>
+                                        <p class="card-text">O projeto visa explorar soluções e estudá-las para
+                                            problemas.</p>
 
-                    <article class="card">
-                        <h3>Seminário de Inovação</h3>
-                        <p>Evento sobre as mais novas tecnologias através de palestras e presença.</p>
-                        <a href="#" class="btn-more" aria-label="Ver mais sobre o Seminário de Inovação">Ver mais</a>
-                    </article>
+                                        <button type="button" class="btn btn-divulgacao mt-auto" data-bs-toggle="modal"
+                                            data-bs-target="#modalVerNoticia" data-noticia-titulo="Pesquisa em IA"
+                                            data-noticia-conteudo="O projeto visa explorar soluções e estudá-las para problemas complexos utilizando Inteligência Artificial. Mais informações sobre os pesquisadores envolvidos e como participar.">
+                                            Ver mais
+                                        </button>
+                                    </div>
+                                </article>
+                            </div>
+                            <div class="col-md-4">
+                                <article class="divulgacao-card card h-100 shadow-sm">
+                                    <div class="card-body d-flex flex-column">
+                                        <h3 class="card-title">Olimpíada de Matemática</h3>
+                                        <p class="card-text">Pesquisas sobre os efeitos da inteligência artificial.</p>
 
-                    <article class="card">
-                        <h3>Pesquisa em Inteligência Artificial</h3>
-                        <p>O projeto visa explorar soluções e estudá-las para problemas.</p>
-                        <a href="#" class="btn-more" aria-label="Ver mais sobre Pesquisa em Inteligência Artificial">Ver mais</a>
-                    </article>
+                                        <button type="button" class="btn btn-divulgacao mt-auto" data-bs-toggle="modal"
+                                            data-bs-target="#modalVerNoticia"
+                                            data-noticia-titulo="Olimpíada de Matemática"
+                                            data-noticia-conteudo="Detalhes sobre a Olimpíada de Matemática. Datas, locais de prova, e links para materiais de estudo. (O texto 'Pesquisas sobre os efeitos da inteligência artificial' parece ser um placeholder e deve ser trocado).">
+                                            Ver mais
+                                        </button>
+                                    </div>
+                                </article>
+                            </div>
+                        </div>
+                    </section>
 
-                    <article class="card">
-                        <h3>Olimpíada de Matemática</h3>
-                        <p>Pesquisas sobre os efeitos da inteligência artificial.</p>
-                        <a href="#" class="btn-more" aria-label="Ver mais sobre Olimpíada de Matemática">Ver mais</a>
-                    </article>
-                </section>
+                    <section class="post-news-section card shadow-sm mb-4 admin-only" aria-labelledby="post-news-title">
+                        <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3">
+                            <h2 id="post-news-title" class="post-news-title mb-0">Painel de Admin:</h2>
 
-                <section class="post-news" aria-labelledby="post-news-title">
-                    <h2 id="post-news-title">Postar Notícia</h2>
-                    <div class="post-buttons">
-                        <button class="btn-attach" aria-label="Anexar imagem ao post">Anexar imagem</button>
-                        <button class="btn-attach" aria-label="Anexar arquivo ao post">Anexar arquivo</button>
+                            <button class="btn btn-attach-primary" data-bs-toggle="modal"
+                                data-bs-target="#modalPostarNoticia">
+                                <i class="bi bi-pencil-square"></i> Escrever Notícia
+                            </button>
+                        </div>
+                    </section>
+
+                    <section aria-labelledby="latest-news-title">
+                        <h2 id="latest-news-title" class="visually-hidden">Últimas Notícias e Projetos</h2>
+                        <div id="latest-news-list" class="row g-3">
+                        </div>
+                    </section>
+
+
+                </div> <!-- fecha col-lg-8 -->
+
+
+                <!-- ✅ ESTE ASIDE ESTÁ AGORA NO LUGAR CORRETO -->
+                <aside class="col-lg-4">
+                    <div class="sticky-top" style="top: 20px;">
+
+                        <section class="sidebar-widget-green shadow-sm mb-4" aria-labelledby="upcoming-events-title">
+
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h2 id="upcoming-events-title" class="mb-0">Próximos Eventos</h2>
+                                <button class="btn btn-light btn-sm admin-only" data-bs-toggle="modal"
+                                    data-bs-target="#modalAdicionarEvento"
+                                    style="border-radius: 50%; width: 32px; height: 32px; padding: 0;">
+                                    <i class="bi bi-plus-lg"></i>
+                                </button>
+                            </div>
+
+                            <ul>
+                                <li>
+                                    <a href="#" aria-label="Detalhes da Semana de Tecnologia">Semana de Tecnologia</a>
+                                    <span>25/10</span>
+                                </li>
+                                <li>
+                                    <a href="#" aria-label="Detalhes da Feira de Ciências em 27 de Junho">Feira de
+                                        Ciências</a>
+                                    <span>27/11</span>
+                                </li>
+                            </ul>
+                        </section>
+
+                        <section class="sidebar-widget-green shadow-sm" aria-labelledby="calendar-title">
+                            <h2 id="calendar-title">Calendário de Eventos</h2>
+                            <div class="calendar-embed-container">
+                                <iframe
+                                    src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FSao_Paulo&bgcolor=%23386641&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&src=cHRicjM0OHM1ZzZnM2IzZnBnbnBqMHFvY2NAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&color=%23ffffff"
+                                    style="border:solid 1px #777" width="800" height="600" frameborder="0"
+                                    scrolling="no"></iframe>
+                            </div>
+                        </section>
+
                     </div>
-                </section>
-
-                <section class="latest-news" aria-labelledby="latest-news-title">
-                    <h2 id="latest-news-title" class="sr-only">Últimas Notícias e Projetos</h2>
-                    
-                    <article>
-                        <h3>Novo Laboratório de Biotecnologia</h3>
-                        <p>Mossoró</p>
-                        <a href="#" class="sr-only" aria-label="Detalhes sobre Novo Laboratório de Biotecnologia em Mossoró">Ver detalhes</a>
-                    </article>
-
-                    <article>
-                        <h3>Projeto de Extensão em Educação</h3>
-                        <p>Pau dos Ferros</p>
-                        <a href="#" class="sr-only" aria-label="Detalhes sobre Projeto de Extensão em Educação em Pau dos Ferros">Ver detalhes</a>
-                    </article>
-                </section>
+                </aside>
             </div>
+        </main>
 
-            <aside class="secondary-column" aria-label="Próximos eventos e calendário">
-                
-                <section class="upcoming-events" aria-labelledby="upcoming-events-title">
-                    <h2 id="upcoming-events-title">Próximos Eventos</h2>
-                    <ul>
-                        <li><a href="#" aria-label="Detalhes da Semana de Tecnologia">Semana de Tecnologia</a></li>
-                        <li>
-                            <a href="#" aria-label="Detalhes da Feira de Ciências em 27 de Junho">Feira de Ciências</a> 
-                            <span>27/06</span>
-                        </li>
+        <footer class="site-footer">
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-md-4 mb-4 mb-md-0">
+                        <a href="tela_inicial.html" class="footer-logo">
+                            <img src="LOGO.png" alt="Logo SIIF">
+                            <span>SIIF</span>
+                        </a>
+                        <p class="footer-copyright">
+                            © 2025 SIIF - Sistema de Interação do Instituto Federal.<br>
+                            Projeto acadêmico desenvolvido por alunos do IFRN.
+                        </p>
+                    </div>
+
+                    <div class="col-md-4 mb-4 mb-md-0">
+                        <h5>Navegação</h5>
+                        <ul class="list-unstyled footer-links">
+                            <li><a href="tela_inicial.html"><i class="bi bi-house-door-fill"></i> Página Inicial</a>
+                            </li>
+                            <li><a href="tela_foruns.html"><i class="bi bi-chat-left-dots-fill"></i> Fóruns</a></li>
+                            <li><a href="tela_divulgação.html"><i class="bi bi-megaphone-fill"></i> Divulgação</a></li>
+                            <li><a href="tela_materiais.html"><i class="bi bi-file-earmark-text-fill"></i> Materiais</a>
+                            </li>
+                            <li><a href="tela_mapa.html"><i class="bi bi-geo-alt-fill"></i> Mapa</a></li>
                         </ul>
-                </section>
+                    </div>
 
-                <section class="calendar" aria-labelledby="calendar-title">
-                    <h2 id="calendar-title">Outubro 2024</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th scope="col" title="Domingo">D</th>
-                                <th scope="col" title="Segunda-feira">S</th>
-                                <th scope="col" title="Terça-feira">T</th>
-                                <th scope="col" title="Quarta-feira">Q</th>
-                                <th scope="col" title="Quinta-feira">Q</th>
-                                <th scope="col" title="Sexta-feira">S</th>
-                                <th scope="col" title="Sábado">S</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
-                            <tr><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td></tr>
-                            <tr><td>13</td><td>14</td><td>15</td><td>16</td><td>17</td><td>18</td><td>19</td></tr>
-                            <tr><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td></tr>
-                            <tr><td>27</td><td>28</td><td>29</td><td>30</td><td>31</td><td></td><td></td></tr>
-                        </tbody>
-                    </table>
-                </section>
-            </aside>
+                    <div class="col-md-4">
+                        <h5>Links Úteis</h5>
+                        <ul class="list-unstyled footer-links">
+                            <li><a href="https://www.gov.br/ifrn/pt-br" target="_blank">Site Oficial IFRN</a></li>
+                            <li><a href="https://suap.ifrn.edu.br/" target="_blank">Acessar SUAP</a></li>
+                            <li><a href="tela_suporte.html">Suporte & Denúncias</a></li>
+                            <li><a href="tela_perfil.html">Meu Perfil</a></li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </footer>
+    </div>
+    <div class="modal fade" id="modalPostarNoticia" tabindex="-1" aria-labelledby="modalPostarNoticiaLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg modal-custom-verde">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalPostarNoticiaLabel">Criar Nova Notícia</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formPostarNoticia">
+                        <div class="mb-3">
+                            <label for="noticiaTitulo" class="form-label fw-bold">Título:</label>
+                            <input type="text" class="form-control" id="noticiaTitulo"
+                                placeholder="Ex: Seminário de Inovação">
+                        </div>
+                        <div class="mb-3">
+                            <label for="noticiaConteudo" class="form-label fw-bold">Conteúdo:</label>
+                            <textarea class="form-control" id="noticiaConteudo" rows="6"
+                                placeholder="Escreva o corpo da notícia aqui..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="noticiaCampus" class="form-label fw-bold">Campus:</label>
+                            <select id="noticiaCampus" class="form-select">
+                                <option value="">Todos os Campus</option>
+                                <option value="mossoro">Mossoró</option>
+                                <option value="paudosferros">Pau dos Ferros</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="noticiaCategoria" class="form-label fw-bold">Categoria:</label>
+                            <select id="noticiaCategoria" class="form-select">
+                                <option value="">Todas as Categorias</option>
+                                <option value="eventos">Eventos</option>
+                                <option value="pesquisa">Pesquisa</option>
+                            </select>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="noticiaImagem" class="form-label"><i class="bi bi-image"></i> Anexar Imagem
+                                    (Capa)</label>
+                                <input class="form-control" type="file" id="noticiaImagem" accept="image/*">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="noticiaArquivo" class="form-label"><i class="bi bi-paperclip"></i> Anexar
+                                    Arquivo (PDF, etc)</label>
+                                <input class="form-control" type="file" id="noticiaArquivo">
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <label for="noticiaLink" class="form-label"><i class="bi bi-link-45deg"></i> Link Externo
+                                (Opcional)</label>
+                            <input type="url" class="form-control" id="noticiaLink" placeholder="https://exemplo.com">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary filter-btn">Publicar Notícia</button>
+                </div>
+            </div>
         </div>
-    </main>
+    </div>
+
+    <div class="modal fade" id="modalVerNoticia" tabindex="-1" aria-labelledby="modalVerNoticiaLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg modal-custom-verde">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalVerNoticiaLabel">Carregando...</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="modalVerNoticiaConteudo">Carregando conteúdo da notícia...</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalAdicionarEvento" tabindex="-1" aria-labelledby="modalAdicionarEventoLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-custom-verde">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalAdicionarEventoLabel">Adicionar Novo Evento</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formAdicionarEvento">
+                        <div class="mb-3">
+                            <label for="eventoTitulo" class="form-label fw-bold">Nome do Evento:</label>
+                            <input type="text" class="form-control" id="eventoTitulo"
+                                placeholder="Ex: Semana de Tecnologia">
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventoData" class="form-label fw-bold">Data do Evento:</label>
+                            <input type="text" class="form-control" id="eventoData" placeholder="Ex: 25/10">
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventoLink" class="form-label fw-bold">Link (Opcional):</label>
+                            <input type="url" class="form-control" id="eventoLink" placeholder="https://...">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer" style="background-color: #f8f9fa;">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary filter-btn">Adicionar Evento</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="tela_suporte.html" class="help-btn help-btn-user"><i class="bi bi-headset"></i></a>
+    <a href="tela_denuncias.html" class="help-btn help-btn-admin"><i class="bi bi-shield-check"></i></a>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const modalVerNoticia = document.getElementById('modalVerNoticia');
+        if (modalVerNoticia) {
+            modalVerNoticia.addEventListener('show.bs.modal', event => {
+                const button = event.relatedTarget;
+                const titulo = button.getAttribute('data-noticia-titulo');
+                const conteudo = button.getAttribute('data-noticia-conteudo');
+                const modalTitle = modalVerNoticia.querySelector('.modal-title');
+                const modalBody = modalVerNoticia.querySelector('#modalVerNoticiaConteudo');
+                if (titulo) {
+                    modalTitle.textContent = titulo;
+                }
+                if (conteudo) {
+                    modalBody.textContent = conteudo;
+                }
+            });
+        }
+    </script>
+    <script>
+
+        const selFiltroCampus = document.getElementById('filtrar-campus');
+        const selFiltroCategoria = document.getElementById('filtrar-categoria');
+
+        const selModalCampus = document.getElementById('noticiaCampus');
+        const selModalCategoria = document.getElementById('noticiaCategoria');
+
+        const modalPostar = document.getElementById('modalPostarNoticia');
+
+        modalPostar.addEventListener('show.bs.modal', () => {
+            selModalCampus.value = selFiltroCampus.value;
+            selModalCategoria.value = selFiltroCategoria.value;
+        });
+    </script>
+
+    <script>
+        // elementos de filtro
+        const selCampus = document.getElementById('filtrar-campus');
+        const selCategoria = document.getElementById('filtrar-categoria');
+        const inputBusca = document.getElementById('pesquisar');
+
+        // função única que aplica todos os filtros
+        function aplicarFiltros() {
+            const campusFiltro = (selCampus.value || "").trim().toLowerCase();
+            const categoriaFiltro = (selCategoria.value || "").trim().toLowerCase();
+            const termoBusca = (inputBusca.value || "").trim().toLowerCase();
+
+            // seleciona todos os cards (os links .latest-news-card)
+            const cards = document.querySelectorAll('.latest-news-card');
+
+            cards.forEach(card => {
+                // atributos/data e textos de cada card
+                const campusCard = (card.getAttribute('data-campus') || "").trim().toLowerCase();
+                const categoriaCard = (card.getAttribute('data-categoria') || "").trim().toLowerCase();
+                const titulo = (card.querySelector('.card-title')?.textContent || "").trim().toLowerCase();
+                // pega conteúdo completo da notícia (se estiver no data-noticia-conteudo)
+                const conteudo = (card.getAttribute('data-noticia-conteudo') || "").trim().toLowerCase();
+
+                // checagens
+                const okCampus = (!campusFiltro) || (campusCard === campusFiltro);
+                const okCategoria = (!categoriaFiltro) || (categoriaCard === categoriaFiltro);
+                const okBusca = (!termoBusca) || (titulo.includes(termoBusca) || conteudo.includes(termoBusca));
+
+                // mostrar/ocultar o _pai_ do card (normalmente a coluna .col-md-6)
+                const elementoPai = card.parentElement;
+                if (elementoPai) {
+                    elementoPai.style.display = (okCampus && okCategoria && okBusca) ? "" : "none";
+                }
+            });
+        }
+
+        // ligar eventos: ao aplicar filtros (submit do form) e mudanças ao digitar/mudar selects
+        // evita comportamento de submit que recarrega a página
+        const formFiltros = document.querySelector('.divulgacao-filters');
+        if (formFiltros) {
+            formFiltros.addEventListener('submit', function (e) {
+                e.preventDefault();
+                aplicarFiltros();
+            });
+        }
+
+        // atualizar ao mudar selects
+        selCampus.addEventListener('change', aplicarFiltros);
+        selCategoria.addEventListener('change', aplicarFiltros);
+
+        // atualizar enquanto o usuário digita (UX melhor) — também escuta 'search' caso use botão
+        inputBusca.addEventListener('input', aplicarFiltros);
+        inputBusca.addEventListener('search', aplicarFiltros);
+
+        // executa uma vez na carga para já aplicar (caso haja filtros pré-selecionados)
+        document.addEventListener('DOMContentLoaded', aplicarFiltros);
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const noticiasContainer = document.querySelector('#latest-news-list');
+            const eventosContainer = document.querySelector('#upcoming-events-list');
+
+            // --- Buscar notícias ---
+            try {
+                const resp = await fetch('/api/noticias');
+                const noticias = await resp.json();
+                noticiasContainer.innerHTML = '';
+                noticias.forEach(n => {
+                    const card = `
+                <div class="col-md-6">
+                    <a href="#" class="latest-news-card card shadow-sm text-decoration-none"
+                        data-bs-toggle="modal" data-bs-target="#modalVerNoticia"
+                        data-noticia-titulo="${n.titulo}"
+                        data-noticia-conteudo="${n.conteudo}">
+                        <div class="card-body">
+                            <h3 class="card-title">${n.titulo}</h3>
+                            <p class="card-text text-muted mb-0">${new Date(n.data_postagem).toLocaleDateString('pt-BR')}</p>
+                        </div>
+                    </a>
+                </div>`;
+                    noticiasContainer.insertAdjacentHTML('beforeend', card);
+                });
+            } catch (err) {
+                console.error('Erro ao carregar notícias:', err);
+            }
+
+            // --- Buscar eventos ---
+            try {
+                const resp = await fetch('/api/eventos');
+                const eventos = await resp.json();
+                eventosContainer.innerHTML = '';
+                eventos.forEach(e => {
+                    const li = `
+                <li>
+                    <a href="#" aria-label="Detalhes de ${e.titulo}">${e.titulo}</a>
+                    <span>${new Date(e.data_hora_inicio).toLocaleDateString('pt-BR')}</span>
+                </li>`;
+                    eventosContainer.insertAdjacentHTML('beforeend', li);
+                });
+            } catch (err) {
+                console.error('Erro ao carregar eventos:', err);
+            }
+        });
+    </script>
+
+
+
 </body>
+
 </html>
