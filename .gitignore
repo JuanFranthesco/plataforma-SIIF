@@ -4,6 +4,8 @@ venv/
 site.db
 *.sqlite3
 
+app/static/uploads/
+
 __pycache__/
 *.pyc
 
