@@ -1,521 +1,372 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Divulgação - SIIF</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Divulgação - SIIF</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
 
 </head>
 
-<body class="role-admin">
-    <div class="page-container">
+<body class="role-user"> 
+  <div class="page-container">
 
-        <nav class="navbar navbar-expand-lg navbar-custom">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="tela_inicial.html">
-                    <img src="LOGO.png" alt="Logo SIIF">
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <i class="bi bi-list text-white fs-1"></i>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link" href="tela_inicial.html"><i class="bi bi-house-door-fill"></i> Página
-                                Inicial</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="tela_foruns.html"><i class="bi bi-chat-left-dots-fill"></i>
-                                Fóruns</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="tela_divulgação.html"><i class="bi bi-megaphone-fill"></i>
-                                Divulgação</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="tela_materiais.html"><i class="bi bi-file-earmark-text-fill"></i>
-                                Materiais</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="tela_mapa.html"><i class="bi bi-geo-alt-fill"></i> Mapa</a>
-                        </li>
-                    </ul>
-                    <a href="tela_perfil.html" class="profile-link ms-lg-auto"> <span>Olá, Fulano de tal</span>
-                        <div class="profile-pic">
-                            <img src="image.png" alt="Perfil">
-                        </div>
-                    </a>
-                </div>
+    <nav class="navbar navbar-expand-lg navbar-custom">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="tela_inicial.html">
+          <img src="LOGO.png" alt="Logo SIIF"> 
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <i class="bi bi-list text-white fs-1"></i> 
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="tela_inicial.html"><i class="bi bi-house-door-fill"></i> Página Inicial</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="tela_foruns.html"><i class="bi bi-chat-left-dots-fill"></i> Fóruns</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="tela_divulgação.html"><i class="bi bi-megaphone-fill"></i> Divulgação</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="tela_materiais.html"><i class="bi bi-file-earmark-text-fill"></i> Materiais</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="tela_mapa.html"><i class="bi bi-geo-alt-fill"></i> Mapa</a> </li>
+          </ul>
+          <a href="tela_perfil.html" class="profile-link ms-lg-auto"> <span>Olá, Fulano de tal</span>
+            <div class="profile-pic">
+              <img src="image.png" alt="Perfil"> 
             </div>
-        </nav>
+          </a>
+        </div>
+      </div>
+    </nav>
 
-        <main id="conteudo-principal" role="main">
-            <a href="#conteudo-principal" class="visually-hidden-focusable skip-link">Pular para o conteúdo
-                principal</a>
+    <main id="conteudo-principal" role="main">
+      <a href="#conteudo-principal" class="visually-hidden-focusable skip-link">Pular para o conteúdo principal</a>
 
-            <h1>Divulgação</h1>
+      <h1>Divulgação</h1>
 
-            <section class="row g-3 mb-4">
-                <div class="col-lg-6">
-                    <form class="divulgacao-filters shadow-sm">
-                        <label for="filtrar-campus" class="visually-hidden">Filtrar por Campus</label>
-                        <select id="filtrar-campus" name="campus" class="form-select" aria-label="Filtrar Campus">
-                            <option value="">Todos os Campus</option>
-                            <option value="mossoro">Mossoró</option>
-                            <option value="paudosferros">Pau dos Ferros</option>
-                        </select>
-                        <label for="filtrar-categoria" class="visually-hidden">Filtrar por Categoria</label>
-                        <select id="filtrar-categoria" name="categoria" class="form-select"
-                            aria-label="Filtrar Categoria">
-                            <option value="">Todas as Categorias</option>
-                            <option value="eventos">Eventos</option>
-                            <option value="pesquisa">Pesquisa</option>
-                        </select>
-                        <button type="submit" class="btn btn-primary filter-btn">Buscar</button>
-                    </form>
-                </div>
-                <div class="col-lg-6">
-                    <form class="divulgacao-search shadow-sm" role="search">
-                        <label for="pesquisar" class="visually-hidden">Campo de Pesquisa</label>
-                        <input type="search" id="pesquisar" class="form-control"
-                            placeholder="Pesquisar notícias e eventos...">
-                        <button type="submit" class="btn-search-icon" aria-label="Executar Pesquisa"><i
-                                class="bi bi-search"></i></button>
-                    </form>
-                </div>
+      <section class="row g-3 mb-4">
+        <div class="col-lg-6">
+          <form class="divulgacao-filters shadow-sm">
+            <label for="filtrar-campus" class="visually-hidden">Filtrar por Campus</label>
+            <select id="filtrar-campus" name="campus" class="form-select" aria-label="Filtrar Campus">
+              <option value="">Todos os Campus</option>
+              <option value="mossoro">Mossoró</option>
+              <option value="paudosferros">Pau dos Ferros</option>
+            </select>
+            <label for="filtrar-categoria" class="visually-hidden">Filtrar por Categoria</label>
+            <select id="filtrar-categoria" name="categoria" class="form-select" aria-label="Filtrar Categoria">
+              <option value="">Todas as Categorias</option>
+              <option value="eventos">Eventos</option>
+              <option value="pesquisa">Pesquisa</option>
+            </select>
+            <button type="submit" class="btn btn-primary filter-btn">Buscar</button>
+          </form>
+        </div>
+        <div class="col-lg-6">
+          <form class="divulgacao-search shadow-sm" role="search">
+            <label for="pesquisar" class="visually-hidden">Campo de Pesquisa</label>
+            <input type="search" id="pesquisar" class="form-control" placeholder="Pesquisar notícias e eventos...">
+            <button type="submit" class="btn-search-icon" aria-label="Executar Pesquisa"><i class="bi bi-search"></i></button>
+          </form>
+        </div>
+      </section>
+
+      <div class="row g-4">
+        
+        <div class="col-lg-8">
+          
+          <section class="mb-4" aria-labelledby="highlights-title">
+            <h2 id="highlights-title" class="visually-hidden">Notícias e Eventos em Destaque</h2>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <article class="divulgacao-card card h-100 shadow-sm">
+                  <div class="card-body d-flex flex-column">
+                    <h3 class="card-title">Seminário de Inovação</h3>
+                    <p class="card-text">Evento sobre as mais novas tecnologias através de palestras e presença.</p>
+                    
+                    <button type="button" class="btn btn-divulgacao mt-auto" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#modalVerNoticia" 
+                            data-noticia-titulo="Seminário de Inovação"
+                            data-noticia-conteudo="Este é o conteúdo completo sobre o Seminário de Inovação. Evento sobre as mais novas tecnologias através de palestras e presença. Detalhes adicionais, datas e links irão aqui.">
+                      Ver mais
+                    </button>
+                  </div>
+                </article>
+              </div>
+              <div class="col-md-4">
+                <article class="divulgacao-card card h-100 shadow-sm">
+                   <div class="card-body d-flex flex-column">
+                    <h3 class="card-title">Pesquisa em IA</h3>
+                    <p class="card-text">O projeto visa explorar soluções e estudá-las para problemas.</p>
+                    
+                    <button type="button" class="btn btn-divulgacao mt-auto" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#modalVerNoticia"
+                            data-noticia-titulo="Pesquisa em IA"
+                            data-noticia-conteudo="O projeto visa explorar soluções e estudá-las para problemas complexos utilizando Inteligência Artificial. Mais informações sobre os pesquisadores envolvidos e como participar.">
+                      Ver mais
+                    </button>
+                  </div>
+                </article>
+              </div>
+              <div class="col-md-4">
+                <article class="divulgacao-card card h-100 shadow-sm">
+                   <div class="card-body d-flex flex-column">
+                    <h3 class="card-title">Olimpíada de Matemática</h3>
+                    <p class="card-text">Pesquisas sobre os efeitos da inteligência artificial.</p>
+                    
+                    <button type="button" class="btn btn-divulgacao mt-auto" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#modalVerNoticia"
+                            data-noticia-titulo="Olimpíada de Matemática"
+                            data-noticia-conteudo="Detalhes sobre a Olimpíada de Matemática. Datas, locais de prova, e links para materiais de estudo. (O texto 'Pesquisas sobre os efeitos da inteligência artificial' parece ser um placeholder e deve ser trocado).">
+                      Ver mais
+                    </button>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <section class="post-news-section card shadow-sm mb-4 admin-only" aria-labelledby="post-news-title">
+            <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3">
+              <h2 id="post-news-title" class="post-news-title mb-0">Painel de Admin:</h2>
+              
+              <button class="btn btn-attach-primary" data-bs-toggle="modal" data-bs-target="#modalPostarNoticia">
+                <i class="bi bi-pencil-square"></i> Escrever Notícia
+              </button>
+            </div>
+          </section>
+          
+          <section aria-labelledby="latest-news-title">
+            <h2 id="latest-news-title" class="visually-hidden">Últimas Notícias e Projetos</h2>
+            <div class="row g-3">
+              <div class="col-md-6">
+                
+                <a href="#" class="latest-news-card card shadow-sm text-decoration-none" 
+                   data-bs-toggle="modal" 
+                   data-bs-target="#modalVerNoticia"
+                   data-noticia-titulo="Novo Laboratório de Biotecnologia"
+                   data-noticia-conteudo="Informações completas sobre o novo laboratório no Campus Mossoró.">
+                  <div class="card-body">
+                    <h3 class="card-title">Novo Laboratório de Biotecnologia</h3>
+                    <p class="card-text text-muted mb-0">Campus Mossoró</p>
+                  </div>
+                </a>
+              </div>
+              <div class="col-md-6">
+                
+                <a href="#" class="latest-news-card card shadow-sm text-decoration-none"
+                   data-bs-toggle="modal" 
+                   data-bs-target="#modalVerNoticia"
+                   data-noticia-titulo="Projeto de Extensão em Educação"
+                   data-noticia-conteudo="Detalhes sobre o novo projeto de extensão em educação no Campus Pau dos Ferros.">
+                  <div class="card-body">
+                    <h3 class="card-title">Projeto de Extensão em Educação</h3>
+                    <p class="card-text text-muted mb-0">Campus Pau dos Ferros</p>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <aside class="col-lg-4">
+          <div class="sticky-top" style="top: 20px;">
+            <section class="sidebar-widget-green shadow-sm mb-4" aria-labelledby="upcoming-events-title">
+              
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 id="upcoming-events-title" class="mb-0">Próximos Eventos</h2>
+                <button class="btn btn-light btn-sm admin-only" data-bs-toggle="modal" data-bs-target="#modalAdicionarEvento" style="border-radius: 50%; width: 32px; height: 32px; padding: 0;">
+                  <i class="bi bi-plus-lg"></i>
+                </button>
+              </div>
+
+              <ul>
+                <li>
+                  <a href="#" aria-label="Detalhes da Semana de Tecnologia">Semana de Tecnologia</a>
+                  <span>25/10</span>
+                </li>
+                <li>
+                  <a href="#" aria-label="Detalhes da Feira de Ciências em 27 de Junho">Feira de Ciências</a> 
+                  <span>27/11</span>
+                </li>
+              </ul>
             </section>
 
-            <div class="row g-4">
+            <section class="sidebar-widget-green shadow-sm" aria-labelledby="calendar-title">
+              <h2 id="calendar-title">Calendário de Eventos</h2>
+              <div class="calendar-embed-container">
+                <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FSao_Paulo&bgcolor=%23386641&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&src=cHRicjM0OHM1ZzZnM2IzZnBnbnBqMHFvY2NAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&color=%23ffffff" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+              </div>
+            </section>
+          </div>
+        </aside>
+      </div>
+    </main>
 
-                <div class="col-lg-8">
-
-                    <section class="mb-4" aria-labelledby="highlights-title">
-                        <h2 id="highlights-title" class="visually-hidden">Notícias e Eventos em Destaque</h2>
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <article class="divulgacao-card card h-100 shadow-sm">
-                                    <div class="card-body d-flex flex-column">
-                                        <h3 class="card-title">Seminário de Inovação</h3>
-                                        <p class="card-text">Evento sobre as mais novas tecnologias através de palestras
-                                            e presença.</p>
-
-                                        <button type="button" class="btn btn-divulgacao mt-auto" data-bs-toggle="modal"
-                                            data-bs-target="#modalVerNoticia"
-                                            data-noticia-titulo="Seminário de Inovação"
-                                            data-noticia-conteudo="Este é o conteúdo completo sobre o Seminário de Inovação. Evento sobre as mais novas tecnologias através de palestras e presença. Detalhes adicionais, datas e links irão aqui.">
-                                            Ver mais
-                                        </button>
-                                    </div>
-                                </article>
-                            </div>
-                            <div class="col-md-4">
-                                <article class="divulgacao-card card h-100 shadow-sm">
-                                    <div class="card-body d-flex flex-column">
-                                        <h3 class="card-title">Pesquisa em IA</h3>
-                                        <p class="card-text">O projeto visa explorar soluções e estudá-las para
-                                            problemas.</p>
-
-                                        <button type="button" class="btn btn-divulgacao mt-auto" data-bs-toggle="modal"
-                                            data-bs-target="#modalVerNoticia" data-noticia-titulo="Pesquisa em IA"
-                                            data-noticia-conteudo="O projeto visa explorar soluções e estudá-las para problemas complexos utilizando Inteligência Artificial. Mais informações sobre os pesquisadores envolvidos e como participar.">
-                                            Ver mais
-                                        </button>
-                                    </div>
-                                </article>
-                            </div>
-                            <div class="col-md-4">
-                                <article class="divulgacao-card card h-100 shadow-sm">
-                                    <div class="card-body d-flex flex-column">
-                                        <h3 class="card-title">Olimpíada de Matemática</h3>
-                                        <p class="card-text">Pesquisas sobre os efeitos da inteligência artificial.</p>
-
-                                        <button type="button" class="btn btn-divulgacao mt-auto" data-bs-toggle="modal"
-                                            data-bs-target="#modalVerNoticia"
-                                            data-noticia-titulo="Olimpíada de Matemática"
-                                            data-noticia-conteudo="Detalhes sobre a Olimpíada de Matemática. Datas, locais de prova, e links para materiais de estudo. (O texto 'Pesquisas sobre os efeitos da inteligência artificial' parece ser um placeholder e deve ser trocado).">
-                                            Ver mais
-                                        </button>
-                                    </div>
-                                </article>
-                            </div>
-                        </div>
-                    </section>
-
-                    <section class="post-news-section card shadow-sm mb-4 admin-only" aria-labelledby="post-news-title">
-                        <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3">
-                            <h2 id="post-news-title" class="post-news-title mb-0">Painel de Admin:</h2>
-
-                            <button class="btn btn-attach-primary" data-bs-toggle="modal"
-                                data-bs-target="#modalPostarNoticia">
-                                <i class="bi bi-pencil-square"></i> Escrever Notícia
-                            </button>
-                        </div>
-                    </section>
-
-                    <section aria-labelledby="latest-news-title">
-                        <h2 id="latest-news-title" class="visually-hidden">Últimas Notícias e Projetos</h2>
-                        <div id="latest-news-list" class="row g-3">
-                        </div>
-                    </section>
-
-
-                </div> <!-- fecha col-lg-8 -->
-
-
-                <!-- ✅ ESTE ASIDE ESTÁ AGORA NO LUGAR CORRETO -->
-                <aside class="col-lg-4">
-                    <div class="sticky-top" style="top: 20px;">
-
-                        <section class="sidebar-widget-green shadow-sm mb-4" aria-labelledby="upcoming-events-title">
-
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h2 id="upcoming-events-title" class="mb-0">Próximos Eventos</h2>
-                                <button class="btn btn-light btn-sm admin-only" data-bs-toggle="modal"
-                                    data-bs-target="#modalAdicionarEvento"
-                                    style="border-radius: 50%; width: 32px; height: 32px; padding: 0;">
-                                    <i class="bi bi-plus-lg"></i>
-                                </button>
-                            </div>
-
-                            <ul>
-                                <li>
-                                    <a href="#" aria-label="Detalhes da Semana de Tecnologia">Semana de Tecnologia</a>
-                                    <span>25/10</span>
-                                </li>
-                                <li>
-                                    <a href="#" aria-label="Detalhes da Feira de Ciências em 27 de Junho">Feira de
-                                        Ciências</a>
-                                    <span>27/11</span>
-                                </li>
-                            </ul>
-                        </section>
-
-                        <section class="sidebar-widget-green shadow-sm" aria-labelledby="calendar-title">
-                            <h2 id="calendar-title">Calendário de Eventos</h2>
-                            <div class="calendar-embed-container">
-                                <iframe
-                                    src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FSao_Paulo&bgcolor=%23386641&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&src=cHRicjM0OHM1ZzZnM2IzZnBnbnBqMHFvY2NAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&color=%23ffffff"
-                                    style="border:solid 1px #777" width="800" height="600" frameborder="0"
-                                    scrolling="no"></iframe>
-                            </div>
-                        </section>
-
-                    </div>
-                </aside>
-            </div>
-        </main>
-
-        <footer class="site-footer">
-            <div class="container-fluid">
-                <div class="row">
-
-                    <div class="col-md-4 mb-4 mb-md-0">
-                        <a href="tela_inicial.html" class="footer-logo">
-                            <img src="LOGO.png" alt="Logo SIIF">
-                            <span>SIIF</span>
-                        </a>
-                        <p class="footer-copyright">
-                            © 2025 SIIF - Sistema de Interação do Instituto Federal.<br>
-                            Projeto acadêmico desenvolvido por alunos do IFRN.
-                        </p>
-                    </div>
-
-                    <div class="col-md-4 mb-4 mb-md-0">
-                        <h5>Navegação</h5>
-                        <ul class="list-unstyled footer-links">
-                            <li><a href="tela_inicial.html"><i class="bi bi-house-door-fill"></i> Página Inicial</a>
-                            </li>
-                            <li><a href="tela_foruns.html"><i class="bi bi-chat-left-dots-fill"></i> Fóruns</a></li>
-                            <li><a href="tela_divulgação.html"><i class="bi bi-megaphone-fill"></i> Divulgação</a></li>
-                            <li><a href="tela_materiais.html"><i class="bi bi-file-earmark-text-fill"></i> Materiais</a>
-                            </li>
-                            <li><a href="tela_mapa.html"><i class="bi bi-geo-alt-fill"></i> Mapa</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="col-md-4">
-                        <h5>Links Úteis</h5>
-                        <ul class="list-unstyled footer-links">
-                            <li><a href="https://www.gov.br/ifrn/pt-br" target="_blank">Site Oficial IFRN</a></li>
-                            <li><a href="https://suap.ifrn.edu.br/" target="_blank">Acessar SUAP</a></li>
-                            <li><a href="tela_suporte.html">Suporte & Denúncias</a></li>
-                            <li><a href="tela_perfil.html">Meu Perfil</a></li>
-                        </ul>
-                    </div>
-
-                </div>
-            </div>
-        </footer>
-    </div>
-    <div class="modal fade" id="modalPostarNoticia" tabindex="-1" aria-labelledby="modalPostarNoticiaLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg modal-custom-verde">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalPostarNoticiaLabel">Criar Nova Notícia</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="formPostarNoticia">
-                        <div class="mb-3">
-                            <label for="noticiaTitulo" class="form-label fw-bold">Título:</label>
-                            <input type="text" class="form-control" id="noticiaTitulo"
-                                placeholder="Ex: Seminário de Inovação">
-                        </div>
-                        <div class="mb-3">
-                            <label for="noticiaConteudo" class="form-label fw-bold">Conteúdo:</label>
-                            <textarea class="form-control" id="noticiaConteudo" rows="6"
-                                placeholder="Escreva o corpo da notícia aqui..."></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="noticiaCampus" class="form-label fw-bold">Campus:</label>
-                            <select id="noticiaCampus" class="form-select">
-                                <option value="">Todos os Campus</option>
-                                <option value="mossoro">Mossoró</option>
-                                <option value="paudosferros">Pau dos Ferros</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="noticiaCategoria" class="form-label fw-bold">Categoria:</label>
-                            <select id="noticiaCategoria" class="form-select">
-                                <option value="">Todas as Categorias</option>
-                                <option value="eventos">Eventos</option>
-                                <option value="pesquisa">Pesquisa</option>
-                            </select>
-                        </div>
-
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="noticiaImagem" class="form-label"><i class="bi bi-image"></i> Anexar Imagem
-                                    (Capa)</label>
-                                <input class="form-control" type="file" id="noticiaImagem" accept="image/*">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="noticiaArquivo" class="form-label"><i class="bi bi-paperclip"></i> Anexar
-                                    Arquivo (PDF, etc)</label>
-                                <input class="form-control" type="file" id="noticiaArquivo">
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            <label for="noticiaLink" class="form-label"><i class="bi bi-link-45deg"></i> Link Externo
-                                (Opcional)</label>
-                            <input type="url" class="form-control" id="noticiaLink" placeholder="https://exemplo.com">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary filter-btn">Publicar Notícia</button>
-                </div>
-            </div>
+    <footer class="site-footer">
+      <div class="container-fluid">
+        <div class="row">
+          
+          <div class="col-md-4 mb-4 mb-md-0">
+            <a href="tela_inicial.html" class="footer-logo">
+              <img src="LOGO.png" alt="Logo SIIF">
+              <span>SIIF</span>
+            </a>
+            <p class="footer-copyright">
+              © 2025 SIIF - Sistema de Interação do Instituto Federal.<br>
+              Projeto acadêmico desenvolvido por alunos do IFRN.
+            </p>
+          </div>
+    
+          <div class="col-md-4 mb-4 mb-md-0">
+            <h5>Navegação</h5>
+            <ul class="list-unstyled footer-links">
+              <li><a href="tela_inicial.html"><i class="bi bi-house-door-fill"></i> Página Inicial</a></li>
+              <li><a href="tela_foruns.html"><i class="bi bi-chat-left-dots-fill"></i> Fóruns</a></li>
+              <li><a href="tela_divulgação.html"><i class="bi bi-megaphone-fill"></i> Divulgação</a></li>
+              <li><a href="tela_materiais.html"><i class="bi bi-file-earmark-text-fill"></i> Materiais</a></li>
+              <li><a href="tela_mapa.html"><i class="bi bi-geo-alt-fill"></i> Mapa</a></li>
+            </ul>
+          </div>
+    
+          <div class="col-md-4">
+            <h5>Links Úteis</h5>
+            <ul class="list-unstyled footer-links">
+              <li><a href="https://www.gov.br/ifrn/pt-br" target="_blank">Site Oficial IFRN</a></li>
+              <li><a href="https://suap.ifrn.edu.br/" target="_blank">Acessar SUAP</a></li>
+              <li><a href="tela_suporte.html">Suporte & Denúncias</a></li>
+              <li><a href="tela_perfil.html">Meu Perfil</a></li>
+            </ul>
+          </div>
+    
         </div>
-    </div>
-
-    <div class="modal fade" id="modalVerNoticia" tabindex="-1" aria-labelledby="modalVerNoticiaLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg modal-custom-verde">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalVerNoticiaLabel">Carregando...</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p id="modalVerNoticiaConteudo">Carregando conteúdo da notícia...</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                </div>
-            </div>
+      </div>
+    </footer>
+    </div> <div class="modal fade" id="modalPostarNoticia" tabindex="-1" aria-labelledby="modalPostarNoticiaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-custom-verde">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="modalPostarNoticiaLabel">Criar Nova Notícia</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-    </div>
-
-    <div class="modal fade" id="modalAdicionarEvento" tabindex="-1" aria-labelledby="modalAdicionarEventoLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-custom-verde">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalAdicionarEventoLabel">Adicionar Novo Evento</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="formAdicionarEvento">
-                        <div class="mb-3">
-                            <label for="eventoTitulo" class="form-label fw-bold">Nome do Evento:</label>
-                            <input type="text" class="form-control" id="eventoTitulo"
-                                placeholder="Ex: Semana de Tecnologia">
-                        </div>
-                        <div class="mb-3">
-                            <label for="eventoData" class="form-label fw-bold">Data do Evento:</label>
-                            <input type="text" class="form-control" id="eventoData" placeholder="Ex: 25/10">
-                        </div>
-                        <div class="mb-3">
-                            <label for="eventoLink" class="form-label fw-bold">Link (Opcional):</label>
-                            <input type="url" class="form-control" id="eventoLink" placeholder="https://...">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer" style="background-color: #f8f9fa;">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary filter-btn">Adicionar Evento</button>
-                </div>
+        <div class="modal-body">
+          <form id="formPostarNoticia">
+            <div class="mb-3">
+              <label for="noticiaTitulo" class="form-label fw-bold">Título:</label>
+              <input type="text" class="form-control" id="noticiaTitulo" placeholder="Ex: Seminário de Inovação">
             </div>
+            <div class="mb-3">
+              <label for="noticiaConteudo" class="form-label fw-bold">Conteúdo:</label>
+              <textarea class="form-control" id="noticiaConteudo" rows="6" placeholder="Escreva o corpo da notícia aqui..."></textarea>
+            </div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="noticiaImagem" class="form-label"><i class="bi bi-image"></i> Anexar Imagem (Capa)</label>
+                <input class="form-control" type="file" id="noticiaImagem" accept="image/*">
+              </div>
+              <div class="col-md-6">
+                <label for="noticiaArquivo" class="form-label"><i class="bi bi-paperclip"></i> Anexar Arquivo (PDF, etc)</label>
+                <input class="form-control" type="file" id="noticiaArquivo">
+              </div>
+            </div>
+            <div class="mt-3">
+               <label for="noticiaLink" class="form-label"><i class="bi bi-link-45deg"></i> Link Externo (Opcional)</label>
+               <input type="url" class="form-control" id="noticiaLink" placeholder="https://exemplo.com">
+            </div>
+          </form>
         </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary filter-btn">Publicar Notícia</button>
+        </div>
+      </div>
     </div>
-    <a href="tela_suporte.html" class="help-btn help-btn-user"><i class="bi bi-headset"></i></a>
-    <a href="tela_denuncias.html" class="help-btn help-btn-admin"><i class="bi bi-shield-check"></i></a>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <div class="modal fade" id="modalVerNoticia" tabindex="-1" aria-labelledby="modalVerNoticiaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-custom-verde"> 
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="modalVerNoticiaLabel">Carregando...</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p id="modalVerNoticiaConteudo">Carregando conteúdo da notícia...</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal fade" id="modalAdicionarEvento" tabindex="-1" aria-labelledby="modalAdicionarEventoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-custom-verde"> 
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="modalAdicionarEventoLabel">Adicionar Novo Evento</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formAdicionarEvento">
+            <div class="mb-3">
+              <label for="eventoTitulo" class="form-label fw-bold">Nome do Evento:</label>
+              <input type="text" class="form-control" id="eventoTitulo" placeholder="Ex: Semana de Tecnologia">
+            </div>
+            <div class="mb-3">
+              <label for="eventoData" class="form-label fw-bold">Data do Evento:</label>
+              <input type="text" class="form-control" id="eventoData" placeholder="Ex: 25/10">
+            </div>
+            <div class="mb-3">
+              <label for="eventoLink" class="form-label fw-bold">Link (Opcional):</label>
+              <input type="url" class="form-control" id="eventoLink" placeholder="https://...">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer" style="background-color: #f8f9fa;">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary filter-btn">Adicionar Evento</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a href="tela_suporte.html" class="help-btn help-btn-user"><i class="bi bi-headset"></i></a>
+  <a href="tela_denuncias.html" class="help-btn help-btn-admin"><i class="bi bi-shield-check"></i></a>
 
-    <script>
-        const modalVerNoticia = document.getElementById('modalVerNoticia');
-        if (modalVerNoticia) {
-            modalVerNoticia.addEventListener('show.bs.modal', event => {
-                const button = event.relatedTarget;
-                const titulo = button.getAttribute('data-noticia-titulo');
-                const conteudo = button.getAttribute('data-noticia-conteudo');
-                const modalTitle = modalVerNoticia.querySelector('.modal-title');
-                const modalBody = modalVerNoticia.querySelector('#modalVerNoticiaConteudo');
-                if (titulo) {
-                    modalTitle.textContent = titulo;
-                }
-                if (conteudo) {
-                    modalBody.textContent = conteudo;
-                }
-            });
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    const modalVerNoticia = document.getElementById('modalVerNoticia');
+    if (modalVerNoticia) { 
+      modalVerNoticia.addEventListener('show.bs.modal', event => {
+        const button = event.relatedTarget;
+        const titulo = button.getAttribute('data-noticia-titulo');
+        const conteudo = button.getAttribute('data-noticia-conteudo');
+        const modalTitle = modalVerNoticia.querySelector('.modal-title');
+        const modalBody = modalVerNoticia.querySelector('#modalVerNoticiaConteudo');
+        if(titulo) {
+          modalTitle.textContent = titulo;
         }
-    </script>
-    <script>
-
-        const selFiltroCampus = document.getElementById('filtrar-campus');
-        const selFiltroCategoria = document.getElementById('filtrar-categoria');
-
-        const selModalCampus = document.getElementById('noticiaCampus');
-        const selModalCategoria = document.getElementById('noticiaCategoria');
-
-        const modalPostar = document.getElementById('modalPostarNoticia');
-
-        modalPostar.addEventListener('show.bs.modal', () => {
-            selModalCampus.value = selFiltroCampus.value;
-            selModalCategoria.value = selFiltroCategoria.value;
-        });
-    </script>
-
-    <script>
-        // elementos de filtro
-        const selCampus = document.getElementById('filtrar-campus');
-        const selCategoria = document.getElementById('filtrar-categoria');
-        const inputBusca = document.getElementById('pesquisar');
-
-        // função única que aplica todos os filtros
-        function aplicarFiltros() {
-            const campusFiltro = (selCampus.value || "").trim().toLowerCase();
-            const categoriaFiltro = (selCategoria.value || "").trim().toLowerCase();
-            const termoBusca = (inputBusca.value || "").trim().toLowerCase();
-
-            // seleciona todos os cards (os links .latest-news-card)
-            const cards = document.querySelectorAll('.latest-news-card');
-
-            cards.forEach(card => {
-                // atributos/data e textos de cada card
-                const campusCard = (card.getAttribute('data-campus') || "").trim().toLowerCase();
-                const categoriaCard = (card.getAttribute('data-categoria') || "").trim().toLowerCase();
-                const titulo = (card.querySelector('.card-title')?.textContent || "").trim().toLowerCase();
-                // pega conteúdo completo da notícia (se estiver no data-noticia-conteudo)
-                const conteudo = (card.getAttribute('data-noticia-conteudo') || "").trim().toLowerCase();
-
-                // checagens
-                const okCampus = (!campusFiltro) || (campusCard === campusFiltro);
-                const okCategoria = (!categoriaFiltro) || (categoriaCard === categoriaFiltro);
-                const okBusca = (!termoBusca) || (titulo.includes(termoBusca) || conteudo.includes(termoBusca));
-
-                // mostrar/ocultar o _pai_ do card (normalmente a coluna .col-md-6)
-                const elementoPai = card.parentElement;
-                if (elementoPai) {
-                    elementoPai.style.display = (okCampus && okCategoria && okBusca) ? "" : "none";
-                }
-            });
+        if(conteudo) {
+          modalBody.textContent = conteudo;
         }
-
-        // ligar eventos: ao aplicar filtros (submit do form) e mudanças ao digitar/mudar selects
-        // evita comportamento de submit que recarrega a página
-        const formFiltros = document.querySelector('.divulgacao-filters');
-        if (formFiltros) {
-            formFiltros.addEventListener('submit', function (e) {
-                e.preventDefault();
-                aplicarFiltros();
-            });
-        }
-
-        // atualizar ao mudar selects
-        selCampus.addEventListener('change', aplicarFiltros);
-        selCategoria.addEventListener('change', aplicarFiltros);
-
-        // atualizar enquanto o usuário digita (UX melhor) — também escuta 'search' caso use botão
-        inputBusca.addEventListener('input', aplicarFiltros);
-        inputBusca.addEventListener('search', aplicarFiltros);
-
-        // executa uma vez na carga para já aplicar (caso haja filtros pré-selecionados)
-        document.addEventListener('DOMContentLoaded', aplicarFiltros);
-    </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", async () => {
-            const noticiasContainer = document.querySelector('#latest-news-list');
-            const eventosContainer = document.querySelector('#upcoming-events-list');
-
-            // --- Buscar notícias ---
-            try {
-                const resp = await fetch('/api/noticias');
-                const noticias = await resp.json();
-                noticiasContainer.innerHTML = '';
-                noticias.forEach(n => {
-                    const card = `
-                <div class="col-md-6">
-                    <a href="#" class="latest-news-card card shadow-sm text-decoration-none"
-                        data-bs-toggle="modal" data-bs-target="#modalVerNoticia"
-                        data-noticia-titulo="${n.titulo}"
-                        data-noticia-conteudo="${n.conteudo}">
-                        <div class="card-body">
-                            <h3 class="card-title">${n.titulo}</h3>
-                            <p class="card-text text-muted mb-0">${new Date(n.data_postagem).toLocaleDateString('pt-BR')}</p>
-                        </div>
-                    </a>
-                </div>`;
-                    noticiasContainer.insertAdjacentHTML('beforeend', card);
-                });
-            } catch (err) {
-                console.error('Erro ao carregar notícias:', err);
-            }
-
-            // --- Buscar eventos ---
-            try {
-                const resp = await fetch('/api/eventos');
-                const eventos = await resp.json();
-                eventosContainer.innerHTML = '';
-                eventos.forEach(e => {
-                    const li = `
-                <li>
-                    <a href="#" aria-label="Detalhes de ${e.titulo}">${e.titulo}</a>
-                    <span>${new Date(e.data_hora_inicio).toLocaleDateString('pt-BR')}</span>
-                </li>`;
-                    eventosContainer.insertAdjacentHTML('beforeend', li);
-                });
-            } catch (err) {
-                console.error('Erro ao carregar eventos:', err);
-            }
-        });
-    </script>
-
-
-
+      });
+    }
+  </script>
+  
 </body>
-
 </html>

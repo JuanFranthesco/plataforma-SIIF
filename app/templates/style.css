@@ -16,7 +16,7 @@ body {
 }
 
 .page-container {
-  max-width: 1700px;
+  max-width: 1400px;
   margin: 0 auto;
   border-radius: 25px;
   overflow: hidden;
@@ -30,7 +30,7 @@ main {
   padding: 40px 50px;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 768px) {
     main {
         padding: 30px 25px;
     }
@@ -62,7 +62,7 @@ main {
    width: 45px;
    height: 45px;
    border-radius: 50%;
-   background-color: #fff; /* FUNDO BRANCO */
+   /*background-color: #fff; /* FUNDO BRANCO */
 }
 
 .navbar-custom .nav-link.active {
@@ -715,4 +715,1369 @@ ESTILOS DA PÁGINA DE MATERIAIS (materiais.html) - ATUALIZADO
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* ---
+============================================================
+ESTILOS ADICIONAIS PARA A PÁGINA DE PERFIL (tela_perfil.html)
+============================================================
+--- */
+
+/* 1. CORREÇÃO DA NAVBAR "CORTADA" */
+/* Removendo as margens negativas que puxavam o conteúdo para cima */
+.profile-header-container {
+  position: relative;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background-color: #FFFFFF;
+  margin-bottom: 25px; 
+  /* As margens negativas (margin-top, margin-left, margin-right) 
+    foram REMOVIDAS daqui para parar de cobrir a navbar.
+  */
+}
+
+/* Como removemos as margens negativas, o banner não encosta mais
+   nas laterais. Adicionamos este @media query para o banner
+   voltar a encostar nas laterais apenas no mobile, onde faz sentido.
+*/
+@media (max-width: 768px) {
+  .profile-header-container {
+    margin-top: -30px;
+    margin-left: -25px;
+    margin-right: -25px;
+  }
+}
+@media (max-width: 576px) {
+  .profile-header-container {
+    margin-top: -20px;
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+}
+
+/* 2. CORREÇÃO DO "QUADRADO AZUL" */
+/* Remove o anel de foco (outline/box-shadow) das abas */
+.profile-tabs .nav-link:focus,
+.profile-tabs .nav-link.active:focus {
+  outline: none;
+  box-shadow: none; /* Bootstrap 5 usa box-shadow para o foco */
+}
+
+/* Banner Verde (no topo) */
+.profile-banner {
+  height: 250px; 
+  background-color: #386641; /* Cor da Paleta */
+  background-size: cover;
+  background-position: center;
+  border-radius: 15px 15px 0 0;
+}
+
+/* Barra Branca de Informações */
+.profile-info-bar {
+  background-color: #FFFFFF;
+  padding: 20px 30px;
+  border-radius: 0 0 15px 15px;
+  position: relative;
+  min-height: 160px; 
+}
+
+/* Foto de Perfil (Sobreposta) */
+.profile-avatar {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 5px solid #FFFFFF; 
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  background-color: #00000000; /* Cor da Paleta */
+  position: absolute;
+  top: -75px;  
+  left: 30px;
+  object-fit: cover;
+}
+
+/* Botões de Ação (Editar, ...) */
+.profile-actions {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+/* Botão "EDITAR PERFIL" customizado (Fiel ao design) */
+.btn-edit-profile {
+  border: 2px solid #386641; 
+  color: #386641; 
+  background-color: #FFFFFF; 
+  font-weight: 600;
+  border-radius: 30px;
+  padding: 6px 16px;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+.btn-edit-profile:hover {
+  background-color: #386641; 
+  color: #FFFFFF; 
+}
+
+/* Botão "..." customizado */
+.btn-icon {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  background-color: #E7E7E4; /* Cor da Paleta */
+  color: #000000; /* Cor da Paleta */
+  border: 1px solid #D1D1D1; /* Cor da Paleta */
+}
+.btn-icon:hover {
+  background-color: #d1d1d1;
+}
+.btn-icon-sm { /* Versão menor para cards */
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+}
+
+/* Detalhes do Usuário (Nome, Bio, Curso) */
+.profile-user-details {
+  padding-left: 170px; 
+  padding-top: 15px; 
+}
+
+/* Responsivo para detalhes do usuário */
+@media (max-width: 768px) {
+  .profile-header-container {
+    /* Ajusta as margens negativas para o padding menor do <main> */
+    margin-top: -30px;
+    margin-left: -25px;
+    margin-right: -25px;
+  }
+  .profile-info-bar {
+    min-height: auto;
+  }
+  .profile-user-details {
+    padding-left: 0;
+    margin-top: 85px; 
+  }
+}
+@media (max-width: 576px) {
+  .profile-header-container {
+    margin-top: -20px;
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+}
+
+
+/* Conteúdo Principal (Abas) */
+.profile-content {
+  background-color: #E7E7E4; /* Cor da Paleta */
+  border-radius: 15px;
+  padding: 1px 20px 20px 20px; 
+}
+
+/* Estilo das Abas de Navegação (Fiel ao Design) */
+.profile-tabs {
+  border-bottom: 1px solid #D1D1D1; /* Cor da Paleta */
+  margin: 20px 0;
+}
+
+.profile-tabs .nav-link {
+  color: #6c757d; 
+  font-weight: 600;
+  border: none;
+  border-bottom: 4px solid transparent;
+  padding-bottom: 15px;
+}
+
+.profile-tabs .nav-link.active {
+  color: #000000; /* Cor da Paleta */
+  border-bottom: 4px solid #386641; 
+  background-color: transparent;
+}
+
+.profile-tabs .nav-link:hover {
+  color: #000000; 
+}
+
+/* Card de Postagem (dentro da aba) */
+.post-card-profile {
+  background-color: #FFFFFF; /* Cor da Paleta */
+  border: 1px solid #D1D1D1; 
+  border-radius: 10px;
+  margin-bottom: 20px;
+  overflow: hidden; 
+}
+
+.post-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px;
+}
+
+.post-card-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.post-card-info {
+  line-height: 1.2;
+}
+
+.post-card-body {
+  padding: 0 20px 15px 20px;
+}
+
+.post-card-title {
+  font-weight: 600;
+  color: #386641; 
+  font-size: 1.15rem;
+  margin-bottom: 10px;
+}
+
+.post-card-footer {
+  background-color: #FFFFFF; 
+  border-top: 1px solid #E7E7E4; 
+  padding: 10px 20px;
+  display: flex;
+  gap: 25px;
+}
+
+.post-interaction-btn {
+  color: #386641; 
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.post-interaction-btn:hover {
+  color: #2a4b30; 
+}
+
+/* ---
+============================================================
+ESTILOS ADICIONAIS PARA A PÁGINA DE DENÚNCIAS (tela_denuncias.html)
+============================================================
+--- */
+
+/* Usamos .denuncia-page para garantir que estes estilos
+   só afetem a página de denúncias */
+
+/* Layout e Títulos */
+.denuncia-page .header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.denuncia-page .title {
+  color: #386641; /* VERDE PADRÃO */
+  font-weight: 700;
+  font-size: 2rem;
+  margin: 0;
+}
+.denuncia-page .grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+
+/* Cards de Estatística */
+.denuncia-page .stats-container {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.denuncia-page .stat-card {
+  background-color: #386641; /* VERDE PADRÃO */
+  color: #fff;
+  padding: 32px;
+  border-radius: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  flex: 1;
+  min-width: 200px;
+}
+.denuncia-page .stat-number {
+  background-color: #fff;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #386641; /* VERDE PADRÃO */
+  font-size: 34px;
+  font-weight: 800; /* Mais forte */
+  margin-bottom: 12px;
+}
+.denuncia-page .stat-sub {
+  font-weight: 600; /* Um pouco mais leve */
+  text-align: center;
+}
+
+/* Formulário de Denúncia */
+.denuncia-page .form-section {
+  margin-top: 25px;
+}
+.denuncia-page .form-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #386641; /* VERDE PADRÃO */
+  margin-bottom: 15px;
+}
+.denuncia-page .form-fields-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.denuncia-page .form-label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: -5px;
+}
+.denuncia-page .form-field {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  background-color: #f2f2f2; /* CINZA INPUT PADRÃO */
+  font-size: 1rem;
+}
+.denuncia-page .form-field:focus {
+  outline: none;
+  border-color: #386641;
+  box-shadow: 0 0 0 3px rgba(56, 102, 65, 0.2);
+}
+.denuncia-page #formHelp {
+  font-style: italic;
+  color: #555;
+  font-size: 0.85rem;
+  margin-top: 0;
+}
+
+/* Botão de Enviar (Adaptado) */
+.denuncia-page .btn-primary {
+  background-color: #386641; /* VERDE PADRÃO */
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+}
+.denuncia-page .btn-primary:hover {
+  background-color: #2a4b30; /* VERDE MAIS ESCURO */
+}
+
+/* Coluna da Direita (Lista) */
+.denuncia-page .right-col {
+  position: relative;
+}
+.denuncia-page .section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #386641; /* VERDE PADRÃO */
+  margin-bottom: 0;
+}
+.denuncia-page .list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 15px;
+}
+.denuncia-page .item {
+  background-color: #386641; /* VERDE PADRÃO */
+  color: #fff;
+  padding: 14px 18px;
+  border-radius: 20px; /* Borda padrão */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.95rem;
+}
+.denuncia-page .item .label {
+  font-weight: 500;
+}
+.denuncia-page .item .controls {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+/* Ícones ✓ e ✕ (Adaptados) */
+.denuncia-page .icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #E7E7E4; /* CINZA CLARO PADRÃO */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #386641; /* VERDE PADRÃO */
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.denuncia-page .icon:hover {
+  transform: scale(1.1);
+  background: #fff;
+}
+
+/* Botão "Ver Todas" (Adaptado) */
+.denuncia-page .view-all {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 8px 18px;
+  border-radius: 20px;
+  background: #E7E7E4; /* CINZA CLARO PADRÃO */
+  color: #386641; /* VERDE PADRÃO */
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+.denuncia-page .view-all:hover {
+  background-color: #dcdcd8;
+}
+
+/* Botão Download (Adaptado) */
+.denuncia-page .download {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #E7E7E4; /* CINZA CLARO PADRÃO */
+  color: #386641; /* VERDE PADRÃO */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.denuncia-page .denuncia-footer {
+  margin-top: 25px;
+  text-align: center;
+  color: #999;
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+  font-size: 0.9rem;
+}
+
+/* Helper do JS para leitores de tela */
+.denuncia-page .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Responsividade da Página de Denúncias */
+@media (max-width: 991px) {
+  .denuncia-page .grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 600px) {
+  .denuncia-page .stat-number {
+    width: 76px;
+    height: 76px;
+    font-size: 26px;
+  }
+  .denuncia-page .item {
+    padding: 12px 14px;
+    font-size: 0.9rem;
+    flex-direction: column;
+    align-items: start;
+    gap: 10px;
+  }
+  .denuncia-page .item .controls {
+    align-self: flex-end;
+  }
+  .denuncia-page .icon {
+    width: 35px;
+    height: 35px;
+  }
+}
+
+/* ---
+============================================================
+ESTILOS ADICIONAIS PARA A PÁGINA DE DIVULGAÇÃO (tela_divulgação.html)
+============================================================
+--- */
+
+/* Barras de Filtro e Pesquisa */
+.divulgacao-filters {
+  display: flex;
+  gap: 10px;
+  background-color: #f8f9fa; /* Cinza claro */
+  padding: 15px;
+  border-radius: 15px;
+  border: 1px solid #dee2e6;
+}
+
+.divulgacao-search {
+  display: flex;
+  align-items: center;
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 15px;
+  border: 1px solid #dee2e6;
+}
+.divulgacao-search .form-control {
+  border-radius: 20px 0 0 20px;
+  border-right: none;
+}
+.divulgacao-search .form-control:focus {
+  z-index: 1;
+  box-shadow: none;
+  border-color: #ccc;
+}
+.divulgacao-search .btn-search-icon {
+  background-color: #386641; /* VERDE PADRÃO */
+  color: #fff;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 0 20px 20px 0;
+  transition: background-color 0.2s;
+}
+.divulgacao-search .btn-search-icon:hover {
+  background-color: #2a4b30; /* VERDE MAIS ESCURO */
+}
+
+/* Cards de Destaque */
+.divulgacao-card {
+  border: none;
+  border-left: 5px solid #386641; /* VERDE PADRÃO */
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.divulgacao-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+}
+.divulgacao-card .card-title {
+  color: #386641; /* VERDE PADRÃO */
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+.divulgacao-card .card-text {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 15px;
+}
+.btn-divulgacao {
+  background-color: #386641; /* VERDE PADRÃO */
+  color: #fff;
+  padding: 8px 15px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 500;
+  align-self: flex-start;
+  transition: background-color 0.2s;
+}
+.btn-divulgacao:hover {
+  background-color: #2a4b30; /* VERDE MAIS ESCURO */
+  color: #fff;
+}
+
+/* Seção de Postar Notícia */
+.post-news-section {
+  border-radius: 15px;
+  border: 1px solid #dee2e6;
+}
+.post-news-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #386641; /* VERDE PADRÃO */
+  margin-bottom: 15px;
+}
+.post-buttons {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+.btn-attach, .btn-attach-primary {
+  background-color: #E7E7E4; /* CINZA CLARO PADRÃO */
+  color: #386641; /* VERDE PADRÃO */
+  border: 1px solid #dcdcd8;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+.btn-attach-primary {
+  background-color: #386641; /* VERDE PADRÃO */
+  color: #fff;
+  border-color: #386641;
+}
+.btn-attach:hover {
+  background-color: #dcdcd8;
+}
+.btn-attach-primary:hover {
+  background-color: #2a4b30;
+  border-color: #2a4b30;
+}
+
+/* Cards de "Últimas Notícias" */
+.latest-news-card {
+  border: 1px solid #dee2e6;
+  border-left: 5px solid transparent;
+  transition: border-left-color 0.3s, transform 0.2s;
+}
+.latest-news-card:hover {
+  border-left-color: #386641; /* VERDE PADRÃO */
+  transform: translateX(3px);
+  color: #333;
+}
+.latest-news-card .card-title {
+  font-size: 1.1rem;
+  color: #386641; /* VERDE PADRÃO */
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+/* Widgets da Sidebar (Eventos e Calendário) */
+.sidebar-widget-green {
+  background-color: #386641; /* VERDE PADRÃO */
+  color: #fff; 
+  padding: 25px;
+  border-radius: 15px;
+}
+.sidebar-widget-green h2 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #fff;
+  font-weight: 600;
+}
+.sidebar-widget-green ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sidebar-widget-green li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  font-weight: 500;
+}
+.sidebar-widget-green li:last-child {
+  border-bottom: none;
+}
+.sidebar-widget-green li a {
+  color: #fff; 
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+.sidebar-widget-green li a:hover {
+  opacity: 0.8; 
+}
+.sidebar-widget-green li span {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 3px 8px;
+  border-radius: 10px;
+}
+
+/* Container Responsivo do Google Calendar */
+.calendar-embed-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  padding-top: 100%; /* Proporção 1:1, pode ajustar se necessário */
+  border-radius: 10px;
+}
+.calendar-embed-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* ---
+============================================================
+ESTILOS ADICIONAIS PARA O FORMULÁRIO EM (tela_suporte.html)
+============================================================
+--- */
+
+/* Escopo para a página de suporte */
+.suporte-page .denuncia-form-section {
+  /* Removemos max-width e margin-top, pois a grade .row cuida disso */
+  text-align: left;
+  border-top: 1px solid #eee; 
+  padding-top: 20px;
+}
+.suporte-page .denuncia-form-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #386641; /* VERDE PADRÃO */
+  margin-bottom: 20px;
+}
+.suporte-page .denuncia-form-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.suporte-page .form-label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: -5px;
+}
+.suporte-page .form-field {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  background-color: #f2f2f2;
+  font-size: 1rem;
+  resize: none;
+}
+.suporte-page .form-field:focus {
+  outline: none;
+  border-color: #386641;
+  box-shadow: 0 0 0 3px rgba(56, 102, 65, 0.2);
+}
+.suporte-page .btn-primary {
+  background-color: #386641; /* VERDE PADRÃO */
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+}
+.suporte-page .btn-primary:hover {
+  background-color: #2a4b30; /* VERDE MAIS ESCURO */
+}
+.suporte-page #formHelp {
+  font-style: italic;
+  color: #555;
+  font-size: 0.85rem;
+  margin-top: 0;
+}
+
+/* Ajustes no FAQ para o novo layout em grid */
+.suporte-page .faq-section {
+  /* Remove a margem automática para se alinhar na grade */
+  margin-bottom: 0; 
+}
+.suporte-page .faq-section h5 {
+   margin-top: 5px; /* Alinha o título com o do formulário */
+}
+.suporte-page .faq-grid {
+  /* Garante que os cards preencham a coluna */
+  grid-template-columns: 1fr; 
+  margin-top: 20px;
+  margin-bottom: 0;
+}
+.suporte-page .faq-card {
+  width: 100%; /* Ocupa 100% da coluna */
+  max-width: 100%;
+}
+
+/* ---
+============================================================
+ESTRUTURA GLOBAL (Layout 'Denúncias' - Fundo Branco)
+============================================================
+--- */
+
+/* 1. Fundo da página agora é BRANCO */
+body.page-background-white {
+  background-color: #FFFFFF;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* 2. O contêiner VERDE do topo (Header) */
+.page-header-v5 {
+  background-color: #386641;
+  /* Adiciona padding para os links e para a área de overlap */
+  padding-top: 30px;
+  padding-bottom: 100px; /* Espaço para o <main> sobrepor */
+  width: 100%;
+}
+
+/* 3. O contêiner BRANCO de conteúdo (separado, abaixo do header) */
+main.content-wrapper-v5 {
+  background-color: #FFFFFF; 
+  max-width: 1239px; /* Largura máxima centralizada */
+  
+  /* A MÁGICA ESTÁ AQUI: */
+  margin-top: -80px; /* Puxa para CIMA, sobrepondo o header */
+  margin-left: auto;
+  margin-right: auto;
+  position: relative; /* Para garantir que fique por cima */
+  z-index: 10;
+  
+  /* AS CURVAS! */
+  border-top-left-radius: 47px; 
+  border-top-right-radius: 47px; 
+  border-bottom-left-radius: 47px;
+  border-bottom-right-radius: 47px;
+
+  padding: 30px 40px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Sombra para flutuar */
+}
+
+/* ---
+============================================================
+ESTILOS ADICIONAIS PARA A PÁGINA DE MAPAS (tela_mapa.html)
+============================================================
+--- */
+
+/* Escopo para a página de mapas (dentro do <main>) */
+.mapa-page h1 {
+  text-align: center;
+  /* A cor já é definida pela regra 'main h1' no seu CSS */
+}
+
+/* Estilo do Seletor de Campus */
+.mapa-page .mapa-selector {
+  max-width: 600px;
+  margin: 0 auto 30px auto;
+  border-radius: 15px;
+  overflow: hidden;
+  border: 1px solid #dee2e6;
+}
+.mapa-page .mapa-selector .input-group-text {
+  background-color: #386641; /* VERDE PADRÃO */
+  color: white;
+  border: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+.mapa-page .mapa-selector .form-select {
+  padding: 12px 15px;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+}
+.mapa-page .mapa-selector .form-select:focus {
+  box-shadow: 0 0 0 3px rgba(56, 102, 65, 0.2);
+}
+
+/* Container do Iframe do Mapa */
+.mapa-page .map-container {
+  border-radius: 20px;
+  overflow: hidden; /* Força o iframe a ter bordas arredondadas */
+  border: 5px solid #E7E7E4; /* CINZA CLARO PADRÃO */
+  background-color: #E7E7E4;
+}
+.mapa-page .map-container iframe {
+  width: 100%;
+  height: 550px;
+  border: none;
+  display: block; /* Remove espaço em branco inferior */
+}
+.mapa-page .map-container small {
+  display: block;
+  padding: 12px;
+  text-align: center;
+  font-size: 0.9rem;
+  background-color: #E7E7E4;
+}
+.mapa-page .map-container small a {
+  color: #386641; /* VERDE PADRÃO */
+  text-decoration: none;
+  font-weight: 500;
+}
+.mapa-page .map-container small a:hover {
+  text-decoration: underline;
+}
+
+/* ---
+============================================================
+ESTILOS PARA MODAIS "BONITOS" (Pop-ups Customizados)
+============================================================
+--- */
+
+/* Adicione esta classe .modal-custom-verde ao .modal-dialog */
+.modal-custom-verde .modal-content {
+  border: none;
+  border-radius: 15px; /* Arredondamento padrão */
+  box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+}
+
+.modal-custom-verde .modal-header {
+  background-color: #386641; /* VERDE PADRÃO */
+  color: #FFFFFF;
+  border-bottom: none;
+  /* Arredonda só os cantos de cima */
+  border-radius: 15px 15px 0 0;
+}
+
+.modal-custom-verde .modal-header .modal-title {
+  font-weight: 600;
+}
+
+/* Deixa o 'X' de fechar branco */
+.modal-custom-verde .modal-header .btn-close {
+  filter: brightness(0) invert(1);
+  opacity: 0.8;
+}
+.modal-custom-verde .modal-header .btn-close:hover {
+  opacity: 1;
+}
+
+.modal-custom-verde .modal-footer {
+  background-color: #f8f9fa; /* Cinza claro padrão */
+}
+
+/* Estilo para listas dentro de modais, como Notificações */
+.modal-custom-verde .list-group-item-action:hover {
+   background-color: #f0f0f0 !important;
+}
+
+.modal-custom-verde .list-group-item {
+   border-bottom: 1px solid #dee2e6 !important;
+}
+.modal-custom-verde .list-group-item:last-child {
+   border-bottom: 0 !important;
+}
+
+/* ---
+============================================================
+ESTILOS ADICIONAIS PARA TELA INICIAL (tela_inicial.html)
+============================================================
+--- */
+
+/* 1. Estilo para os botões "Materiais OBMEP" e "Fóruns" 
+     (substitui o <button> por um <a> estilizado)
+*/
+.card-home-btn {
+  margin-top: 10px;
+  background-color: #e7e7e4; /* CINZA CLARO PADRÃO */
+  color: #386641; /* VERDE PADRÃO */
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  align-self: center;
+  display: inline-flex; /* Usar inline-flex para o <a> */
+  align-items: center;
+  gap: 6px;
+  text-decoration: none; /* Remove sublinhado do link */
+  transition: background-color 0.2s;
+}
+.card-home-btn:hover { 
+  background-color: #dcdcd8; /* CINZA MAIS ESCURO */
+  color: #386641;
+}
+
+/* 2. Wrapper para transformar cards verdes (notícias, eventos, mapa) em links 
+     sem estragar o visual.
+*/
+.card-link-wrapper {
+  text-decoration: none; /* Remove sublinhado */
+  color: inherit; /* Faz o texto herdar a cor (branco) */
+  display: block;
+  height: 100%;
+}
+.card-link-wrapper:hover .noticias,
+.card-link-wrapper:hover .eventos,
+.card-link-wrapper:hover .mapa {
+  /* Efeito sutil de hover no card verde */
+  opacity: 0.95;
+  transform: scale(1.01);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+.card-link-wrapper .noticias,
+.card-link-wrapper .eventos,
+.card-link-wrapper .mapa {
+  /* Garante altura total e transição suave */
+  height: 100%;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Faz o iframe do mapa não ser clicável (para o link do card funcionar) */
+.mapa iframe {
+  pointer-events: none;
+}
+
+/* ---
+============================================================
+ESTILOS DO FOOTER PADRÃO (VERSÃO ATUALIZADA - FUNDO CLARO)
+============================================================
+--- */
+
+.site-footer {
+  /* ATUALIZADO: Fundo cinza claro da sua paleta */
+  background-color: #E7E7E4; 
+  /* O padding é igual ao do <main> para alinhar */
+  padding: 40px 50px; 
+  /* ATUALIZADO: Cor de texto escura */
+  color: #555; 
+  border-top: 1px solid #D1D1D1; /* Borda cinza mais escura */
+  /* Remove o arredondamento de baixo do .page-container */
+  margin-bottom: -25px; 
+  margin-left: -1px;
+  margin-right: -1px;
+}
+
+/* Ajusta o padding em telas menores, igual ao <main> */
+@media (max-width: 768px) {
+  .site-footer {
+    padding: 30px 25px;
+  }
+}
+@media (max-width: 576px) {
+  .site-footer {
+    padding: 20px 15px;
+  }
+}
+
+.site-footer h5 {
+  font-weight: 600;
+  color: #386641; /* ATUALIZADO: Verde Padrão */
+  margin-bottom: 15px;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #386641; /* ATUALIZADO: Verde Padrão */
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.footer-logo img {
+  height: 40px;
+  /* ATUALIZADO: Remove o filtro de inversão */
+  filter: none; 
+}
+
+.footer-copyright {
+  font-size: 0.9rem;
+  line-height: 1.4rem;
+  color: #555; /* ATUALIZADO: Cinza escuro */
+}
+
+.footer-links li {
+  margin-bottom: 8px;
+}
+
+.footer-links a {
+  text-decoration: none;
+  color: #386641; /* ATUALIZADO: Verde Padrão */
+  opacity: 0.9;
+  transition: all 0.2s ease-in-out;
+  display: flex; 
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-links a:hover {
+  color: #2a4b30; /* ATUALIZADO: Verde mais escuro */
+  opacity: 1;
+  transform: translateX(3px); /* Efeito de hover */
+}
+
+/* ---
+============================================================
+ESTILOS PARA NÍVEL DE ACESSO (Admin vs User)
+============================================================
+--- */
+
+/* 1. Por padrão, ESCONDE todos os elementos de admin */
+.admin-only {
+  display: none !important; 
+}
+
+/* 2. QUANDO o <body> tiver a classe 'role-admin', MOSTRA os elementos */
+body.role-admin .admin-only {
+  /* 'block' é o display correto para links de dropdown do Bootstrap */
+  display: block !important; 
+}
+
+/* --- Botão Flutuante --- */
+
+/* Esconde o botão de admin por padrão */
+.help-btn-admin {
+  display: none;
+}
+/* Mostra o botão de usuário por padrão */
+.help-btn-user {
+  display: flex; 
+}
+
+/* Quando for admin, inverte a visibilidade */
+body.role-admin .help-btn-admin {
+  display: flex; 
+}
+body.role-admin .help-btn-user {
+  display: none; 
+}
+
+/* ---
+============================================================
+ESTILOS ADICIONAIS PARA A TELA DE LOGIN (tela_login.html)
+============================================================
+--- */
+
+/* Sobrescreve o 'body' padrão APENAS na tela de login */
+body.login-page {
+  font-family: 'Poppins', sans-serif;
+  background-color: #D1D1D1;
+  color: #FFFFFF;
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  padding: 20px; /* Mantém o padding do seu body original */
+}
+
+/* Garante que o reset * não afete outros resets */
+.login-page * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* --- Container Principal do Login --- */
+.login-page .login-container {
+  display: flex;
+  width: 900px;
+  max-width: 100%;
+  height: 600px;
+  background-color: #386641;
+  border-radius: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+/* --- Painéis (Esquerda e Direita) --- */
+.login-page .info-panel,
+.login-page .login-panel {
+  flex: 1;
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Estilos do Painel de Informações (Esquerda) --- */
+.login-page .info-panel {
+  position: relative;
+  justify-content: space-between;
+}
+
+.login-page .info-panel::before {
+  content: '';
+  position: absolute;
+  left: 50px;
+  top: 50px;
+  bottom: 50px;
+  width: 2px;
+  background-color: rgba(255, 255, 255, 0.2);
+  z-index: 0;
+}
+
+.login-page .info-panel .logo,
+.login-page .info-panel .description {
+  position: relative;
+  z-index: 1;
+  padding-left: 30px;
+}
+
+.login-page .logo .logo-image {
+  width: 100px;
+  margin-bottom: 15px;
+}
+
+.login-page .logo h1 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0 0 5px 0;
+}
+
+.login-page .logo p {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #FFFFFF;
+  opacity: 0.8;
+}
+
+.login-page .info-panel .description {
+  max-width: 280px;
+}
+
+.login-page .description p {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #FFFFFF;
+  line-height: 1.5;
+}
+
+.login-page .info-panel .illustration {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.login-page .info-panel .illustration img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* --- Estilos do Painel de Login (Direita) --- */
+.login-page .login-panel {
+  justify-content: center;
+  position: relative;
+}
+
+.login-page .login-panel h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 30px;
+  color: #FFFFFF;
+}
+
+.login-page .input-group {
+  margin-bottom: 20px;
+}
+
+.login-page .input-group label {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  color: #FFFFFF;
+}
+
+.login-page .input-group input {
+  width: 100%;
+  padding: 12px 15px;
+  border: none;
+  border-radius: 10px;
+  background-color: #E7E7E4;
+  font-size: 1rem;
+  color: #000000;
+}
+
+.login-page .input-group input:focus {
+  outline: 2px solid #5ab394;
+}
+
+.login-page .password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-page .password-icon-svg {
+  position: absolute;
+  right: 15px;
+  width: 20px;
+  height: 20px;
+  fill: #888;
+  opacity: 0.7;
+}
+
+.login-page .login-button {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  background-color: #D1D1D1;
+  color: #386641;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+.login-page .login-button:hover {
+  background-color: #c1c1c1;
+}
+
+/* Estilo para as duas imagens de crédito */
+.login-page .developer-credit {
+  position: absolute;
+  bottom: 50px;
+  right: 50px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.login-page .developer-credit .credit-text-image {
+  width: 90px;
+  height: auto;
+}
+
+.login-page .developer-credit .credit-logo-image {
+  width: 35px;
+  height: auto;
+}
+
+/* --- Responsividade --- */
+@media (max-width: 850px) {
+  .login-page .login-container {
+      flex-direction: column;
+      height: auto;
+  }
+  .login-page .info-panel {
+      display: none;
+  }
+  .login-page .login-panel {
+      border-radius: 30px;
+  }
+}
+
+/* ---
+============================================================
+ESTILOS PARA BOTÃO "RELEVANTE" (CURTIR)
+============================================================
+--- */
+
+/* Estilo para o botão "Relevante" quando está ativo (clicado) */
+.post-action-btn.active {
+  background-color: #386641; /* Cor verde padrão */
+  color: #FFFFFF !important; /* Texto branco */
+  font-weight: 700;
+}
+
+/* Adiciona um ícone de "up" quando está ativo */
+.post-action-btn.active::before {
+  content: "\f148"; /* Código do ícone 'arrow-up-circle-fill' do Bootstrap */
+  font-family: "bootstrap-icons";
+  margin-right: 6px;
+}
+
+/* Animação de "pulso" ao clicar (feedback tátil) */
+.post-action-btn:active {
+  transform: scale(0.95);
+  transition: transform 0.1s ease;
 }

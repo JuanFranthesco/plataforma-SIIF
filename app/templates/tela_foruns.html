@@ -5,25 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fórum - SIIF</title>
 
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Seu CSS Centralizado -->
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+
+<body class="role-user">
 
     <div class="page-container">
 
-        <!-- Navbar Padronizada -->
         <nav class="navbar navbar-expand-lg navbar-custom">
             <div class="container-fluid">
                 <a class="navbar-brand" href="tela_inicial.html">
-                    <img src="" alt="Logo"> <!-- Adicione o src da sua logo -->
+                    <img src="LOGO.png" alt="Logo"> 
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <i class="bi bi-list text-white fs-1"></i>
@@ -34,168 +30,141 @@
                             <a class="nav-link" href="tela_inicial.html"><i class="bi bi-house-door-fill"></i> Página Inicial</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="forum.html"><i class="bi bi-chat-left-dots-fill"></i> Fóruns</a>
+                            <a class="nav-link active" href="tela_foruns.html"><i class="bi bi-chat-left-dots-fill"></i> Fóruns</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="bi bi-megaphone-fill"></i> Divulgação</a>
+                            <a class="nav-link" href="tela_divulgação.html"><i class="bi bi-megaphone-fill"></i> Divulgação</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="tela_materiais.html"><i class="bi bi-file-earmark-text-fill"></i> Materiais</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="bi bi-geo-alt-fill"></i> Mapa</a>
+                            <a class="nav-link" href="tela_mapa.html"><i class="bi bi-geo-alt-fill"></i> Mapa</a>
                         </li>
                     </ul>
-                    <a href="#" class="profile-link ms-lg-auto">
+                    <a href="tela_perfil.html" class="profile-link ms-lg-auto">
                         <span>Olá, Fulano de tal</span>
                         <div class="profile-pic">
-                            <img src="" alt="Perfil"> <!-- Adicione o src da foto -->
+                            <img src="image.png" alt="Perfil"> 
                         </div>
                     </a>
                 </div>
             </div>
         </nav>
 
-        <!-- Conteúdo principal branco -->
         <main>
             <div class="row g-4">
-                <!-- Coluna da Esquerda (Sidebar) -->
                 <aside class="col-lg-3 d-none d-lg-block">
                     <div class="forum-left-sidebar">
-                        <a href="#" class="sidebar-link">
-                            <i class="bi bi-person-circle"></i>
+                        <a href="tela_perfil.html" class="sidebar-link"> <i class="bi bi-person-circle"></i>
                             <span>Perfil</span>
                         </a>
-                        <a href="#" class="sidebar-link active d-flex justify-content-between align-items-center">
+                        
+                        <a href="#" class="sidebar-link active d-flex justify-content-between align-items-center" data-bs-toggle="modal" data-bs-target="#modalNotificacoes">
                             <div>
                                 <i class="bi bi-bell-fill"></i>
                                 <span class="truncate">Notificações</span>
                             </div>
                             <span class="notification-badge">230</span>
                         </a>
-                        <a href="#" class="sidebar-link">
+                        
+                        <a href="tela_perfil.html#salvos-tab" class="sidebar-link">
                             <i class="bi bi-bookmark-fill"></i>
                             <span>Posts salvos</span>
                         </a>
                         <div class="mt-4">
-                            <a href="janela_postar.html" class="btn btn-light w-100 fw-bold new-post-btn">
+                            <button type="button" class="btn btn-light w-100 fw-bold new-post-btn" data-bs-toggle="modal" data-bs-target="#modalPostar">
                                 Novo Post
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </aside>
 
-                <!-- Coluna Central (Posts) -->
                 <div class="col-lg-6 col-md-8">
-                    <!-- Barra de Busca -->
                     <div class="search-container mb-4">
                         <input type="text" class="form-control forum-search" placeholder="Buscar no fórum...">
                         <i class="bi bi-search search-icon-forum"></i>
                     </div>
 
-                    <!-- Card de Postagem -->
                     <article class="forum-post-card">
                         <div class="post-header">
-                            <div class="d-flex align-items-center gap-2">
-                                <img class="contact-avatar" src="https://placehold.co/40x40/ccc/fff?text=A1" alt="Avatar"> <!-- Placeholder Avatar -->
+                            <a href="#" class="d-flex align-items-center gap-2 text-decoration-none" data-bs-toggle="modal" data-bs-target="#modalVerPerfil">
+                                <img class="contact-avatar" src="https://placehold.co/40x40/ccc/fff?text=A1" alt="Avatar">
                                 <div>
-                                    <h3 class="post-author">Aluno 1</h3>
+                                    <h3 class="post-author text-white">Aluno 1</h3>
                                 </div>
-                            </div>
-                            <!-- Menu de Opções do Post -->
+                            </a>
                             <div class="post-options-container">
                                 <input type="checkbox" id="post-options-1" class="comment-options-toggle">
                                 <label for="post-options-1" class="post-options-label-white">
                                     <i class="bi bi-three-dots-vertical fs-5"></i>
                                 </label>
                                 <div class="comment-options-menu">
-                                    <a href="#" class="comment-option-item">
-                                        <i class="bi bi-bookmark-fill text-success"></i>
-                                        <span>Salvar Post</span>
-                                    </a>
-                                    <a href="#" class="comment-option-item">
-                                        <i class="bi bi-flag-fill text-danger"></i>
-                                        <span class="text-danger">Denunciar</span>
-                                    </a>
+                                    <a href="#" class="comment-option-item"><i class="bi bi-bookmark-fill text-success"></i> <span>Salvar Post</span></a>
+                                    <a href="#" class="comment-option-item"><i class="bi bi-flag-fill text-danger"></i> <span class="text-danger">Denunciar</span></a>
+                                    <div class="dropdown-divider admin-only"></div>
+                                    <a href="#" class="comment-option-item admin-only"><i class="bi bi-trash-fill text-danger"></i> <span class="text-danger">Excluir Post</span></a>
+                                    <a href="#" class="comment-option-item admin-only"><i class="bi bi-slash-circle-fill text-danger"></i> <span class="text-danger">Banir Usuário</span></a>
                                 </div>
                             </div>
                         </div>
 
                         <div class="post-body">
                             <p>Alguém tem fotos do Lajedo? Estou precisando para meu TCC :/</p>
-                            <img class="img-fluid rounded" src="https://images.unsplash.com/photo-1593492283935-985856b3a38e?q=80&w=1932&auto=format&fit=crop" alt="Imagem Lajedo">
+                            <img class="img-fluid rounded" src="https://images.unsplash.com/photo-1593492283935-985856b3a38e?q=80&w=1932&auto-format&fit=crop" alt="Imagem Lajedo">
                         </div>
 
                         <div class="post-footer">
-                            <button class="post-action-btn">
-                                <span class="fw-bold">2</span>
-                                <span>Relevante</span>
-                            </button>
+                            <button class="post-action-btn js-like-btn"><span class="fw-bold">2</span> <span>Relevante</span></button>
                             <button class="post-action-btn" type="button" data-bs-toggle="collapse" data-bs-target="#comments-post-1" aria-expanded="true" aria-controls="comments-post-1">
-                                <span class="fw-bold">2</span>
-                                <span>Comentários</span>
+                                <span class="fw-bold">2</span> <span>Comentários</span>
                             </button>
-                            <button class="post-action-btn">
-                                <i class="bi bi-share-fill"></i>
-                                <span>Compartilhar</span>
-                            </button>
+                            <button class="post-action-btn"><i class="bi bi-share-fill"></i> <span>Compartilhar</span></button>
                         </div>
 
-                        <!-- Seção de Comentários (Collapse) -->
                         <div class="collapse show comments-section" id="comments-post-1">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="mb-0">Comentários</h5>
-                                <a href="janela_comentarios.html" class="btn btn-sm new-comment-btn">Comentar</a>
+                                <button type="button" class="btn btn-sm new-comment-btn" data-bs-toggle="modal" data-bs-target="#modalComentar">
+                                  Comentar
+                                </button>
                             </div>
 
                             <div class="vstack gap-3">
-                                <!-- Comentário 1 -->
                                 <div class="single-comment">
-                                    <img class="contact-avatar-sm" src="https://placehold.co/32x32/ddd/fff?text=A11" alt="Avatar"> <!-- Placeholder Avatar -->
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#modalVerPerfil">
+                                      <img class="contact-avatar-sm" src="https://placehold.co/32x32/ddd/fff?text=A11" alt="Avatar">
+                                    </a>
                                     <div class="flex-grow-1">
-                                        <p class="fw-bold text-success mb-0">Aluno 11</p>
+                                        <a href="#" class="fw-bold text-success mb-0 text-decoration-none" data-bs-toggle="modal" data-bs-target="#modalVerPerfil">Aluno 11</a>
                                         <p class="mb-0">Procura no site oficial. Tem várias!</p>
                                     </div>
-                                    <!-- Menu de Opções do Comentário -->
                                     <div class="post-options-container">
                                         <input type="checkbox" id="comment-options-1" class="comment-options-toggle">
-                                        <label for="comment-options-1" class="post-options-label-gray">
-                                            <i class="bi bi-three-dots-vertical"></i>
-                                        </label>
+                                        <label for="comment-options-1" class="post-options-label-gray"><i class="bi bi-three-dots-vertical"></i></label>
                                         <div class="comment-options-menu">
-                                            <a href="#" class="comment-option-item">
-                                                <i class="bi bi-bookmark-fill text-success"></i>
-                                                <span>Salvar</span>
-                                            </a>
-                                            <a href="#" class="comment-option-item">
-                                                <i class="bi bi-flag-fill text-danger"></i>
-                                                <span class="text-danger">Denunciar</span>
-                                            </a>
+                                            <a href="#" class="comment-option-item"><i class="bi bi-bookmark-fill text-success"></i> <span>Salvar</span></a>
+                                            <a href="#" class="comment-option-item"><i class="bi bi-flag-fill text-danger"></i> <span class="text-danger">Denunciar</span></a>
+                                            <div class="dropdown-divider admin-only"></div>
+                                            <a href="#" class="comment-option-item admin-only"><i class="bi bi-trash-fill text-danger"></i> <span class="text-danger">Excluir Comentário</span></a>
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Comentário 2 -->
                                 <div class="single-comment">
-                                    <img class="contact-avatar-sm" src="https://placehold.co/32x32/eee/fff?text=A404" alt="Avatar"> <!-- Placeholder Avatar -->
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#modalVerPerfil">
+                                      <img class="contact-avatar-sm" src="https://placehold.co/32x32/eee/fff?text=A404" alt="Avatar">
+                                    </a>
                                     <div class="flex-grow-1">
-                                        <p class="fw-bold text-success mb-0">Aluno 404</p>
+                                        <a href="#" class="fw-bold text-success mb-0 text-decoration-none" data-bs-toggle="modal" data-bs-target="#modalVerPerfil">Aluno 404</a>
                                         <p class="mb-0">Não</p>
                                     </div>
-                                    <!-- Menu de Opções do Comentário -->
                                     <div class="post-options-container">
                                         <input type="checkbox" id="comment-options-2" class="comment-options-toggle">
-                                        <label for="comment-options-2" class="post-options-label-gray">
-                                            <i class="bi bi-three-dots-vertical"></i>
-                                        </label>
+                                        <label for="comment-options-2" class="post-options-label-gray"><i class="bi bi-three-dots-vertical"></i></label>
                                         <div class="comment-options-menu">
-                                            <a href="#" class="comment-option-item">
-                                                <i class="bi bi-trash-fill text-danger"></i>
-                                                <span class="text-danger">Excluir</span>
-                                            </a>
-                                            <a href="#" class="comment-option-item">
-                                                <i class="bi bi-flag-fill text-danger"></i>
-                                                <span class="text-danger">Denunciar</span>
-                                            </a>
+                                            <a href="#" class="comment-option-item"><i class="bi bi-flag-fill text-danger"></i> <span class="text-danger">Denunciar</span></a>
+                                            <div class="dropdown-divider admin-only"></div>
+                                            <a href="#" class="comment-option-item admin-only"><i class="bi bi-trash-fill text-danger"></i> <span class="text-danger">Excluir Comentário</span></a>
                                         </div>
                                     </div>
                                 </div>
@@ -203,140 +172,360 @@
                         </div>
                     </article>
 
-                    <!-- Outro Card de Postagem (exemplo) -->
                     <article class="forum-post-card">
                         <div class="post-header">
-                            <div class="d-flex align-items-center gap-2">
-                                <img class="contact-avatar" src="https://placehold.co/40x40/aaa/fff?text=A12" alt="Avatar"> <!-- Placeholder Avatar -->
+                            <a href="#" class="d-flex align-items-center gap-2 text-decoration-none" data-bs-toggle="modal" data-bs-target="#modalVerPerfil">
+                                <img class="contact-avatar" src="https://placehold.co/40x40/aaa/fff?text=A12" alt="Avatar">
                                 <div>
-                                    <h3 class="post-author">Aluno 12</h3>
+                                    <h3 class="post-author text-white">Pedro Augusto</h3>
                                 </div>
-                            </div>
+                            </a>
                             <div class="post-options-container">
                                 <input type="checkbox" id="post-options-2" class="comment-options-toggle">
-                                <label for="post-options-2" class="post-options-label-white">
-                                    <i class="bi bi-three-dots-vertical fs-5"></i>
-                                </label>
+                                <label for="post-options-2" class="post-options-label-white"><i class="bi bi-three-dots-vertical fs-5"></i></label>
                                  <div class="comment-options-menu">
-                                    <a href="#" class="comment-option-item">
-                                        <i class="bi bi-bookmark-fill text-success"></i>
-                                        <span>Salvar Post</span>
-                                    </a>
-                                    <a href="#" class="comment-option-item">
-                                        <i class="bi bi-flag-fill text-danger"></i>
-                                        <span class="text-danger">Denunciar</span>
-                                    </a>
-                                </div>
+                                    <a href="#" class="comment-option-item"><i class="bi bi-bookmark-fill text-success"></i> <span>Salvar Post</span></a>
+                                    <a href="#" class="comment-option-item"><i class="bi bi-flag-fill text-danger"></i> <span class="text-danger">Denunciar</span></a>
+                                    <div class="dropdown-divider admin-only"></div>
+                                    <a href="#" class="comment-option-item admin-only"><i class="bi bi-trash-fill text-danger"></i> <span class="text-danger">Excluir Post</span></a>
+                                    <a href="#" class="comment-option-item admin-only"><i class="bi bi-slash-circle-fill text-danger"></i> <span class="text-danger">Banir Usuário</span></a>
+                                 </div>
                             </div>
                         </div>
                         <div class="post-body">
                             <p>Jackson vai mesmo deixar o campus????<br>Eu ainda nem superei Wigna!! :(</p>
                         </div>
                         <div class="post-footer">
-                             <button class="post-action-btn">
-                                <span class="fw-bold">1</span>
-                                <span>Relevante</span>
-                            </button>
+                             <button class="post-action-btn js-like-btn"><span class="fw-bold">1</span> <span>Relevante</span></button>
                             <button class="post-action-btn" type="button" data-bs-toggle="collapse" data-bs-target="#comments-post-2" aria-expanded="false" aria-controls="comments-post-2">
-                                <span class="fw-bold">0</span>
-                                <span>Comentários</span>
+                                <span class="fw-bold">0</span> <span>Comentários</span>
                             </button>
-                            <button class="post-action-btn">
-                                <i class="bi bi-share-fill"></i>
-                                <span>Compartilhar</span>
-                            </button>
+                            <button class="post-action-btn"><i class="bi bi-share-fill"></i> <span>Compartilhar</span></button>
                         </div>
                          <div class="collapse comments-section" id="comments-post-2">
                              <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="mb-0">Comentários</h5>
-                                <a href="janela_comentarios.html" class="btn btn-sm new-comment-btn">Comentar</a>
+                                <button type="button" class="btn btn-sm new-comment-btn" data-bs-toggle="modal" data-bs-target="#modalComentar">
+                                  Comentar
+                                </button>
                             </div>
                             <p class="text-center text-muted fst-italic">Seja o primeiro a comentar!</p>
                          </div>
                     </article>
-
                 </div>
 
-                <!-- Coluna da Direita (Filtros) -->
-                 <aside class="col-lg-3 d-none d-lg-block">
-                    <div class="forum-right-sidebar">
+                <aside class="col-lg-3">
+                    <form class="forum-right-sidebar" method="GET" action="tela_foruns.html">
                         <div class="mb-4">
                             <h5 class="sidebar-title">Ordenar por:</h5>
                             <div class="form-check">
-                                <input class="form-check-input custom-checkbox" type="checkbox" value="" id="check-relevancia-desktop">
+                                <input class="form-check-input custom-checkbox" type="radio" name="ordenarPor" value="relevancia" id="check-relevancia-desktop">
                                 <label class="form-check-label" for="check-relevancia-desktop">Relevância</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input custom-checkbox" type="checkbox" value="" id="check-recente-desktop" checked>
+                                <input class="form-check-input custom-checkbox" type="radio" name="ordenarPor" value="recente" id="check-recente-desktop" checked>
                                 <label class="form-check-label" for="check-recente-desktop">Mais recente</label>
                             </div>
                         </div>
                         <div>
                             <h5 class="sidebar-title">Exibir publicações:</h5>
                              <div class="form-check">
-                                <input class="form-check-input custom-checkbox" type="checkbox" value="" id="check-prof-desktop">
+                                <input class="form-check-input custom-checkbox" type="checkbox" name="exibir[]" value="professores" id="check-prof-desktop">
                                 <label class="form-check-label" for="check-prof-desktop">Professores</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input custom-checkbox" type="checkbox" value="" id="check-estudantes-desktop">
+                                <input class="form-check-input custom-checkbox" type="checkbox" name="exibir[]" value="estudantes" id="check-estudantes-desktop">
                                 <label class="form-check-label" for="check-estudantes-desktop">Estudantes</label>
                             </div>
                              <div class="form-check">
-                                <input class="form-check-input custom-checkbox" type="checkbox" value="" id="check-servidores-desktop">
+                                <input class="form-check-input custom-checkbox" type="checkbox" name="exibir[]" value="servidores" id="check-servidores-desktop">
                                 <label class="form-check-label" for="check-servidores-desktop">Servidores</label>
                             </div>
                         </div>
-                    </div>
-                     <!-- Botão de Filtro Mobile (visível só em telas menores) -->
+
+                        <button type="submit" class="btn btn-primary filter-btn w-100 mt-4">
+                            Aplicar Filtros
+                        </button>
+                    </form>
+                    
                     <button class="btn btn-success d-lg-none mt-3 w-100" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFiltros" aria-controls="offcanvasFiltros">
                         <i class="bi bi-filter"></i> Filtros
                     </button>
                 </aside>
             </div>
         </main>
-    </div>
 
-     <!-- Offcanvas para Filtros Mobile -->
+        <footer class="site-footer">
+          <div class="container-fluid">
+            <div class="row">
+              
+              <div class="col-md-4 mb-4 mb-md-0">
+                <a href="tela_inicial.html" class="footer-logo">
+                  <img src="LOGO.png" alt="Logo SIIF">
+                  <span>SIIF</span>
+                </a>
+                <p class="footer-copyright">
+                  © 2025 SIIF - Sistema de Interação do Instituto Federal.<br>
+                  Projeto acadêmico desenvolvido por alunos do IFRN.
+                </p>
+              </div>
+        
+              <div class="col-md-4 mb-4 mb-md-0">
+                <h5>Navegação</h5>
+                <ul class="list-unstyled footer-links">
+                  <li><a href="tela_inicial.html"><i class="bi bi-house-door-fill"></i> Página Inicial</a></li>
+                  <li><a href="tela_foruns.html"><i class="bi bi-chat-left-dots-fill"></i> Fóruns</a></li>
+                  <li><a href="tela_divulgação.html"><i class="bi bi-megaphone-fill"></i> Divulgação</a></li>
+                  <li><a href="tela_materiais.html"><i class="bi bi-file-earmark-text-fill"></i> Materiais</a></li>
+                  <li><a href="tela_mapa.html"><i class="bi bi-geo-alt-fill"></i> Mapa</a></li>
+                </ul>
+              </div>
+        
+              <div class="col-md-4">
+                <h5>Links Úteis</h5>
+                <ul class="list-unstyled footer-links">
+                  <li><a href="https://www.gov.br/ifrn/pt-br" target="_blank">Site Oficial IFRN</a></li>
+                  <li><a href="https://suap.ifrn.edu.br/" target="_blank">Acessar SUAP</a></li>
+                  <li><a href="tela_suporte.html">Suporte & Denúncias</a></li>
+                  <li><a href="tela_perfil.html">Meu Perfil</a></li>
+                </ul>
+              </div>
+        
+            </div>
+          </div>
+        </footer>
+    </div> 
+    
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasFiltros" aria-labelledby="offcanvasFiltrosLabel">
       <div class="offcanvas-header">
         <h5 class="offcanvas-title sidebar-title" id="offcanvasFiltrosLabel">Filtros</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
-      <div class="offcanvas-body">
-         <div class="mb-4">
-            <h5 class="sidebar-title">Ordenar por:</h5>
-            <div class="form-check">
-                <input class="form-check-input custom-checkbox" type="checkbox" value="" id="check-relevancia-mobile">
-                <label class="form-check-label" for="check-relevancia-mobile">Relevância</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input custom-checkbox" type="checkbox" value="" id="check-recente-mobile" checked>
-                <label class="form-check-label" for="check-recente-mobile">Mais recente</label>
-            </div>
-        </div>
-        <div>
-            <h5 class="sidebar-title">Exibir publicações:</h5>
-             <div class="form-check">
-                <input class="form-check-input custom-checkbox" type="checkbox" value="" id="check-prof-mobile">
-                <label class="form-check-label" for="check-prof-mobile">Professores</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input custom-checkbox" type="checkbox" value="" id="check-estudantes-mobile">
-                <label class="form-check-label" for="check-estudantes-mobile">Estudantes</label>
-            </div>
-             <div class="form-check">
-                <input class="form-check-input custom-checkbox" type="checkbox" value="" id="check-servidores-mobile">
-                <label class="form-check-label" for="check-servidores-mobile">Servidores</label>
-            </div>
+      <div class="offcanvas-body d-flex flex-column">
+        <form class="flex-grow-1 d-flex flex-column" method="GET" action="tela_foruns.html">
+           <div class="mb-4">
+              <h5 class="sidebar-title">Ordenar por:</h5>
+              <div class="form-check">
+                  <input class="form-check-input custom-checkbox" type="radio" name="ordenarPorMobile" value="relevancia" id="check-relevancia-mobile">
+                  <label class="form-check-label" for="check-relevancia-mobile">Relevância</label>
+              </div>
+              <div class="form-check">
+                  <input class="form-check-input custom-checkbox" type="radio" name="ordenarPorMobile" value="recente" id="check-recente-mobile" checked>
+                  <label class="form-check-label" for="check-recente-mobile">Mais recente</label>
+              </div>
+          </div>
+          <div class="mb-4">
+              <h5 class="sidebar-title">Exibir publicações:</h5>
+               <div class="form-check">
+                  <input class="form-check-input custom-checkbox" type="checkbox" name="exibirMobile[]" value="professores" id="check-prof-mobile">
+                  <label class="form-check-label" for="check-prof-mobile">Professores</label>
+              </div>
+              <div class="form-check">
+                  <input class="form-check-input custom-checkbox" type="checkbox" name="exibirMobile[]" value="estudantes" id="check-estudantes-mobile">
+                  <label class="form-check-label" for="check-estudantes-mobile">Estudantes</label>
+              </div>
+               <div class="form-check">
+                  <input class="form-check-input custom-checkbox" type="checkbox" name="exibirMobile[]" value="servidores" id="check-servidores-mobile">
+                  <label class="form-check-label" for="check-servidores-mobile">Servidores</label>
+              </div>
+          </div>
+          
+          <button type="submit" class="btn btn-primary filter-btn w-100 mt-auto">
+              Aplicar Filtros
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal fade" id="modalComentar" tabindex="-1" aria-labelledby="modalComentarLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-custom-verde">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="modalComentarLabel">Escrever Comentário</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <textarea class="form-control" rows="5" placeholder="No que está pensando?" aria-label="Campo para escrever seu comentário"></textarea>
+          </div>
+          <div class="modal-footer d-flex justify-content-between">
+            <button type="button" class="btn btn-link" style="color: #386641; text-decoration: none;">
+              <i class="bi bi-paperclip"></i> Anexar Mídia
+            </button>
+            <button type="button" class="btn btn-primary filter-btn">Comentar</button>
+          </div>
         </div>
       </div>
     </div>
 
+    <div class="modal fade" id="modalPostar" tabindex="-1" aria-labelledby="modalPostarLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-custom-verde">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="modalPostarLabel">Criar Novo Post</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <textarea class="form-control" rows="5" placeholder="No que está pensando?" aria-label="Campo para escrever sua postagem"></textarea>
+          </div>
+          <div class="modal-footer d-flex justify-content-between">
+            <button type="button" class="btn btn-link" style="color: #386641; text-decoration: none;">
+              <i class="bi bi-paperclip"></i> Anexar Mídia
+            </button>
+            <button type="button" class="btn btn-primary filter-btn">Postar</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <!-- Botão de Ajuda Fixo -->
-    <a href="tela_suporte.html" class="help-btn"><i class="bi bi-headset"></i></a>
+    <div class="modal fade" id="modalNotificacoes" tabindex="-1" aria-labelledby="modalNotificacoesLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg modal-custom-verde"> 
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="modalNotificacoesLabel">Suas Notificações</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" style="padding: 0;">
+            <div class="list-group list-group-flush">
+              
+              <a href="#" class="list-group-item list-group-item-action py-3" style="background-color: #E7E7E4;"> 
+                <div class="d-flex w-100 justify-content-between">
+                  <h6 class="mb-1"><i class="bi bi-chat-fill text-success"></i> Novo Comentário</h6>
+                  <small class="text-muted">agora mesmo</small>
+                </div>
+                <p class="mb-0 small text-muted"><b>Aluno 11</b> comentou no seu post "Preciso de informações sobre os Tal".</p>
+              </a>
 
-    <!-- Bootstrap JS Bundle -->
+              <a href="#" class="list-group-item list-group-item-action py-3" style="background-color: #E7E7E4;">
+                <div class="d-flex w-100 justify-content-between">
+                  <h6 class="mb-1"><i class="bi bi-arrow-up-circle-fill text-success"></i> Post Relevante</h6>
+                  <small class="text-muted">há 5 min</small>
+                </div>
+                <p class="mb-0 small text-muted">Seu post "Jackson vai mesmo deixar o campus????" recebeu um "Relevante".</p>
+              </a>
+
+              <a href="#" class="list-group-item list-group-item-action py-3">
+                <div class="d-flex w-100 justify-content-between">
+                  <h6 class="mb-1"><i class="bi bi-chat-fill text-secondary"></i> Novo Comentário</h6>
+                  <small class="text-muted">há 1 dia</small>
+                </div>
+                <p class="mb-0 small text-muted"><b>Aluno 404</b> comentou no seu post "Preciso de informações sobre os Tal".</p>
+              </a>
+              
+              <a href="#" class="list-group-item list-group-item-action py-3">
+                <div class="d-flex w-100 justify-content-between">
+                  <h6 class="mb-1"><i class="bi bi-megaphone-fill text-secondary"></i> Nova Divulgação</h6>
+                  <small class="text-muted">há 2 dias</small>
+                </div>
+                <p class="mb-0 small text-muted">Veja o novo "Seminário de Inovação" na página de Divulgação.</p>
+              </a>
+
+            </div>
+          </div>
+          <div class="modal-footer d-flex justify-content-center">
+            <button type="button" class_ ="btn btn-sm" style="color: #386641; text-decoration: none;">Marcar todas como lidas</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal fade" id="modalVerPerfil" tabindex="-1" aria-labelledby="modalVerPerfilLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered modal-custom-verde"> 
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="modalVerPerfilLabel">Perfil do Usuário</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          
+          <div class="modal-body" style="padding: 0; background-color: #E7E7E4;">
+            
+            <div class="profile-header-container" style="margin: 0; border-radius: 0;">
+              
+              <div class="profile-banner" style="background-image: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070&auto=format&fit=crop'); border-radius: 0;">
+              </div>
+
+              <div class="profile-info-bar">
+                
+                <img src="image.png" alt="Foto do Usuário" class="profile-avatar">
+
+                <div class="profile-actions">
+                  <div class="dropdown">
+                    <button class="btn btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="bi bi-three-dots"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li><a class="dropdown-item" href="#"><i class="bi bi-share-fill me-2"></i> Compartilhar Perfil</a></li>
+                      <li class="admin-only"><a class="dropdown-item text-danger" href="#"><i class="bi bi-slash-circle-fill me-2"></i> Banir Usuário</a></li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="profile-user-details">
+                  <h2 class="profile-name">Aluno 1</h2>
+                  <p class="profile-bio">Estudante de Informática no IFRN-Apodi.</p>
+                  <p class="profile-course">
+                    <i class="bi bi-mortarboard-fill"></i> Informática – IFRN Apodi
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="profile-content" style="border-radius: 0;">
+              
+              <ul class="nav profile-tabs" id="profileTabModal" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" id="posts-tab-modal" data-bs-toggle="tab" data-bs-target="#posts-tab-pane-modal" type="button" role="tab" aria-selected="true">
+                    Posts no Fórum
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="materiais-tab-modal" data-bs-toggle="tab" data-bs-target="#materiais-tab-pane-modal" type="button" role="tab" aria-selected="false">
+                    Materiais Compartilhados
+                  </button>
+                </li>
+              </ul>
+
+              <div class="tab-content" id="profileTabContentModal">
+                
+                <div class="tab-pane fade show active" id="posts-tab-pane-modal" role="tabpanel">
+                  <p class="text-center text-muted p-4 fst-italic">Carregando posts...</p>
+                  </div>
+
+                <div class="tab-pane fade" id="materiais-tab-pane-modal" role="tabpanel">
+                  <p class="text-center text-muted p-4 fst-italic">Carregando materiais...</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          </div>
+      </div>
+    </div>
+    <a href="tela_suporte.html" class="help-btn help-btn-user"><i class="bi bi-headset"></i></a>
+    <a href="tela_denuncias.html" class="help-btn help-btn-admin"><i class="bi bi-shield-check"></i></a>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const likeButtons = document.querySelectorAll('.js-like-btn');
+        likeButtons.forEach(button => {
+          button.addEventListener('click', function(event) {
+            event.preventDefault(); 
+            this.classList.toggle('active');
+            const countSpan = this.querySelector('span:first-child');
+            if (countSpan) {
+              let currentCount = parseInt(countSpan.textContent, 10);
+              if (this.classList.contains('active')) {
+                countSpan.textContent = currentCount + 1;
+              } else {
+                countSpan.textContent = currentCount - 1;
+              }
+            }
+          });
+        });
+      });
+    </script>
+
 </body>
 </html>

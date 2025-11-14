@@ -3,423 +3,122 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mapa IFRN - SIIF</title>
-  <link rel="stylesheet" href="styles.css" />
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Bootstrap Icons -->
+  <title>Mapas dos Campi - SIIF</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-  <style>
-    * {
-margin: 0;
-padding: 0;
-box-sizing: border-box;
-font-family: 'Poppins', sans-serif;
-}
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
 
-body {
-background-color: #d1d1d1;
-padding: 15px;
-}
-
-.page-container {
-max-width: 1400px;
-margin: 0 auto;
-border-radius: 25px;
-overflow: hidden;
-background-color: #386641;
-box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-}
-
-/* NAVBAR */
-nav {
-display: flex;
-align-items: center;
-justify-content: space-between;
-padding: 15px 40px;
-flex-wrap: wrap;
-}
-
-.nav-left {
-display: flex;
-align-items: center;
-gap: 25px;
-flex-wrap: wrap;
-}
-
-.nav-left img {
-width: 45px;
-height: 45px;
-border-radius: 50%;
-background-color: #fff;
-}
-
-.nav-links {
-display: flex;
-gap: 25px;
-align-items: center;
-flex-wrap: wrap;
-}
-
-.nav-links a {
-color: white;
-text-decoration: none;
-font-weight: 500;
-display: flex;
-align-items: center;
-gap: 8px;
-font-size: 1rem;
-}
-
-.nav-links a.active {
-border-bottom: 2px solid white;
-padding-bottom: 3px;
-}
-
-.nav-links a:hover {
-opacity: 0.9;
-}
-
-.nav-right {
-display: flex;
-align-items: center;
-background-color: #fff;
-color: #386641;
-border-radius: 30px;
-padding: 5px 15px 5px 10px;
-}
-
-.nav-right span {
-font-size: 0.95rem;
-}
-
-.profile-pic {
-width: 40px;
-height: 40px;
-border-radius: 50%;
-overflow: hidden;
-margin-left: 10px;
-background-color: #ccc;
-}
-
-/* CONTEÚDO BRANCO */
-main {
-background-color: #fff;
-border-radius: 25px 25px 0 0;
-padding: 40px 50px;
-}
-
-/* GRID PRINCIPAL */
-.main-grid {
-display: grid;
-grid-template-columns: 1.5fr 1fr 1fr;
-gap: 25px;
-margin-bottom: 25px;
-}
-
-
-.main-content {
-    display: flex;
-    flex-direction: column; 
-    align-items: center; 
-    padding: 20px; 
-}
-
-.main-content iframe {
-    border-radius: 15px; 
-    width: 100%; 
-    max-width: 1000px; 
-    height: 550px; 
-    border: 5px solid #d1d1d1; 
-}
-
-/* Estiliza o link "Ver mapa ampliado" */
-.main-content small {
-    margin-top: 10px;
-    font-size: 0.9rem;
-}
-
-/* CARDS LATERAIS */
-.card {
-background-color: #386641;
-border-radius: 15px;
-padding: 15px;
-text-align: center;
-color: white;
-display: flex;
-flex-direction: column;
-justify-content: space-between;
-}
-
-.card img {
-width: 100%;
-height: 180px;
-border-radius: 12px;
-background-color: #ccc;
-margin-bottom: 15px;
-}
-
-.card p {
-font-size: 0.9rem;
-line-height: 1.4rem;
-color: #e7e7e4;
-}
-
-.card button {
-margin-top: 10px;
-background-color: #e7e7e4;
-color: #386641;
-border: none;
-padding: 8px 16px;
-border-radius: 8px;
-font-weight: 500;
-cursor: pointer;
-align-self: center;
-display: flex;
-align-items: center;
-gap: 6px;
-}
-
-.card button i {
-font-size: 1rem;
-}
-
-.card button:hover {
-background-color: #dcdcd8;
-}
-
-/* PRÓXIMOS EVENTOS E MAPA */
-.bottom-grid {
-display: grid;
-grid-template-columns: 1.2fr 1.8fr;
-gap: 25px;
-}
-
-.eventos {
-background-color: #386641;
-border-radius: 15px;
-padding: 20px;
-color: white;
-}
-
-.eventos h3 {
-font-weight: 600;
-display: flex;
-align-items: center;
-gap: 8px;
-}
-
-.eventos h3 i {
-font-size: 1.2rem;
-}
-
-.eventos-lista {
-display: flex;
-gap: 20px;
-margin-top: 20px;
-flex-wrap: wrap;
-justify-content: flex-start;
-}
-
-.evento {
-background-color: white;
-color: #386641;
-border-radius: 15px;
-width: 110px;
-min-height: 100px;
-padding: 8px;
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-font-weight: 600;
-text-align: center;
-font-size: 0.85rem;
-word-wrap: break-word;
-line-height: 1.2rem;
-}
-
-.mapa {
-background-color: #386641;
-border-radius: 15px;
-padding: 15px;
-color: white;
-}
-
-.mapa h3 {
-font-weight: 600;
-margin-bottom: 10px;
-}
-
-.mapa iframe {
-width: 100%;
-height: 250px;
-border-radius: 10px;
-border: none;
-}
-
-/* BOTÃO AJUDA FIXO */
-.help-btn {
-position: fixed;
-bottom: 30px;
-right: 30px;
-background-color: #386641;
-color: white;
-border-radius: 50%;
-width: 60px;
-height: 60px;
-display: flex;
-align-items: center;
-justify-content: center;
-font-size: 1.8rem;
-box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-cursor: pointer;
-z-index: 100;
-}
-
-.help-btn:hover {
-background-color: #2a4b30;
-}
-
-/* RESPONSIVO */
-@media (max-width: 1200px) {
-.main-grid {
-  grid-template-columns: 1fr 1fr;
-}
-.noticias {
-  grid-column: 1 / -1;
-}
-}
-
-@media (max-width: 992px) {
-.main-grid {
-  grid-template-columns: 1fr;
-}
-.bottom-grid {
-  grid-template-columns: 1fr;
-}
-nav {
-  flex-direction: column;
-  gap: 15px;
-  padding: 15px 20px;
-}
-.nav-links {
-  gap: 15px;
-}
-.nav-left {
-  gap: 15px;
-}
-main {
-  padding: 30px 25px;
-}
-.help-btn {
-  bottom: 20px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
-  font-size: 1.5rem;
-}
-}
-
-@media (max-width: 768px) {
-body {
-  padding: 10px;
-}
-.nav-links {
-  justify-content: center;
-  width: 100%;
-}
-.nav-links a {
-  font-size: 0.9rem;
-}
-.nav-right span {
-  font-size: 0.85rem;
-}
-.eventos-lista {
-  justify-content: center;
-}
-.evento {
-  width: 100px;
-  min-height: 90px;
-  font-size: 0.8rem;
-}
-}
-
-@media (max-width: 576px) {
-.nav-links {
-  flex-direction: column;
-  gap: 10px;
-  align-items: flex-start;
-}
-.nav-links a {
-  font-size: 0.95rem;
-}
-.nav-right {
-  width: 100%;
-  justify-content: center;
-}
-main {
-  padding: 20px 15px;
-}
-.noticia-card {
-  padding: 12px;
-  font-size: 0.9rem;
-}
-.card {
-  padding: 12px;
-}
-.card p {
-  font-size: 0.85rem;
-}
-.eventos, .mapa {
-  padding: 15px;
-}
-.help-btn {
-  bottom: 15px;
-  right: 15px;
-  width: 45px;
-  height: 45px;
-  font-size: 1.3rem;
-}
-}
-  </style>
 </head>
 
-<body>
+<body class="role-user"> 
   <div class="page-container">
-    <nav>
-      <div class="nav-left">
-        <img src="" alt="Logo">
-        <div class="nav-links">
-          <a href="#"><i class="bi bi-house-door-fill"></i> Página Inicial</a>
-          <a href="#"><i class="bi bi-chat-left-dots-fill"></i> Fóruns</a>
-          <a href="#"><i class="bi bi-megaphone-fill"></i> Divulgação</a>
-          <a href="#"><i class="bi bi-file-earmark-text-fill"></i> Materiais</a>
-          <a href="#" class="active"><i class="bi bi-geo-alt-fill"></i> Mapa</a>
-        </div>
-      </div>
 
-      <div class="nav-right">
-        <span>Olá, Fulano de tal</span>
-        <div class="profile-pic">
-          <img src="" alt="Perfil">
+    <nav class="navbar navbar-expand-lg navbar-custom">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="tela_inicial.html">
+          <img src="LOGO.png" alt="Logo SIIF"> 
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <i class="bi bi-list text-white fs-1"></i> 
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="tela_inicial.html"><i class="bi bi-house-door-fill"></i> Página Inicial</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="tela_foruns.html"><i class="bi bi-chat-left-dots-fill"></i> Fóruns</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="tela_divulgação.html"><i class="bi bi-megaphone-fill"></i> Divulgação</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="tela_materiais.html"><i class="bi bi-file-earmark-text-fill"></i> Materiais</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="tela_mapa.html"><i class="bi bi-geo-alt-fill"></i> Mapa</a>
+            </li>
+          </ul>
+          <a href="tela_perfil.html" class="profile-link ms-lg-auto">
+            <span>Olá, Fulano de tal</span>
+            <div class="profile-pic">
+              <img src="image.png" alt="Perfil"> 
+            </div>
+          </a>
         </div>
       </div>
     </nav>
-<main>
-    <div class="main-content">
+
+    <main class="mapa-page">
+      
+      <h1>Mapas dos Campi</h1>
+
+      <div class="input-group mb-4 shadow-sm mapa-selector">
+        <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i> Selecione o Campus:</span>
+        <select class="form-select" id="campus-select" aria-label="Selecione o Campus">
+          <option value="apodi" selected>Apodi</option>
+          <option value="mossoro" disabled>Mossoró (em breve)</option>
+          <option value="natal" disabled>Natal (em breve)</option>
+          <option value="pau-dos-ferros" disabled>Pau dos Ferros (em breve)</option>
+        </select>
+      </div>
+
+      <div class="map-container shadow-sm">
         <iframe 
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3970.590804240725!2d-37.8121256243238!3d-5.627263179795482!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7baf7f6172a76a7%3A0x4df8711927cb367!2sIFRN%20-%20Campus%20Apodi!5e0!3m2!1spt-BR!2sbr!4v1761177469518!5m2!1spt-BR!2sbr" 
             allowfullscreen="" 
             loading="lazy" 
             referrerpolicy="no-referrer-when-downgrade">
         </iframe>
-        <br/>
-        <small><a href="https://maps.app.goo.gl/pehC6UrsjfvS5jej6">Ver mapa ampliado</a></small>
-    </div>
-</main>
-  </div>
+        <small><a href="https://maps.app.goo.gl/pehC6UrsjfvS5jej6" target="_blank">Ver mapa ampliado</a></small>
+      </div>
 
-  <div class="help-btn"><i class="bi bi-headset"></i></div>
+    </main>
+    <footer class="site-footer">
+      <div class="container-fluid">
+        <div class="row">
+          
+          <div class="col-md-4 mb-4 mb-md-0">
+            <a href="tela_inicial.html" class="footer-logo">
+              <img src="LOGO.png" alt="Logo SIIF">
+              <span>SIIF</span>
+            </a>
+            <p class="footer-copyright">
+              © 2025 SIIF - Sistema de Interação do Instituto Federal.<br>
+              Projeto acadêmico desenvolvido por alunos do IFRN.
+            </p>
+          </div>
+    
+          <div class="col-md-4 mb-4 mb-md-0">
+            <h5>Navegação</h5>
+            <ul class="list-unstyled footer-links">
+              <li><a href="tela_inicial.html"><i class="bi bi-house-door-fill"></i> Página Inicial</a></li>
+              <li><a href="tela_foruns.html"><i class="bi bi-chat-left-dots-fill"></i> Fóruns</a></li>
+              <li><a href="tela_divulgação.html"><i class="bi bi-megaphone-fill"></i> Divulgação</a></li>
+              <li><a href="tela_materiais.html"><i class="bi bi-file-earmark-text-fill"></i> Materiais</a></li>
+              <li><a href="tela_mapa.html"><i class="bi bi-geo-alt-fill"></i> Mapa</a></li>
+            </ul>
+          </div>
+    
+          <div class="col-md-4">
+            <h5>Links Úteis</h5>
+            <ul class="list-unstyled footer-links">
+              <li><a href="https://www.gov.br/ifrn/pt-br" target="_blank">Site Oficial IFRN</a></li>
+              <li><a href="https://suap.ifrn.edu.br/" target="_blank">Acessar SUAP</a></li>
+              <li><a href="tela_suporte.html">Suporte & Denúncias</a></li>
+              <li><a href="tela_perfil.html">Meu Perfil</a></li>
+            </ul>
+          </div>
+    
+        </div>
+      </div>
+    </footer>
+  </div> <a href="tela_suporte.html" class="help-btn help-btn-user"><i class="bi bi-headset"></i></a>
+  <a href="tela_denuncias.html" class="help-btn help-btn-admin"><i class="bi bi-shield-check"></i></a>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
