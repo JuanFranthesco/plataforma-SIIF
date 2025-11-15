@@ -59,7 +59,7 @@ def tela_inicial():
 
 @main_bp.route('/forum')
 def tela_foruns():
-    return "Página de Fóruns ainda não implementada."
+    return render_template('tela_foruns.html')
 
 @main_bp.route('/divulgacao')
 def tela_divulgacao():
@@ -67,7 +67,7 @@ def tela_divulgacao():
 
 @main_bp.route('/mapa')
 def tela_mapa():
-    return "Página do Mapa ainda não implementada."
+    return render_template('tela_mapa.html')
 
 @main_bp.route('/perfil')
 def tela_perfil():
@@ -76,10 +76,6 @@ def tela_perfil():
 @main_bp.route('/denuncias')
 def tela_denuncias():
     return "Página de Denuncias ainda não implementada."
-
-@main_bp.route('/ajuda')
-def tela_ajuda():
-    return "Página de Ajuda ainda não implementada."
 
 # ------------------------------------------------------------
 # TELA DE MATERIAIS
