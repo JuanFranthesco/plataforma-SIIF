@@ -1,4 +1,4 @@
-from flask import render_template,request, redirect, url_for, flash, current_app, send_from_directory, Blueprint
+from flask import render_template, request, redirect, url_for, flash, current_app, send_from_directory, Blueprint
 from flask_login import login_required
 from sqlalchemy import or_
 from werkzeug.utils import secure_filename
@@ -8,14 +8,13 @@ from thefuzz import fuzz
 from app.models import Material, User, FAQ, Denuncia
 from app.extensions import db
 
-
 main_bp = Blueprint('main', __name__)
+
 
 @main_bp.route('/')
 @main_bp.route('/index')
 def index():
-    return redirect(url_for('main.tela_materiais')) #por enquanto
-    #return "<h1>Projeto SIIF está no AR!</h1>"
+    return redirect(url_for('main.tela_materiais'))
 
 @main_bp.route('/materiais')
 def tela_materiais():
@@ -194,25 +193,21 @@ def excluir_material(material_id):
 # Rota para a Tela de Suporte
 
 @main_bp.route('/suporte', methods=['GET', 'POST'])
-@login_required
 def suporte():
     if request.method == 'POST':
         assunto = request.form.get('title')
         descricao = request.form.get('description')
+
         if not descricao:
             flash('Erro: A descrição da denúncia é obrigatória.', 'danger')
             return redirect(url_for('main.suporte'))
 
-        denunciante_id_temporario = None
-        
-        descricao_completa = descricao
-        if assunto:
-            descricao_completa = f"Assunto: {assunto}\n\n{descricao}"
+        descricao_completa = f"Assunto: {assunto}\n\n{descricao}" if assunto else descricao
 
         nova_denuncia = Denuncia(
             tipo_denuncia="Denúncia via Página de Suporte",
             descricao=descricao_completa,
-            denunciante_id=denunciante_id_temporario
+            denunciante_id=None
         )
 
         try:
@@ -222,9 +217,8 @@ def suporte():
         except Exception as e:
             db.session.rollback()
             flash(f'Ocorreu um erro ao enviar sua denúncia: {e}', 'danger')
+
         return redirect(url_for('main.suporte'))
-    
-    faqs_recentes = FAQ.query.order_by(FAQ.id.desc()).limit(4).all()
 
     termo_busca = request.args.get('busca', '')
     faqs_resultados = []
@@ -236,9 +230,11 @@ def suporte():
                 FAQ.resposta.ilike(f'%{termo_busca}%')
             )
         ).all()
-        
+
+    faqs_recentes = FAQ.query.order_by(FAQ.id.desc()).limit(4).all()
+
     return render_template(
-        'tela_suporte.html', 
+        'tela_suporte.html',
         faqs_recentes=faqs_recentes,
         faqs_resultados=faqs_resultados,
         termo_busca=termo_busca
