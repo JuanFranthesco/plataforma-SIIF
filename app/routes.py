@@ -10,17 +10,56 @@ from app.extensions import db
 
 main_bp = Blueprint('main', __name__)
 
+# ------------------------------------------------------------
+# TELA INICIAL
+# ------------------------------------------------------------
 
 @main_bp.route('/')
 @main_bp.route('/index')
 def index():
-    return redirect(url_for('main.tela_materiais'))
+    return redirect(url_for('main.tela_inicial'))
+
+@main_bp.route('/home')
+@main_bp.route('/tela-inicial')
+def tela_inicial():
+    """Tela inicial do portal."""
+    return render_template('tela_inicial.html')
+
+# ------------------------------------------------------------
+# PLACEHOLDERS (Evita erros de url_for até as telas existirem)
+# ------------------------------------------------------------
+
+@main_bp.route('/forum')
+def tela_foruns():
+    return "Página de Fóruns ainda não implementada."
+
+@main_bp.route('/divulgacao')
+def tela_divulgacao():
+    return "Página de Divulgação ainda não implementada."
+
+@main_bp.route('/mapa')
+def tela_mapa():
+    return "Página do Mapa ainda não implementada."
+
+@main_bp.route('/perfil')
+def tela_perfil():
+    return "Página de Perfil ainda não implementada."
+
+@main_bp.route('/denuncias')
+def tela_denuncias():
+    return "Página de Denuncias ainda não implementada."
+
+@main_bp.route('/ajuda')
+def tela_ajuda():
+    return "Página de Ajuda ainda não implementada."
+
+# ------------------------------------------------------------
+# TELA DE MATERIAIS
+# ------------------------------------------------------------
 
 @main_bp.route('/materiais')
 def tela_materiais():
-    """
-    Rota principal: Exibe os materiais e aplica filtros.
-    """
+    """Exibe os materiais e aplica filtros."""
 
     categoria_filtro = request.args.get('categoria')
     termo_pesquisa = request.args.get('q')
@@ -68,6 +107,10 @@ def tela_materiais():
         categoria_selecionada=categoria_filtro, #para o filtro 'lembrar' a seleção
         termo_pesquisado=termo_pesquisa #para a parte de pesquisa
     )
+
+# ------------------------------------------------------------
+# ADICIONAR MATERIAL
+# ------------------------------------------------------------
 
 @main_bp.route('/materiais/adicionar', methods=['POST'])
 def adicionar_material():
@@ -139,6 +182,9 @@ def adicionar_material():
 
     return redirect(url_for('main.tela_materiais'))
 
+# ------------------------------------------------------------
+# DOWNLOAD MATERIAL
+# ------------------------------------------------------------
 
 @main_bp.route('/materiais/download/<int:material_id>')
 def download_material(material_id):
@@ -161,6 +207,9 @@ def download_material(material_id):
         flash('Arquivo não encontrado no servidor. Pode ter sido removido.', 'danger')
         return redirect(url_for('main.tela_materiais'))
 
+# ------------------------------------------------------------
+# EXCLUIR MATERIAL
+# ------------------------------------------------------------
 
 @main_bp.route('/materiais/excluir/<int:material_id>', methods=['POST'])
 def excluir_material(material_id):
@@ -190,7 +239,9 @@ def excluir_material(material_id):
         
     return redirect(url_for('main.tela_materiais'))
 
-# Rota para a Tela de Suporte
+# ------------------------------------------------------------
+# SUPORTE
+# ------------------------------------------------------------
 
 @main_bp.route('/suporte', methods=['GET', 'POST'])
 def suporte():
