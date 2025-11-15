@@ -1,6 +1,6 @@
 import os
 from flask import Flask
-from .extensions import db, login_manager
+from .extensions import db, login_manager, migrate
 
 def create_app():
     app = Flask(__name__)
@@ -19,6 +19,9 @@ def create_app():
 
     from app.routes import main_bp
     app.register_blueprint(main_bp)
+
+    from app.api import api
+    app.register_blueprint(api)
 
     with app.app_context():
         from app import models
