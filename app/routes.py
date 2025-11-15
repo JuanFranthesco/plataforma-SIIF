@@ -34,7 +34,7 @@ def tela_foruns():
     return "Página de Fóruns ainda não implementada."
 
 @main_bp.route('/divulgacao')
-def divulgacao():
+def tela_divulgacao():
     return render_template('tela_divulgacao.html')
 
 @main_bp.route('/mapa')
