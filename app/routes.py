@@ -71,11 +71,11 @@ def tela_mapa():
 
 @main_bp.route('/perfil')
 def tela_perfil():
-    return "Página de Perfil ainda não implementada."
+    return render_template('tela_perfil.html')
 
 @main_bp.route('/denuncias')
 def tela_denuncias():
-    return "Página de Denuncias ainda não implementada."
+    return render_template('tela_denuncias.html')
 
 # ------------------------------------------------------------
 # TELA DE MATERIAIS
