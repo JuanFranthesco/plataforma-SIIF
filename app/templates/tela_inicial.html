@@ -42,7 +42,6 @@
             </li>
           </ul>
 
-          <!-- Perfil: se tiver login, substitua a string "Fulano de tal" / imagem por current_user -->
           <a href="{{ url_for('main.tela_perfil') }}" class="profile-link ms-lg-auto">
             <span>Olá, Fulano de tal</span>
             <div class="profile-pic">
@@ -56,24 +55,32 @@
     <main>
       <div class="row g-4 mb-4">
         
+        <!-- NOTÍCIAS DINÂMICAS -->
         <div class="col-lg-6 col-md-12">
           <a href="{{ url_for('main.tela_divulgacao') }}" class="card-link-wrapper">
             <div class="noticias">
               <h3><i class="bi bi-megaphone-fill"></i> Notícias recentes</h3>
-              <div class="noticia-card">
-                A 2° Fase da OBMEP acontecerá no dia 25 de Outubro! Confira o seu local de prova.
-              </div>
-              <div class="noticia-card">
-                Como está o pace? Prepare-se, a 1° Corrida do Campus está chegando!
-              </div>
+
+              {% if noticias and noticias|length > 0 %}
+                {% for n in noticias %}
+                <div class="noticia-card">
+                  {{ n.titulo }}
+                </div>
+                {% endfor %}
+              {% else %}
+                <div class="noticia-card">
+                  Nenhuma notícia cadastrada ainda.
+                </div>
+              {% endif %}
+
             </div>
           </a>
         </div>
 
+        <!-- CARD OBMEP -->
         <div class="col-lg-3 col-md-6">
           <div class="card-home"> 
             <div>
-              <!-- se quiser, coloque uma imagem em static/img/obmep.jpg e ajuste o filename abaixo -->
               <img src="{{ url_for('static', filename='img/obmep.jpg') }}" alt="Imagem OBMEP">
               <p>Prepare-se para a OBMEP, acesse a aba materiais na nossa plataforma!</p>
             </div>
@@ -98,32 +105,33 @@
 
       <div class="row g-4">
         
+        <!-- EVENTOS DINÂMICOS -->
         <div class="col-lg-5 col-md-12">
           <a href="{{ url_for('main.tela_divulgacao') }}" class="card-link-wrapper">
             <div class="eventos">
               <h3><i class="bi bi-calendar-event-fill"></i> Próximos eventos</h3>
               <div class="eventos-lista">
-                <div class="evento">
-                  <strong>25<br>OUT</strong>
-                  <span>OBMEP</span>
-                </div>
-                <div class="evento">
-                  <strong>09<br>NOV</strong>
-                  <span>DIA 1 ENEM</span>
-                </div>
-                <div class="evento">
-                  <strong>16<br>NOV</strong>
-                  <span>DIA 2 ENEM</span>
-                </div>
-                <div class="evento">
-                  <strong>17<br>NOV</strong>
-                  <span>SEMANA<br>DA CONSCIÊNCIA<br>NEGRA</span>
-                </div>
+
+                {% if eventos and eventos|length > 0 %}
+                  {% for e in eventos %}
+                  <div class="evento">
+                    <strong>
+                      {{ e.data_hora_inicio.strftime('%d') }}<br>
+                      {{ e.data_hora_inicio.strftime('%b')|upper }}
+                    </strong>
+                    <span>{{ e.titulo }}</span>
+                  </div>
+                  {% endfor %}
+                {% else %}
+                  <p style="color: #fff; margin-left: 10px;">Nenhum evento futuro cadastrado.</p>
+                {% endif %}
+
               </div>
             </div>
           </a>
         </div>
 
+        <!-- MAPA -->
         <div class="col-lg-7 col-md-12">
           <a href="{{ url_for('main.tela_mapa') }}" class="card-link-wrapper">
             <div class="mapa">

@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 import os
 import datetime
 from thefuzz import fuzz
-from app.models import Material, User, FAQ, Denuncia
+from app.models import Material, User, FAQ, Denuncia, Noticia, Evento
 from app.extensions import db
 
 main_bp = Blueprint('main', __name__)
@@ -22,8 +22,36 @@ def index():
 @main_bp.route('/home')
 @main_bp.route('/tela-inicial')
 def tela_inicial():
-    """Tela inicial do portal."""
-    return render_template('tela_inicial.html')
+    """
+    Tela inicial com dados reais do banco:
+    - Últimas notícias
+    - Próximos eventos
+    """
+
+    # -------------------------------
+    # Buscar notícias (últimas 4)
+    # -------------------------------
+    noticias = Noticia.query.order_by(Noticia.data_postagem.desc()).limit(4).all()
+
+    # -------------------------------
+    # Buscar eventos futuros
+    # -------------------------------
+    agora = datetime.datetime.now(datetime.timezone.utc)
+
+    eventos = (
+        Evento.query
+        .filter(Evento.data_hora_inicio >= agora)
+        .order_by(Evento.data_hora_inicio.asc())
+        .limit(4)
+        .all()
+    )
+
+    return render_template(
+        'tela_inicial.html',
+        noticias=noticias,
+        eventos=eventos
+    )
+
 
 # ------------------------------------------------------------
 # PLACEHOLDERS (Evita erros de url_for até as telas existirem)
