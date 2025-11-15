@@ -1,8 +1,11 @@
-import os
-from thefuzz import fuzz
-from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, send_from_directory
+from flask import render_template,request, redirect, url_for, flash, current_app, send_from_directory, Blueprint
+from flask_login import login_required
+from sqlalchemy import or_
 from werkzeug.utils import secure_filename
-from app.models import Material, User
+import os
+import datetime
+from thefuzz import fuzz
+from app.models import Material, User, FAQ, Denuncia
 from app.extensions import db
 
 
@@ -187,3 +190,56 @@ def excluir_material(material_id):
         flash(f'Erro ao excluir material: {e}', 'danger')
         
     return redirect(url_for('main.tela_materiais'))
+
+# Rota para a Tela de Suporte
+
+@main_bp.route('/suporte', methods=['GET', 'POST'])
+@login_required
+def suporte():
+    if request.method == 'POST':
+        assunto = request.form.get('title')
+        descricao = request.form.get('description')
+        if not descricao:
+            flash('Erro: A descrição da denúncia é obrigatória.', 'danger')
+            return redirect(url_for('main.suporte'))
+
+        denunciante_id_temporario = None
+        
+        descricao_completa = descricao
+        if assunto:
+            descricao_completa = f"Assunto: {assunto}\n\n{descricao}"
+
+        nova_denuncia = Denuncia(
+            tipo_denuncia="Denúncia via Página de Suporte",
+            descricao=descricao_completa,
+            denunciante_id=denunciante_id_temporario
+        )
+
+        try:
+            db.session.add(nova_denuncia)
+            db.session.commit()
+            flash('Sua denúncia foi enviada anonimamente.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Ocorreu um erro ao enviar sua denúncia: {e}', 'danger')
+        return redirect(url_for('main.suporte'))
+    
+    faqs_recentes = FAQ.query.order_by(FAQ.id.desc()).limit(4).all()
+
+    termo_busca = request.args.get('busca', '')
+    faqs_resultados = []
+
+    if termo_busca:
+        faqs_resultados = FAQ.query.filter(
+            or_(
+                FAQ.pergunta.ilike(f'%{termo_busca}%'),
+                FAQ.resposta.ilike(f'%{termo_busca}%')
+            )
+        ).all()
+        
+    return render_template(
+        'tela_suporte.html', 
+        faqs_recentes=faqs_recentes,
+        faqs_resultados=faqs_resultados,
+        termo_busca=termo_busca
+    )

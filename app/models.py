@@ -1,12 +1,18 @@
 from app.extensions import db 
 from datetime import datetime, timezone
+from flask_login import UserMixin
+from . import login_manager
 
 # ===================================================================
 # TELAS: Tela de Login e Tela de Perfil
 # RESPONSÁVEIS: Equipe 2
 # ===================================================================
 
-class User(db.Model):
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+class User(db.Model, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     matricula = db.Column(db.String(80), unique=True, nullable=False)
