@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Divulgação - SIIF</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body class="role-admin">
+    <div class="page-container">
+
+        <nav class="navbar navbar-expand-lg navbar-custom">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="tela_inicial.html">
+                    <img src="LOGO.png" alt="Logo SIIF">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="bi bi-list text-white fs-1"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="tela_inicial.html"><i class="bi bi-house-door-fill"></i> Página
+                                Inicial</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="tela_foruns.html"><i class="bi bi-chat-left-dots-fill"></i>
+                                Fóruns</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="tela_divulgação.html"><i class="bi bi-megaphone-fill"></i>
+                                Divulgação</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="tela_materiais.html"><i class="bi bi-file-earmark-text-fill"></i>
+                                Materiais</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="tela_mapa.html"><i class="bi bi-geo-alt-fill"></i> Mapa</a>
+                        </li>
+                    </ul>
+                    <a href="tela_perfil.html" class="profile-link ms-lg-auto"> <span>Olá, Fulano de tal</span>
+                        <div class="profile-pic">
+                            <img src="image.png" alt="Perfil">
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <main id="conteudo-principal" role="main">
+            <a href="#conteudo-principal" class="visually-hidden-focusable skip-link">Pular para o conteúdo
+                principal</a>
+
+            <h1>Divulgação</h1>
+
+            <section class="row g-3 mb-4">
+                <div class="col-lg-6">
+                    <form class="divulgacao-filters shadow-sm">
+                        <label for="filtrar-campus" class="visually-hidden">Filtrar por Campus</label>
+                        <select id="filtrar-campus" name="campus" class="form-select" aria-label="Filtrar Campus">
+                            <option value="">Todos os Campus</option>
+                            <option value="mossoro">Mossoró</option>
+                            <option value="paudosferros">Pau dos Ferros</option>
+                        </select>
+                        <label for="filtrar-categoria" class="visually-hidden">Filtrar por Categoria</label>
+                        <select id="filtrar-categoria" name="categoria" class="form-select"
+                            aria-label="Filtrar Categoria">
+                            <option value="">Todas as Categorias</option>
+                            <option value="eventos">Eventos</option>
+                            <option value="pesquisa">Pesquisa</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary filter-btn">Buscar</button>
+                    </form>
+                </div>
+                <div class="col-lg-6">
+                    <form class="divulgacao-search shadow-sm" role="search">
+                        <label for="pesquisar" class="visually-hidden">Campo de Pesquisa</label>
+                        <input type="search" id="pesquisar" class="form-control"
+                            placeholder="Pesquisar notícias e eventos...">
+                        <button type="submit" class="btn-search-icon" aria-label="Executar Pesquisa"><i
+                                class="bi bi-search"></i></button>
+                    </form>
+                </div>
+            </section>
+
+            <div class="row g-4">
+
+                <div class="col-lg-8">
+
+                    <section class="mb-4" aria-labelledby="highlights-title">
+                        <h2 id="highlights-title" class="visually-hidden">Notícias e Eventos em Destaque</h2>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <article class="divulgacao-card card h-100 shadow-sm">
+                                    <div class="card-body d-flex flex-column">
+                                        <h3 class="card-title">Seminário de Inovação</h3>
+                                        <p class="card-text">Evento sobre as mais novas tecnologias através de palestras
+                                            e presença.</p>
+
+                                        <button type="button" class="btn btn-divulgacao mt-auto" data-bs-toggle="modal"
+                                            data-bs-target="#modalVerNoticia"
+                                            data-noticia-titulo="Seminário de Inovação"
+                                            data-noticia-conteudo="Este é o conteúdo completo sobre o Seminário de Inovação. Evento sobre as mais novas tecnologias através de palestras e presença. Detalhes adicionais, datas e links irão aqui.">
+                                            Ver mais
+                                        </button>
+                                    </div>
+                                </article>
+                            </div>
+                            <div class="col-md-4">
+                                <article class="divulgacao-card card h-100 shadow-sm">
+                                    <div class="card-body d-flex flex-column">
+                                        <h3 class="card-title">Pesquisa em IA</h3>
+                                        <p class="card-text">O projeto visa explorar soluções e estudá-las para
+                                            problemas.</p>
+
+                                        <button type="button" class="btn btn-divulgacao mt-auto" data-bs-toggle="modal"
+                                            data-bs-target="#modalVerNoticia" data-noticia-titulo="Pesquisa em IA"
+                                            data-noticia-conteudo="O projeto visa explorar soluções e estudá-las para problemas complexos utilizando Inteligência Artificial. Mais informações sobre os pesquisadores envolvidos e como participar.">
+                                            Ver mais
+                                        </button>
+                                    </div>
+                                </article>
+                            </div>
+                            <div class="col-md-4">
+                                <article class="divulgacao-card card h-100 shadow-sm">
+                                    <div class="card-body d-flex flex-column">
+                                        <h3 class="card-title">Olimpíada de Matemática</h3>
+                                        <p class="card-text">Pesquisas sobre os efeitos da inteligência artificial.</p>
+
+                                        <button type="button" class="btn btn-divulgacao mt-auto" data-bs-toggle="modal"
+                                            data-bs-target="#modalVerNoticia"
+                                            data-noticia-titulo="Olimpíada de Matemática"
+                                            data-noticia-conteudo="Detalhes sobre a Olimpíada de Matemática. Datas, locais de prova, e links para materiais de estudo. (O texto 'Pesquisas sobre os efeitos da inteligência artificial' parece ser um placeholder e deve ser trocado).">
+                                            Ver mais
+                                        </button>
+                                    </div>
+                                </article>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="post-news-section card shadow-sm mb-4 admin-only" aria-labelledby="post-news-title">
+                        <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3">
+                            <h2 id="post-news-title" class="post-news-title mb-0">Painel de Admin:</h2>
+
+                            <button class="btn btn-attach-primary" data-bs-toggle="modal"
+                                data-bs-target="#modalPostarNoticia">
+                                <i class="bi bi-pencil-square"></i> Escrever Notícia
+                            </button>
+                        </div>
+                    </section>
+
+                    <section aria-labelledby="latest-news-title">
+                        <h2 id="latest-news-title" class="visually-hidden">Últimas Notícias e Projetos</h2>
+                        <div id="latest-news-list" class="row g-3">
+                        </div>
+                    </section>
+
+
+                </div> <!-- fecha col-lg-8 -->
+
+
+                >
+                <aside class="col-lg-4">
+                    <div class="sticky-top" style="top: 20px;">
+
+                        <section class="sidebar-widget-green shadow-sm mb-4" aria-labelledby="upcoming-events-title">
+
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h2 id="upcoming-events-title" class="mb-0">Próximos Eventos</h2>
+                                <button class="btn btn-light btn-sm admin-only" data-bs-toggle="modal"
+                                    data-bs-target="#modalAdicionarEvento"
+                                    style="border-radius: 50%; width: 32px; height: 32px; padding: 0;">
+                                    <i class="bi bi-plus-lg"></i>
+                                </button>
+                            </div>
+
+                            <ul id="upcoming-events-list">
+                                <li>
+                                    <a href="#" aria-label="Detalhes da Semana de Tecnologia">Semana de Tecnologia</a>
+                                    <span>25/10</span>
+                                </li>
+                                <li>
+                                    <a href="#" aria-label="Detalhes da Feira de Ciências em 27 de Junho">Feira de
+                                        Ciências</a>
+                                    <span>27/11</span>
+                                </li>
+                            </ul>
+                        </section>
+
+                        <section class="sidebar-widget-green shadow-sm" aria-labelledby="calendar-title">
+                            <h2 id="calendar-title">Calendário de Eventos</h2>
+                            <div class="calendar-embed-container">
+                                <iframe
+                                    src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FSao_Paulo&bgcolor=%23386641&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&src=cHRicjM0OHM1ZzZnM2IzZnBnbnBqMHFvY2NAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&color=%23ffffff"
+                                    style="border:solid 1px #777" width="800" height="600" frameborder="0"
+                                    scrolling="no"></iframe>
+                            </div>
+                        </section>
+
+                    </div>
+                </aside>
+            </div>
+        </main>
+
+        <footer class="site-footer">
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-md-4 mb-4 mb-md-0">
+                        <a href="tela_inicial.html" class="footer-logo">
+                            <img src="LOGO.png" alt="Logo SIIF">
+                            <span>SIIF</span>
+                        </a>
+                        <p class="footer-copyright">
+                            © 2025 SIIF - Sistema de Interação do Instituto Federal.<br>
+                            Projeto acadêmico desenvolvido por alunos do IFRN.
+                        </p>
+                    </div>
+
+                    <div class="col-md-4 mb-4 mb-md-0">
+                        <h5>Navegação</h5>
+                        <ul class="list-unstyled footer-links">
+                            <li><a href="tela_inicial.html"><i class="bi bi-house-door-fill"></i> Página Inicial</a>
+                            </li>
+                            <li><a href="tela_foruns.html"><i class="bi bi-chat-left-dots-fill"></i> Fóruns</a></li>
+                            <li><a href="tela_divulgação.html"><i class="bi bi-megaphone-fill"></i> Divulgação</a></li>
+                            <li><a href="tela_materiais.html"><i class="bi bi-file-earmark-text-fill"></i> Materiais</a>
+                            </li>
+                            <li><a href="tela_mapa.html"><i class="bi bi-geo-alt-fill"></i> Mapa</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="col-md-4">
+                        <h5>Links Úteis</h5>
+                        <ul class="list-unstyled footer-links">
+                            <li><a href="https://www.gov.br/ifrn/pt-br" target="_blank">Site Oficial IFRN</a></li>
+                            <li><a href="https://suap.ifrn.edu.br/" target="_blank">Acessar SUAP</a></li>
+                            <li><a href="tela_suporte.html">Suporte & Denúncias</a></li>
+                            <li><a href="tela_perfil.html">Meu Perfil</a></li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </footer>
+    </div>
+    <div class="modal fade" id="modalPostarNoticia" tabindex="-1" aria-labelledby="modalPostarNoticiaLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg modal-custom-verde">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalPostarNoticiaLabel">Criar Nova Notícia</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formPostarNoticia">
+                        <div class="mb-3">
+                            <label for="noticiaTitulo" class="form-label fw-bold">Título:</label>
+                            <input type="text" class="form-control" id="noticiaTitulo"
+                                placeholder="Ex: Seminário de Inovação">
+                        </div>
+                        <div class="mb-3">
+                            <label for="noticiaConteudo" class="form-label fw-bold">Conteúdo:</label>
+                            <textarea class="form-control" id="noticiaConteudo" rows="6"
+                                placeholder="Escreva o corpo da notícia aqui..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="noticiaCampus" class="form-label fw-bold">Campus:</label>
+                            <select id="noticiaCampus" class="form-select">
+                                <option value="">Todos os Campus</option>
+                                <option value="mossoro">Mossoró</option>
+                                <option value="paudosferros">Pau dos Ferros</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="noticiaCategoria" class="form-label fw-bold">Categoria:</label>
+                            <select id="noticiaCategoria" class="form-select">
+                                <option value="">Todas as Categorias</option>
+                                <option value="eventos">Eventos</option>
+                                <option value="pesquisa">Pesquisa</option>
+                            </select>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="noticiaImagem" class="form-label"><i class="bi bi-image"></i> Anexar Imagem
+                                    (Capa)</label>
+                                <input class="form-control" type="file" id="noticiaImagem" accept="image/*">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="noticiaArquivo" class="form-label"><i class="bi bi-paperclip"></i> Anexar
+                                    Arquivo (PDF, etc)</label>
+                                <input class="form-control" type="file" id="noticiaArquivo">
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <label for="noticiaLink" class="form-label"><i class="bi bi-link-45deg"></i> Link Externo
+                                (Opcional)</label>
+                            <input type="url" class="form-control" id="noticiaLink" placeholder="https://exemplo.com">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary filter-btn">Publicar Notícia</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   <div class="modal fade" id="modalVerNoticia" tabindex="-1" aria-labelledby="modalVerNoticiaLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg modal-custom-verde">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalVerNoticiaLabel">Carregando...</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                                <div class="modal-body">
+                    <img src="" id="modalVerNoticiaImagem" class="img-fluid rounded mb-3" alt="Imagem da Notícia"
+                        style="display: none; width: 100%;">
+
+                    <p id="modalVerNoticiaConteudo">Carregando conteúdo da notícia...</p>
+                
+                    <hr>
+                    <a href="#" id="modalVerNoticiaLinkExterno" class="btn btn-primary filter-btn me-2" target="_blank"
+                        style="display: none;">
+                        <i class="bi bi-link-45deg"></i> Acessar Link Externo
+                    </a>
+                    <a href="#" id="modalVerNoticiaArquivo" class="btn btn-secondary" target="_blank"
+                        style="display: none;">
+                        <i class="bi bi-paperclip"></i> Baixar Anexo
+                    </a>
+                </div>
+                
+                                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>         </div>     </div>         <div class="modal fade" id="modalAdicionarEvento" tabindex="-1" aria-labelledby="modalAdicionarEventoLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-custom-verde">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalAdicionarEventoLabel">Adicionar Novo Evento</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formAdicionarEvento">
+                        <div class="mb-3">
+                            <label for="eventoTitulo" class="form-label fw-bold">Nome do Evento:</label>
+                            <input type="text" class="form-control" id="eventoTitulo"
+                                placeholder="Ex: Semana de Tecnologia">
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventoData" class="form-label fw-bold">Data do Evento:</label>
+                            <input type="text" class="form-control" id="eventoData" placeholder="Ex: 25/10">
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventoLink" class="form-label fw-bold">Link (Opcional):</label>
+                            <input type="url" class="form-control" id="eventoLink" placeholder="https://...">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer" style="background-color: #f8f9fa;">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary filter-btn">Adicionar Evento</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalAdicionarEvento" tabindex="-1" aria-labelledby="modalAdicionarEventoLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-custom-verde">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalAdicionarEventoLabel">Adicionar Novo Evento</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formAdicionarEvento">
+                        <div class="mb-3">
+                            <label for="eventoTitulo" class="form-label fw-bold">Nome do Evento:</label>
+                            <input type="text" class="form-control" id="eventoTitulo"
+                                placeholder="Ex: Semana de Tecnologia">
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventoData" class="form-label fw-bold">Data do Evento:</label>
+                            <input type="text" class="form-control" id="eventoData" placeholder="Ex: 25/10">
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventoLink" class="form-label fw-bold">Link (Opcional):</label>
+                            <input type="url" class="form-control" id="eventoLink" placeholder="https://...">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer" style="background-color: #f8f9fa;">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary filter-btn">Adicionar Evento</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="tela_suporte.html" class="help-btn help-btn-user"><i class="bi bi-headset"></i></a>
+    <a href="tela_denuncias.html" class="help-btn help-btn-admin"><i class="bi bi-shield-check"></i></a>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const modalVerNoticia = document.getElementById('modalVerNoticia');
+        if (modalVerNoticia) {
+            modalVerNoticia.addEventListener('show.bs.modal', event => {
+                const button = event.relatedTarget;
+
+                // 1. Pegar TODOS os dados do card
+                const titulo = button.getAttribute('data-noticia-titulo');
+                const conteudo = button.getAttribute('data-noticia-conteudo');
+                const imagemUrl = button.getAttribute('data-noticia-imagem-url');
+                const linkExterno = button.getAttribute('data-noticia-link-externo'); // <-- NOVO
+                const arquivoUrl = button.getAttribute('data-noticia-arquivo-url'); // <-- NOVO
+
+                // 2. Selecionar TODOS os elementos do Modal
+                const modalTitle = modalVerNoticia.querySelector('.modal-title');
+                const modalBody = modalVerNoticia.querySelector('#modalVerNoticiaConteudo');
+                const modalImage = modalVerNoticia.querySelector('#modalVerNoticiaImagem');
+                const modalLinkExterno = modalVerNoticia.querySelector('#modalVerNoticiaLinkExterno'); // <-- NOVO
+                const modalArquivo = modalVerNoticia.querySelector('#modalVerNoticiaArquivo'); // <-- NOVO
+
+                // 3. Atualizar Título e Conteúdo
+                modalTitle.textContent = titulo ? titulo : "Carregando...";
+                modalBody.textContent = conteudo ? conteudo : "Carregando conteúdo...";
+
+                // 4. Lógica da Imagem (como antes)
+                if (imagemUrl && modalImage) {
+                    modalImage.src = imagemUrl;
+                    modalImage.style.display = 'block';
+                } else if (modalImage) {
+                    modalImage.src = '';
+                    modalImage.style.display = 'none';
+                }
+
+                // 5. LÓGICA DOS LINKS (NOVA)
+
+                // Link Externo
+                if (linkExterno && modalLinkExterno) {
+                    modalLinkExterno.href = linkExterno;
+                    modalLinkExterno.style.display = 'inline-block'; // Mostra o botão
+                } else if (modalLinkExterno) {
+                    modalLinkExterno.href = '#';
+                    modalLinkExterno.style.display = 'none'; // Esconde o botão
+                }
+
+                // Arquivo Anexo
+                if (arquivoUrl && modalArquivo) {
+                    modalArquivo.href = arquivoUrl;
+                    modalArquivo.style.display = 'inline-block'; // Mostra o botão
+                } else if (modalArquivo) {
+                    modalArquivo.href = '#';
+                    modalArquivo.style.display = 'none'; // Esconde o botão
+                }
+            });
+        }
+    </script>
+    <script>
+
+        const selFiltroCampus = document.getElementById('filtrar-campus');
+        const selFiltroCategoria = document.getElementById('filtrar-categoria');
+
+        const selModalCampus = document.getElementById('noticiaCampus');
+        const selModalCategoria = document.getElementById('noticiaCategoria');
+
+        const modalPostar = document.getElementById('modalPostarNoticia');
+
+        modalPostar.addEventListener('show.bs.modal', () => {
+            selModalCampus.value = selFiltroCampus.value;
+            selModalCategoria.value = selFiltroCategoria.value;
+        });
+    </script>
+
+    <script>
+
+        const selCampus = document.getElementById('filtrar-campus');
+        const selCategoria = document.getElementById('filtrar-categoria');
+        const inputBusca = document.getElementById('pesquisar');
+
+
+        function aplicarFiltros() {
+            const campusFiltro = (selCampus.value || "").trim().toLowerCase();
+            const categoriaFiltro = (selCategoria.value || "").trim().toLowerCase();
+            const termoBusca = (inputBusca.value || "").trim().toLowerCase();
+
+
+            const cards = document.querySelectorAll('.latest-news-card');
+
+            cards.forEach(card => {
+
+                const campusCard = (card.getAttribute('data-campus') || "").trim().toLowerCase();
+                const categoriaCard = (card.getAttribute('data-categoria') || "").trim().toLowerCase();
+                const titulo = (card.querySelector('.card-title')?.textContent || "").trim().toLowerCase();
+
+                const conteudo = (card.getAttribute('data-noticia-conteudo') || "").trim().toLowerCase();
+
+
+                const okCampus = (!campusFiltro) || (campusCard === campusFiltro);
+                const okCategoria = (!categoriaFiltro) || (categoriaCard === categoriaFiltro);
+                const okBusca = (!termoBusca) || (titulo.includes(termoBusca) || conteudo.includes(termoBusca));
+
+
+                const elementoPai = card.parentElement;
+                if (elementoPai) {
+                    elementoPai.style.display = (okCampus && okCategoria && okBusca) ? "" : "none";
+                }
+            });
+        }
+
+
+        const formFiltros = document.querySelector('.divulgacao-filters');
+        if (formFiltros) {
+            formFiltros.addEventListener('submit', function (e) {
+                e.preventDefault();
+                aplicarFiltros();
+            });
+        }
+
+
+        selCampus.addEventListener('change', aplicarFiltros);
+        selCategoria.addEventListener('change', aplicarFiltros);
+
+
+        inputBusca.addEventListener('input', aplicarFiltros);
+        inputBusca.addEventListener('search', aplicarFiltros);
+
+
+        document.addEventListener('DOMContentLoaded', aplicarFiltros);
+    </script>
+    <script>
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const noticiasContainer = document.getElementById("latest-news-list");
+            const eventosContainer = document.getElementById("upcoming-events-list"); // Agora vai funcionar
+
+            // 1. Carregar Notícias
+            try {
+                const response = await fetch("/api/noticias"); // Rota corrigida
+                const noticias = await response.json();
+
+                noticiasContainer.innerHTML = "";
+                noticias.forEach(n => {
+                    const card = document.createElement("div");
+                    card.classList.add("col-md-6");
+
+                    // Este HTML está ótimo, pois inclui os data-attributes para o filtro
+                    // ...
+                    card.innerHTML = `
+                                <a href="#" class="latest-news-card card shadow-sm text-decoration-none h-100" 
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalVerNoticia"
+                                    data-noticia-titulo="${n.titulo}"
+                                    data-noticia-conteudo="${n.conteudo}"
+                                    data-noticia-imagem-url="${n.imagem_url || ''}"
+                                    data-noticia-link-externo="${n.link_externo || ''}"
+                                    data-noticia-arquivo-url="${n.arquivo_url || ''}"
+                                    data-campus="${n.campus || ''}" 
+                                    data-categoria="${n.categoria || ''}">
+
+                                <div class="card-body position-relative">
+                                    <button 
+                                        type="button" 
+                                        class="btn btn-sm btn-outline-danger admin-only position-absolute top-0 end-0 mt-2 me-2"
+                                        data-id="${n.id}"
+                                        onclick="event.preventDefault(); event.stopPropagation(); deletarNoticia(${n.id}, this);">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+
+                                    <h3 class="card-title pe-4">${n.titulo}</h3> <p class="card-text text-muted mb-0">
+                                        Campus: ${n.campus || "Não informado"}
+                                    </p>
+                                </div>
+                                </a>
+                                `;
+                    // ...
+                    noticiasContainer.appendChild(card);
+                });
+
+                // IMPORTANTE: Aplica os filtros DEPOIS que as notícias foram carregadas
+                if (typeof aplicarFiltros === 'function') {
+                    aplicarFiltros();
+                }
+
+            } catch (err) {
+                console.error('Erro ao carregar notícias:', err);
+                noticiasContainer.innerHTML = "<p>Erro ao carregar notícias.</p>";
+            }
+
+            // 2. Carregar Eventos
+            try {
+                const resp = await fetch('/api/eventos'); // Rota que criamos no Ponto 2.2
+                const eventos = await resp.json();
+
+                if (eventosContainer) { // Verifica se o container existe
+                    eventosContainer.innerHTML = ''; // Limpa os eventos estáticos
+                    if (eventos.length === 0) {
+                        eventosContainer.innerHTML = "<li>Nenhum evento futuro.</li>";
+                    }
+                    eventos.forEach(e => {
+                        // Formata a data
+                        const dataEvento = new Date(e.data_hora_inicio).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+                        // ...
+                        const li = `
+<li class="d-flex justify-content-between align-items-center mb-2">
+    <div>
+        <a href="#" aria-label="Detalhes de ${e.titulo}">${e.titulo}</a>
+        <span class="ms-2 text-muted">${dataEvento}</span>
+    </div>
+    <button 
+        type="button"
+        class="btn btn-sm btn-outline-danger admin-only" 
+        data-id="${e.id}"
+        onclick="deletarEvento(${e.id}, this)">
+        <i class="bi bi-trash"></i>
+    </button>
+</li>`;
+                        eventosContainer.insertAdjacentHTML('beforeend', li);
+                        // ...
+                    });
+                }
+            } catch (err) {
+                console.error('Erro ao carregar eventos:', err);
+                if (eventosContainer) eventosContainer.innerHTML = "<li>Erro ao carregar eventos.</li>";
+            }
+        });
+
+    </script>
+    <script>
+        // --- Lógica para ENVIAR NOVA NOTÍCIA ---
+        const formNoticia = document.getElementById('formPostarNoticia');
+        const btnNoticia = document.querySelector('#modalPostarNoticia .btn-primary.filter-btn');
+
+        if (formNoticia && btnNoticia) {
+            // Mapeia o clique do botão para "submeter" o formulário
+            btnNoticia.addEventListener('click', () => {
+                formNoticia.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+            });
+
+            formNoticia.addEventListener('submit', async (e) => {
+                e.preventDefault(); // Impede o envio tradicional
+                btnNoticia.disabled = true;
+                btnNoticia.textContent = "Publicando...";
+
+                const formData = new FormData();
+
+                // Mapeia os IDs do form para os nomes que a API espera
+                formData.append('titulo', document.getElementById('noticiaTitulo').value);
+                formData.append('conteudo', document.getElementById('noticiaConteudo').value);
+                formData.append('campus', document.getElementById('noticiaCampus').value);
+                formData.append('categoria', document.getElementById('noticiaCategoria').value);
+                formData.append('link_externo', document.getElementById('noticiaLink').value);
+                formData.append('imagem', document.getElementById('noticiaImagem').files[0]);
+                formData.append('arquivo', document.getElementById('noticiaArquivo').files[0]);
+
+                try {
+                    const response = await fetch('/api/noticias', { // Rota POST
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        alert('Notícia publicada com sucesso!');
+                        location.reload(); // Recarrega a página
+                    } else {
+                        alert('Erro ao publicar notícia.');
+                    }
+                } catch (err) {
+                    console.error('Erro no fetch:', err);
+                    alert('Erro de conexão.');
+                } finally {
+                    btnNoticia.disabled = false;
+                    btnNoticia.textContent = "Publicar Notícia";
+                }
+            });
+        }
+
+        // --- Lógica para ENVIAR NOVO EVENTO ---
+        const formEvento = document.getElementById('formAdicionarEvento');
+        const btnEvento = document.querySelector('#modalAdicionarEvento .btn-primary.filter-btn');
+
+        if (formEvento && btnEvento) {
+            // Mapeia o clique do botão
+            btnEvento.addEventListener('click', () => {
+                formEvento.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+            });
+
+            formEvento.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                btnEvento.disabled = true;
+                btnEvento.textContent = "Adicionando...";
+
+                const formData = new FormData();
+                formData.append('titulo', document.getElementById('eventoTitulo').value);
+                formData.append('data', document.getElementById('eventoData').value); // API espera 'data'
+                formData.append('link', document.getElementById('eventoLink').value); // API espera 'link'
+
+                try {
+                    const response = await fetch('/api/eventos', { // Rota POST que criamos
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        alert('Evento adicionado com sucesso!');
+                        location.reload();
+                    } else {
+                        alert('Erro ao adicionar evento.');
+                    }
+                } catch (err) {
+                    console.error('Erro no fetch:', err);
+                    alert('Erro de conexão.');
+                } finally {
+                    btnEvento.disabled = false;
+                    btnEvento.textContent = "Adicionar Evento";
+                }
+            });
+        }
+    </script>
+
+    <script>
+        async function deletarNoticia(id, buttonElement) {
+            if (!confirm('Tem certeza que deseja excluir esta notícia? Esta ação não pode ser desfeita.')) {
+                return;
+            }
+
+            buttonElement.disabled = true;
+            buttonElement.innerHTML = '<i class="bi bi-hourglass-split"></i>';
+
+            try {
+                const response = await fetch(`/api/noticias/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    // Encontra o 'col-md-6' mais próximo e remove
+                    buttonElement.closest('.col-md-6').remove();
+                } else {
+                    alert('Erro ao excluir a notícia.');
+                    buttonElement.disabled = false;
+                    buttonElement.innerHTML = '<i class="bi bi-trash"></i>';
+                }
+            } catch (err) {
+                console.error('Erro no fetch:', err);
+                alert('Erro de conexão ao tentar excluir.');
+                buttonElement.disabled = false;
+                buttonElement.innerHTML = '<i class="bi bi-trash"></i>';
+            }
+        }
+
+        async function deletarEvento(id, buttonElement) {
+            if (!confirm('Tem certeza que deseja excluir este evento?')) {
+                return;
+            }
+
+            buttonElement.disabled = true;
+            buttonElement.innerHTML = '<i class="bi bi-hourglass-split"></i>';
+
+            try {
+                const response = await fetch(`/api/eventos/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    // Encontra o 'li' mais próximo e remove
+                    buttonElement.closest('li').remove();
+                } else {
+                    alert('Erro ao excluir o evento.');
+                    buttonElement.disabled = false;
+                    buttonElement.innerHTML = '<i class="bi bi-trash"></i>';
+                }
+            } catch (err) {
+                console.error('Erro no fetch:', err);
+                alert('Erro de conexão ao tentar excluir.');
+                buttonElement.disabled = false;
+                buttonElement.innerHTML = '<i class="bi bi-trash"></i>';
+            }
+        }
+    </script>
+</body>
+
+</html>
