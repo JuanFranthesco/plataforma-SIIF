@@ -20,7 +20,16 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(128))
     is_admin = db.Column(db.Boolean, default=False)
     perfil = db.relationship('Perfil', backref='user', uselist=False, lazy=True)
+
+    def set_password(self, password):
+        """Cria um hash seguro da senha."""
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        """Verifica se a senha fornecida bate com o hash."""
+        return check_password_hash(self.password_hash, password)
     def __repr__(self): return f'<User {self.matricula}>'
+
 
 class Perfil(db.Model):
     __tablename__ = 'perfil'
