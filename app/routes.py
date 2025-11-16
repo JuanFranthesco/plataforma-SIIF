@@ -86,7 +86,7 @@ def tela_perfil():
         except Exception as e:
             db.session.rollback()
             flash(f'Erro ao atualizar o perfil: {e}', 'danger')
-        return redirect(url_for('main.tela_perfil'))'
+        return redirect(url_for('main.tela_perfil'))
     return render_template('tela_perfil.html', form=form)
 
 @main_bp.route('/denuncias')
