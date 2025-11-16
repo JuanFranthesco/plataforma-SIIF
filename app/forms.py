@@ -11,12 +11,9 @@ class LoginForm(FlaskForm):
 
 class RegisterForm(FlaskForm):
     matricula = StringField('Matrícula', validators=[DataRequired()])
-    
-    # O seu modelo User (models.py) exige um e-mail, então vamos adicioná-lo
+    name = StringField('Nome', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email(message="Email inválido.")])
-    
     password = PasswordField('Senha', validators=[DataRequired()])
-    
     password_confirm = PasswordField('Confirmar Senha', 
                                      validators=[DataRequired(), 
                                                  EqualTo('password', message='As senhas não conferem.')])
