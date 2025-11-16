@@ -140,7 +140,16 @@
   </div> 
   
   <a href="{{ url_for('main.suporte') }}" class="help-btn"><i class="bi bi-headset"></i></a>
-
+  <div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+      <div class="vw-plugin-top-wrapper"></div>
+    </div>
+  </div>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+  <script>
+    new window.VLibras.Widget('https://vlibras.gov.br/app');
+  </script>
   <script>
     (function(){
       const sample = [
