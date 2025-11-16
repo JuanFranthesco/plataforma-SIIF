@@ -69,8 +69,12 @@
         <label for="matricula">Matrícula</label><br>
         {{ form.matricula(class="campo-login") }}
         {% for error in form.matricula.errors %}<p class="erro-validacao">{{ error }}</p>{% endfor %}
-
+        <label for="name">Nome</label><br>
+        
+        {{ form.name(class="campo-login") }}
+        {% for error in form.name.errors %}<p class="erro-validacao">{{ error }}</p>{% endfor %}
         <label for="email">Email</label><br>
+        
         {{ form.email(class="campo-login") }}
         {% for error in form.email.errors %}<p class="erro-validacao">{{ error }}</p>{% endfor %}
 
