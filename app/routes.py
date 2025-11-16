@@ -1,12 +1,13 @@
 from flask import render_template, request, redirect, url_for, flash, current_app, send_from_directory, Blueprint
-from flask_login import login_required
+from flask_login import login_required, current_user
 from sqlalchemy import or_
 from werkzeug.utils import secure_filename
 import os
 import datetime
 from thefuzz import fuzz
-from app.models import Material, User, FAQ, Denuncia, Noticia, Evento
+from app.models import Material, User, FAQ, Denuncia, Noticia, Evento, Perfil
 from app.extensions import db
+from app.forms import ProfileForm
 
 main_bp = Blueprint('main', __name__)
 
@@ -69,9 +70,24 @@ def tela_divulgacao():
 def tela_mapa():
     return render_template('tela_mapa.html')
 
-@main_bp.route('/perfil')
+@main_bp.route('/perfil', methods=['GET', 'POST'])
+@login_required  # <-- Protege a página, exigindo login
 def tela_perfil():
-    return render_template('tela_perfil.html')
+    form = ProfileForm(obj=current_user.perfil)
+    if form.validate_on_submit():
+        perfil = current_user.perfil
+        if not perfil:
+            perfil = Perfil(user_id=current_user.id)
+            db.session.add(perfil)
+        form.populate_obj(perfil)
+        try:
+            db.session.commit()
+            flash('Perfil atualizado com sucesso!', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Erro ao atualizar o perfil: {e}', 'danger')
+        return redirect(url_for('main.tela_perfil'))'
+    return render_template('tela_perfil.html', form=form)
 
 @main_bp.route('/denuncias')
 def tela_denuncias():
