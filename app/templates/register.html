@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro</title>
+    <style>
+        /* (Seu CSS que você forneceu...) */
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+        form {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            min-width: 300px;
+        }
+        .campo-login {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0 15px 0;
+            border: 1px solid #aaa;
+            border-radius: 6px;
+            font-size: 15px;
+            box-sizing: border-box; /* Garante que o padding não quebre o layout */
+        }
+        input[type="submit"] {
+            width: 100%;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #1e7e34;
+        }
+        .erro-validacao {
+            color: red;
+            font-size: 0.9em;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Registrar-se</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        
+        <label for="matricula">Matrícula</label><br>
+        {{ form.matricula(class="campo-login") }}
+        {% for error in form.matricula.errors %}<p class="erro-validacao">{{ error }}</p>{% endfor %}
+
+        <label for="email">Email</label><br>
+        {{ form.email(class="campo-login") }}
+        {% for error in form.email.errors %}<p class="erro-validacao">{{ error }}</p>{% endfor %}
+
+        <label for="password">Senha</label><br>
+        {{ form.password(class="campo-login") }}
+        {% for error in form.password.errors %}<p class="erro-validacao">{{ error }}</p>{% endfor %}
+
+        <label for="password_confirm">Confirmar Senha</label><br>
+        {{ form.password_confirm(class="campo-login") }}
+        {% for error in form.password_confirm.errors %}<p class="erro-validacao">{{ error }}</p>{% endfor %}
+
+        {{ form.submit() }}
+    </form>
+</body>
+</html>
