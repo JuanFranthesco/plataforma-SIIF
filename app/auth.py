@@ -48,7 +48,8 @@ def register():
             # 1. Cria a nova instância do usuário
             new_user = User(
                 matricula=form.matricula.data,
-                email=form.email.data
+                email=form.email.data,
+                name=form.name.data,
             )
             
             # 2. Define o hash da senha
