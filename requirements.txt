@@ -18,4 +18,5 @@ Flask-Login
 thefuzz==0.22.1
 gunicorn
 flask_wtf
+email-validator
 
