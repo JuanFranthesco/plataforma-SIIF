@@ -22,6 +22,7 @@ def index():
 
 @main_bp.route('/home')
 @main_bp.route('/tela-inicial')
+@login_required
 def tela_inicial():
     """
     Tela inicial com dados reais do banco:
@@ -53,20 +54,23 @@ def tela_inicial():
         eventos=eventos
     )
 
-
 # ------------------------------------------------------------
 # PLACEHOLDERS (Evita erros de url_for até as telas existirem)
 # ------------------------------------------------------------
 
 @main_bp.route('/forum')
+@login_required
 def tela_foruns():
     return render_template('tela_foruns.html')
+    
 
 @main_bp.route('/divulgacao')
+@login_required
 def tela_divulgacao():
     return render_template('tela_divulgacao.html')
 
 @main_bp.route('/mapa')
+@login_required
 def tela_mapa():
     return render_template('tela_mapa.html')
 
@@ -102,14 +106,73 @@ def tela_perfil():
     )
 
 @main_bp.route('/denuncias')
+@login_required
 def tela_denuncias():
-    return render_template('tela_denuncias.html')
+    # 1. PROTEGER A ROTA: Apenas admins podem ver
+    if not current_user.is_admin:
+        flash('Você não tem permissão para acessar esta página.', 'danger')
+        return redirect(url_for('main.tela_inicial'))
+
+    # 2. BUSCAR DADOS DO BANCO
+    # Pega apenas as denúncias com status 'Recebida'
+    denuncias_abertas = Denuncia.query.filter_by(status='Recebida').order_by(Denuncia.data_envio.desc()).all()
+    
+    # 3. CALCULAR ESTATÍSTICAS
+    total_abertas = len(denuncias_abertas)
+    total_resolvidas = Denuncia.query.filter_by(status='Resolvida').count()
+    total_denuncias = total_abertas + total_resolvidas
+
+    return render_template(
+        'tela_denuncias.html', 
+        denuncias=denuncias_abertas,
+        total_abertas=total_abertas,
+        total_resolvidas=total_resolvidas,
+        total_denuncias=total_denuncias
+    )
+
+# --- ADICIONE ESTAS DUAS NOVAS ROTAS (PARA OS BOTÕES) ---
+
+@main_bp.route('/denuncia/resolver/<int:denuncia_id>', methods=['POST'])
+@login_required
+def resolver_denuncia(denuncia_id):
+    if not current_user.is_admin:
+        return redirect(url_for('main.tela_inicial'))
+    
+    denuncia = Denuncia.query.get_or_404(denuncia_id)
+    denuncia.status = 'Resolvida' # Atualiza o status
+    try:
+        db.session.commit()
+        flash('Denúncia marcada como resolvida.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Erro ao atualizar denúncia: {e}', 'danger')
+        
+    return redirect(url_for('main.tela_denuncias'))
+
+
+@main_bp.route('/denuncia/excluir/<int:denuncia_id>', methods=['POST'])
+@login_required
+def excluir_denuncia(denuncia_id):
+    if not current_user.is_admin:
+        return redirect(url_for('main.tela_inicial'))
+    
+    denuncia = Denuncia.query.get_or_404(denuncia_id)
+    try:
+        db.session.delete(denuncia) # Exclui do banco
+        db.session.commit()
+        flash('Denúncia excluída com sucesso.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Erro ao excluir denúncia: {e}', 'danger')
+
+    return redirect(url_for('main.tela_denuncias'))
 
 # ------------------------------------------------------------
 # TELA DE MATERIAIS
 # ------------------------------------------------------------
 
 @main_bp.route('/materiais')
+@login_required
 def tela_materiais():
     """Exibe os materiais e aplica filtros."""
 
@@ -165,6 +228,7 @@ def tela_materiais():
 # ------------------------------------------------------------
 
 @main_bp.route('/materiais/adicionar', methods=['POST'])
+@login_required
 def adicionar_material():
     """
     Rota que recebe os dados do modal "Adicionar Material".
@@ -239,6 +303,7 @@ def adicionar_material():
 # ------------------------------------------------------------
 
 @main_bp.route('/materiais/download/<int:material_id>')
+@login_required
 def download_material(material_id):
     """
     Rota para "Acessar" (fazer download ou exibir) um arquivo.
@@ -264,6 +329,7 @@ def download_material(material_id):
 # ------------------------------------------------------------
 
 @main_bp.route('/materiais/excluir/<int:material_id>', methods=['POST'])
+@login_required
 def excluir_material(material_id):
     """
     Rota para o botão de excluir (lixeira).
@@ -296,6 +362,7 @@ def excluir_material(material_id):
 # ------------------------------------------------------------
 
 @main_bp.route('/suporte', methods=['GET', 'POST'])
+@login_required
 def suporte():
     if request.method == 'POST':
         assunto = request.form.get('title')
