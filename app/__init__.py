@@ -57,7 +57,7 @@ def create_app():
     # Criar tabelas no DB
     # --------------------------
     with app.app_context():
-        from app import models
+        from app.models import User
         db.create_all()
         admin_exists = User.query.filter_by(matricula="1234").first()
         if not admin_exists:
