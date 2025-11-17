@@ -1,11 +1,11 @@
 from flask import render_template, request, redirect, url_for, flash, current_app, send_from_directory, Blueprint
 from flask_login import login_required, current_user
-from sqlalchemy import or_
+from sqlalchemy import or_, desc, func
 from werkzeug.utils import secure_filename
 import os
 import datetime
 from thefuzz import fuzz
-from app.models import Material, User, FAQ, Denuncia, Noticia, Evento, Perfil, Topico, PostSalvo, PostLike
+from app.models import Material, User, FAQ, Denuncia, Noticia, Evento, Perfil, Topico, Resposta, PostSalvo, PostLike, Notificacao
 from app.extensions import db
 from app.forms import ProfileForm
 
@@ -29,17 +29,8 @@ def tela_inicial():
     - Últimas notícias
     - Próximos eventos
     """
-
-    # -------------------------------
-    # Buscar notícias (últimas 4)
-    # -------------------------------
     noticias = Noticia.query.order_by(Noticia.data_postagem.desc()).limit(4).all()
-
-    # -------------------------------
-    # Buscar eventos futuros
-    # -------------------------------
     agora = datetime.datetime.now(datetime.timezone.utc)
-
     eventos = (
         Evento.query
         .filter(Evento.data_hora_inicio >= agora)
@@ -47,7 +38,6 @@ def tela_inicial():
         .limit(4)
         .all()
     )
-
     return render_template(
         'tela_inicial.html',
         noticias=noticias,
@@ -55,15 +45,230 @@ def tela_inicial():
     )
 
 # ------------------------------------------------------------
-# PLACEHOLDERS (Evita erros de url_for até as telas existirem)
+# FUNÇÕES DO FÓRUM (COMPLETAS)
 # ------------------------------------------------------------
 
 @main_bp.route('/forum')
 @login_required
 def tela_foruns():
-    return render_template('tela_foruns.html')
+    """
+    ATUALIZADO: Agora inclui lógica de PESQUISA, FILTRO e ORDENAÇÃO.
+    """
     
+    # 1. Obter os parâmetros da URL (ex: /forum?q=teste&ordenarPor=relevancia)
+    termo_pesquisa = request.args.get('q')
+    ordenar_por = request.args.get('ordenarPor')
+    filtro = request.args.get('filtro') # Para o filtro de "posts salvos"
 
+    # 2. Iniciar a consulta base de Tópicos
+    query = Topico.query
+
+    # 3. Aplicar Filtro de PESQUISA (se existir)
+    if termo_pesquisa:
+        query = query.filter(or_(
+            Topico.titulo.ilike(f'%{termo_pesquisa}%'),
+            Topico.conteudo.ilike(f'%{termo_pesquisa}%')
+        ))
+
+    # 4. Aplicar Filtro de "POSTS SALVOS" (se existir)
+    if filtro == 'salvos':
+        query = query.join(PostSalvo).filter(PostSalvo.user_id == current_user.id)
+
+    # 5. Aplicar ORDENAÇÃO
+    if ordenar_por == 'relevancia':
+        # Ordena pela contagem de 'likes' (PostLike)
+        query = query.outerjoin(PostLike).group_by(Topico.id).order_by(desc(func.count(PostLike.id)))
+    else:
+        # Padrão: ordena por 'mais recente'
+        query = query.order_by(desc(Topico.criado_em))
+
+    # 6. Executar a consulta
+    topicos = query.all()
+    
+    # --- (Lógica de likes/salvos do usuário - igual a antes) ---
+    likes_usuario = [like.topico_id for like in PostLike.query.filter_by(user_id=current_user.id).all()]
+    salvos_usuario = [salvo.topico_id for salvo in PostSalvo.query.filter_by(user_id=current_user.id).all()]
+
+    return render_template(
+        'tela_foruns.html', 
+        topicos=topicos,
+        likes_usuario=likes_usuario,
+        salvos_usuario=salvos_usuario,
+        # 7. Envia os filtros de volta para o HTML "lembrar" as seleções
+        termo_pesquisado=termo_pesquisa,
+        ordenacao_selecionada=ordenar_por,
+        filtro_selecionado=filtro
+    )
+
+
+@main_bp.route('/forum/postar', methods=['POST'])
+@login_required
+def criar_post():
+    """
+    Rota para o modal "Novo Post".
+    """
+    conteudo = request.form.get('conteudo_post')
+    if not conteudo:
+        flash('O post não pode ficar vazio.', 'warning')
+        return redirect(url_for('main.tela_foruns'))
+
+    linhas = conteudo.split('\n', 1)
+    titulo = linhas[0].strip()[:150]
+    if not titulo:
+        titulo = "Novo Post"
+
+    novo_topico = Topico(
+        titulo=titulo,
+        conteudo=conteudo,
+        autor_id=current_user.id
+    )
+    db.session.add(novo_topico)
+    db.session.commit()
+    
+    flash('Post criado com sucesso!', 'success')
+    return redirect(url_for('main.tela_foruns'))
+
+@main_bp.route('/forum/<int:topico_id>/comentar', methods=['POST'])
+@login_required
+def comentar_post(topico_id):
+    """
+    ATUALIZADO: Agora também cria uma notificação.
+    """
+    conteudo = request.form.get('conteudo_comentario')
+    topico = Topico.query.get_or_404(topico_id)
+
+    if not conteudo:
+        flash('O comentário não pode ficar vazio.', 'warning')
+        return redirect(url_for('main.tela_foruns'))
+
+    nova_resposta = Resposta(
+        conteudo=conteudo,
+        topico_id=topico.id,
+        autor_id=current_user.id
+    )
+    db.session.add(nova_resposta)
+    
+    # --- LÓGICA DE NOTIFICAÇÃO ADICIONADA ---
+    try:
+        # Só notifica se quem comentou NÃO for o dono do post
+        if topico.autor_id != current_user.id:
+            nova_notificacao = Notificacao(
+                mensagem=f"{current_user.name} comentou no seu post: \"{topico.titulo}\"",
+                link_url=url_for('main.tela_foruns'), # (Idealmente, um link para o post)
+                usuario_id=topico.autor_id # Envia a notificação para o autor do tópico
+            )
+            db.session.add(nova_notificacao)
+        
+        db.session.commit() # Salva o comentário e a notificação
+        flash('Comentário enviado!', 'success')
+        
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Erro ao salvar comentário ou notificação: {e}', 'danger')
+    
+    return redirect(url_for('main.tela_foruns'))
+
+@main_bp.route('/forum/<int:topico_id>/like', methods=['POST'])
+@login_required
+def like_post(topico_id):
+    """
+    Rota para o botão "Relevante".
+    """
+    topico = Topico.query.get_or_404(topico_id)
+    like_existente = PostLike.query.filter_by(
+        user_id=current_user.id,
+        topico_id=topico.id
+    ).first()
+
+    if like_existente:
+        db.session.delete(like_existente)
+        flash('Post desmarcado como relevante.', 'info')
+    else:
+        novo_like = PostLike(user_id=current_user.id, topico_id=topico.id)
+        db.session.add(novo_like)
+        flash('Post marcado como relevante!', 'success')
+    
+    db.session.commit()
+    return redirect(request.referrer or url_for('main.tela_foruns')) # Volta para a pág anterior
+
+@main_bp.route('/forum/<int:topico_id>/salvar', methods=['POST'])
+@login_required
+def salvar_post(topico_id):
+    """
+    Rota para o botão "Salvar Post".
+    """
+    topico = Topico.query.get_or_404(topico_id)
+    save_existente = PostSalvo.query.filter_by(
+        user_id=current_user.id,
+        topico_id=topico.id
+    ).first()
+
+    if save_existente:
+        db.session.delete(save_existente)
+        flash('Post removido dos salvos.', 'info')
+    else:
+        novo_salvo = PostSalvo(user_id=current_user.id, topico_id=topico.id)
+        db.session.add(novo_salvo)
+        flash('Post salvo com sucesso!', 'success')
+    
+    db.session.commit()
+    return redirect(request.referrer or url_for('main.tela_foruns')) # Volta para a pág anterior
+
+@main_bp.route('/forum/<int:topico_id>/excluir', methods=['POST'])
+@login_required
+def excluir_post(topico_id):
+    """
+    Rota para o Admin excluir posts.
+    """
+    topico = Topico.query.get_or_404(topico_id)
+    if not current_user.is_admin and topico.autor_id != current_user.id:
+        flash('Você não tem permissão para fazer isso.', 'danger')
+        return redirect(url_for('main.tela_foruns'))
+        
+    db.session.delete(topico)
+    db.session.commit()
+    
+    flash('Tópico excluído.', 'warning')
+    return redirect(url_for('main.tela_foruns'))
+
+@main_bp.route('/forum/<int:topico_id>/denunciar', methods=['POST'])
+@login_required
+def denunciar_post(topico_id):
+    """
+    NOVO: Rota para receber a denúncia de um post.
+    """
+    topico = Topico.query.get_or_404(topico_id)
+    descricao_denuncia = request.form.get('descricao')
+
+    if not descricao_denuncia:
+        flash('Você precisa fornecer um motivo para a denúncia.', 'danger')
+        return redirect(url_for('main.tela_foruns'))
+
+    # Cria uma descrição mais completa para o admin
+    descricao_completa = f"Denúncia contra o Tópico ID #{topico.id} (Título: {topico.titulo})\n"
+    descricao_completa += f"Autor do Tópico: {topico.autor.name}\n\n"
+    descricao_completa += f"Motivo: {descricao_denuncia}"
+
+    nova_denuncia = Denuncia(
+        tipo_denuncia="Denúncia de Post no Fórum",
+        descricao=descricao_completa,
+        denunciante_id=current_user.id # Registra quem denunciou
+    )
+
+    try:
+        db.session.add(nova_denuncia)
+        db.session.commit()
+        flash('Denúncia enviada com sucesso. A administração irá analisar.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Ocorreu um erro ao enviar sua denúncia: {e}', 'danger')
+
+    return redirect(url_for('main.tela_foruns'))
+
+# ------------------------------------------------------------
+# ROTAS RESTANTES (PLACEHOLDERS E OUTRAS)
+# ------------------------------------------------------------
+    
 @main_bp.route('/divulgacao')
 @login_required
 def tela_divulgacao():
@@ -91,37 +296,32 @@ def tela_perfil():
             db.session.rollback()
             flash(f'Erro ao atualizar o perfil: {e}', 'danger')
         return redirect(url_for('main.tela_perfil'))
-    # 1. Posts no Fórum (criados pelo usuário)
+
     meus_posts = Topico.query.filter_by(autor_id=current_user.id).order_by(Topico.criado_em.desc()).all()
-    # 2. Materiais Compartilhados (criados pelo usuário)
     meus_materiais = Material.query.filter_by(autor_id=current_user.id).order_by(Material.data_upload.desc()).all()
-    # 3. Itens Salvos (relação PostSalvo)
-    meus_salvos = PostSalvo.query.filter_by(user_id=current_user.id).all()
+    
+    # Atualizado: Busca os Tópicos salvos, não os objetos PostSalvo
+    meus_salvos_query = Topico.query.join(PostSalvo).filter(PostSalvo.user_id == current_user.id)
+    meus_salvos = meus_salvos_query.order_by(desc(PostSalvo.id)).all()
+
     return render_template(
         'tela_perfil.html', 
         form=form,
         posts=meus_posts,
         materiais=meus_materiais,
-        salvos=meus_salvos
+        salvos=meus_salvos # Envia a lista de Tópicos salvos
     )
 
 @main_bp.route('/denuncias')
 @login_required
 def tela_denuncias():
-    # 1. PROTEGER A ROTA: Apenas admins podem ver
     if not current_user.is_admin:
         flash('Você não tem permissão para acessar esta página.', 'danger')
         return redirect(url_for('main.tela_inicial'))
-
-    # 2. BUSCAR DADOS DO BANCO
-    # Pega apenas as denúncias com status 'Recebida'
     denuncias_abertas = Denuncia.query.filter_by(status='Recebida').order_by(Denuncia.data_envio.desc()).all()
-    
-    # 3. CALCULAR ESTATÍSTICAS
     total_abertas = len(denuncias_abertas)
     total_resolvidas = Denuncia.query.filter_by(status='Resolvida').count()
     total_denuncias = total_abertas + total_resolvidas
-
     return render_template(
         'tela_denuncias.html', 
         denuncias=denuncias_abertas,
@@ -130,41 +330,36 @@ def tela_denuncias():
         total_denuncias=total_denuncias
     )
 
-# --- ADICIONE ESTAS DUAS NOVAS ROTAS (PARA OS BOTÕES) ---
+# --- ROTAS DE AÇÃO PARA DENÚNCIAS ---
 
 @main_bp.route('/denuncia/resolver/<int:denuncia_id>', methods=['POST'])
 @login_required
 def resolver_denuncia(denuncia_id):
     if not current_user.is_admin:
         return redirect(url_for('main.tela_inicial'))
-    
     denuncia = Denuncia.query.get_or_404(denuncia_id)
-    denuncia.status = 'Resolvida' # Atualiza o status
+    denuncia.status = 'Resolvida'
     try:
         db.session.commit()
         flash('Denúncia marcada como resolvida.', 'success')
     except Exception as e:
         db.session.rollback()
         flash(f'Erro ao atualizar denúncia: {e}', 'danger')
-        
     return redirect(url_for('main.tela_denuncias'))
-
 
 @main_bp.route('/denuncia/excluir/<int:denuncia_id>', methods=['POST'])
 @login_required
 def excluir_denuncia(denuncia_id):
     if not current_user.is_admin:
         return redirect(url_for('main.tela_inicial'))
-    
     denuncia = Denuncia.query.get_or_404(denuncia_id)
     try:
-        db.session.delete(denuncia) # Exclui do banco
+        db.session.delete(denuncia)
         db.session.commit()
         flash('Denúncia excluída com sucesso.', 'success')
     except Exception as e:
         db.session.rollback()
         flash(f'Erro ao excluir denúncia: {e}', 'danger')
-
     return redirect(url_for('main.tela_denuncias'))
 
 # ------------------------------------------------------------
@@ -174,8 +369,6 @@ def excluir_denuncia(denuncia_id):
 @main_bp.route('/materiais')
 @login_required
 def tela_materiais():
-    """Exibe os materiais e aplica filtros."""
-
     categoria_filtro = request.args.get('categoria')
     termo_pesquisa = request.args.get('q')
     query_base = Material.query
@@ -183,27 +376,18 @@ def tela_materiais():
     if categoria_filtro:
         query_base = query_base.filter(Material.categoria == categoria_filtro)
     
-    # 1. Busca os materiais do DB (filtrados por categoria, se houver)
     materiais_query = query_base.order_by(Material.categoria, Material.titulo).all()
 
-    # 2. Se houver pesquisa, filtra a lista 'materiais_query' em Python
     if termo_pesquisa:
-        resultados_fuzzy = [] #o fuzzy é para n precisar ficar pesquisando o exato nome do arquivo. melhor para UX
-        
+        resultados_fuzzy = []
         for material in materiais_query:
             texto_completo = f"{material.titulo} {material.descricao or ''}"
             score = fuzz.partial_ratio(termo_pesquisa.lower(), texto_completo.lower()) 
             if score > 60:
                 resultados_fuzzy.append((material, score))
-
         resultados_fuzzy.sort(key=lambda x: x[1], reverse=True)
-        
-        # 3. Substitui a lista original pela lista filtrada e ordenada
         materiais_query = [material for material, score in resultados_fuzzy]
 
-    # A LINHA DUPLICADA QUE ESTAVA AQUI FOI REMOVIDA
-
-    # 4. Agrupa os resultados (sejam eles filtrados ou não)
     materiais_agrupados = {}
     for material in materiais_query:
         categoria = material.categoria if material.categoria else "Geral"
@@ -211,16 +395,15 @@ def tela_materiais():
             materiais_agrupados[categoria] = []
         materiais_agrupados[categoria].append(material)
     
-    #busca todas as categorias únicas que existem no banco
     categorias_query = db.session.query(Material.categoria).distinct().order_by(Material.categoria)
-    categorias = [c[0] for c in categorias_query if c[0]] # Lista limpa de nomes
+    categorias = [c[0] for c in categorias_query if c[0]]
 
     return render_template(
         'tela_materiais.html', 
         materiais_agrupados=materiais_agrupados,
         categorias=categorias,
-        categoria_selecionada=categoria_filtro, #para o filtro 'lembrar' a seleção
-        termo_pesquisado=termo_pesquisa #para a parte de pesquisa
+        categoria_selecionada=categoria_filtro,
+        termo_pesquisado=termo_pesquisa
     )
 
 # ------------------------------------------------------------
@@ -230,33 +413,25 @@ def tela_materiais():
 @main_bp.route('/materiais/adicionar', methods=['POST'])
 @login_required
 def adicionar_material():
-    """
-    Rota que recebe os dados do modal "Adicionar Material".
-    """
     if request.method == 'POST':
         try:
-            #pegar dados do formulário
             titulo = request.form.get('materialTitulo')
             descricao = request.form.get('materialDescricao')
             arquivo = request.files.get('materialArquivo')
             
-            #lógica de Categoria (prioriza a nova)
             categoria_nova = request.form.get('materialCategoriaNova')
             if categoria_nova:
                 categoria = categoria_nova.strip().capitalize()
             else:
                 categoria = request.form.get('materialCategoriaExistente')
             
-            #validação
             if not titulo or not arquivo or not arquivo.filename:
                 flash('Erro: Título e Arquivo são obrigatórios.', 'danger')
                 return redirect(url_for('main.tela_materiais'))
-
             if not categoria:
                 flash('Erro: Por favor, selecione ou crie uma categoria.', 'danger')
                 return redirect(url_for('main.tela_materiais'))
 
-            #salvar o arquivo físico
             filename = secure_filename(arquivo.filename)
             upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
             
@@ -266,34 +441,23 @@ def adicionar_material():
                 
             arquivo.save(upload_path)
             
-            #salvar no Banco de Dados
             db_path = os.path.join('static', 'uploads', filename).replace(os.path.sep, '/')
 
-            #AVISO: to usando 'autor_id=1' como placeholder.
-            #vc precisa trocar isso pelo ID do usuário logado (ex: current_user.id) 
-            #quando implementar a autenticação.
-            
-            #garante que o usuário autor (ID 1) exista para teste
-            autor = User.query.get(1)
-            if not autor:
-                autor = User(id=1, matricula="00000001", email="admin@siif.com", is_admin=True)
-                db.session.add(autor)
-
+            # CORRIGIDO: Usa o ID do usuário logado (current_user.id)
             novo_material = Material(
                 titulo=titulo,
                 descricao=descricao,
                 arquivo_path=db_path,
                 categoria=categoria,
-                autor_id=autor.id 
+                autor_id=current_user.id 
             )
             
             db.session.add(novo_material)
             db.session.commit()
-            
             flash('Material adicionado com sucesso!', 'success')
         
         except Exception as e:
-            db.session.rollback() #desfaz qualquer mudança no banco se der erro
+            db.session.rollback()
             flash(f'Erro interno ao salvar o material: {e}', 'danger')
 
     return redirect(url_for('main.tela_materiais'))
@@ -305,21 +469,11 @@ def adicionar_material():
 @main_bp.route('/materiais/download/<int:material_id>')
 @login_required
 def download_material(material_id):
-    """
-    Rota para "Acessar" (fazer download ou exibir) um arquivo.
-    """
     material = Material.query.get_or_404(material_id)
-    
     try:
-        #material.arquivo_path é 'static/uploads/meu_arquivo.pdf'
-        #precisamos do diretório (relativo à pasta 'app') e do nome do arquivo
         directory = os.path.join(current_app.root_path, 'static', 'uploads')
         filename = os.path.basename(material.arquivo_path)
-        
         return send_from_directory(directory, filename, as_attachment=False, conditional=True)
-        # send_from_directory é a forma segura de servir arquivos
-        # as_attachment=False tenta abrir o arquivo no navegador (ex: PDFs)
-        
     except FileNotFoundError:
         flash('Arquivo não encontrado no servidor. Pode ter sido removido.', 'danger')
         return redirect(url_for('main.tela_materiais'))
@@ -331,30 +485,23 @@ def download_material(material_id):
 @main_bp.route('/materiais/excluir/<int:material_id>', methods=['POST'])
 @login_required
 def excluir_material(material_id):
-    """
-    Rota para o botão de excluir (lixeira).
-    (Futuramente, adicionar verificação de admin)
-    """
-    # TODO: Adicionar verificação de admin (ex: if not current_user.is_admin: ...)
-    
     material = Material.query.get_or_404(material_id)
     
+    # CORRIGIDO: Só admin ou o dono podem excluir
+    if not current_user.is_admin and material.autor_id != current_user.id:
+        flash('Você não tem permissão para excluir este material.', 'danger')
+        return redirect(url_for('main.tela_materiais'))
+
     try:
-        #excluir o arquivo físico do disco
         arquivo_path_abs = os.path.join(current_app.root_path, material.arquivo_path)
         if os.path.exists(arquivo_path_abs):
             os.remove(arquivo_path_abs)
-            
-        #excluir a referência do banco de dados
         db.session.delete(material)
         db.session.commit()
-        
         flash('Material excluído com sucesso!', 'success')
-    
     except Exception as e:
         db.session.rollback()
         flash(f'Erro ao excluir material: {e}', 'danger')
-        
     return redirect(url_for('main.tela_materiais'))
 
 # ------------------------------------------------------------
@@ -377,13 +524,13 @@ def suporte():
         nova_denuncia = Denuncia(
             tipo_denuncia="Denúncia via Página de Suporte",
             descricao=descricao_completa,
-            denunciante_id=None
+            denunciante_id=current_user.id # CORRIGIDO: Registra quem denunciou
         )
 
         try:
             db.session.add(nova_denuncia)
             db.session.commit()
-            flash('Sua denúncia foi enviada anonimamente.', 'success')
+            flash('Sua denúncia foi enviada.', 'success')
         except Exception as e:
             db.session.rollback()
             flash(f'Ocorreu um erro ao enviar sua denúncia: {e}', 'danger')
