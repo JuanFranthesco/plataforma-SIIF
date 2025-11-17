@@ -288,6 +288,78 @@
       }
     });
   </script>
+  <script>
+  // --- Lógica de Acessibilidade ---
+
+  // 1. Abrir/Fechar Menu
+  function toggleAccessMenu() {
+    const menu = document.getElementById('access-menu');
+    menu.classList.toggle('show');
+  }
+
+  // 2. Alto Contraste
+  function toggleContrast() {
+    document.body.classList.toggle('high-contrast');
+    if (document.body.classList.contains('high-contrast')) {
+      localStorage.setItem('contrast', 'true');
+    } else {
+      localStorage.removeItem('contrast');
+    }
+  }
+
+  // Verifica preferência salva
+  if (localStorage.getItem('contrast') === 'true') {
+    document.body.classList.add('high-contrast');
+  }
+
+  // 3. Controle de Fonte
+  let currentFontSize = 100; 
+
+  function increaseFont() {
+    if (currentFontSize < 150) {
+      currentFontSize += 10;
+      document.body.style.fontSize = currentFontSize + '%';
+    }
+  }
+
+  function decreaseFont() {
+    if (currentFontSize > 80) {
+      currentFontSize -= 10;
+      document.body.style.fontSize = currentFontSize + '%';
+    }
+  }
+
+  function resetAccess() {
+    currentFontSize = 100;
+    document.body.style.fontSize = '100%';
+    document.body.classList.remove('high-contrast');
+    localStorage.removeItem('contrast');
+  }
+</script>
+  <div id="access-menu" class="access-menu-container">
+    <h6 class="mb-3 border-bottom pb-2">Acessibilidade</h6>
+    <div class="d-grid gap-2">
+      <button class="btn btn-sm btn-outline-dark d-flex justify-content-between align-items-center" onclick="toggleContrast()">
+        <span>Alto Contraste</span>
+        <i class="bi bi-circle-half"></i>
+      </button>
+      <div class="btn-group" role="group">
+        <button class="btn btn-sm btn-outline-dark" onclick="increaseFont()">
+          <i class="bi bi-zoom-in"></i> Aumentar
+        </button>
+        <button class="btn btn-sm btn-outline-dark" onclick="decreaseFont()">
+          <i class="bi bi-zoom-out"></i> Diminuir
+        </button>
+      </div>
+      <button class="btn btn-sm btn-outline-danger" onclick="resetAccess()">
+        <i class="bi bi-arrow-counterclockwise"></i> Resetar
+      </button>
+    </div>
+  </div>
+
+  <button class="btn-access-float" onclick="toggleAccessMenu()" title="Opções de Acessibilidade">
+    <i class="bi bi-universal-access"></i>
+  </button>
   
 </body>
 </html>
