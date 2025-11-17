@@ -57,10 +57,21 @@ def create_app():
     # Criar tabelas no DB
     # --------------------------
     with app.app_context():
-        try:
-            from app import models  # noqa: F401
-            db.create_all()
-        except Exception:
-            pass
+        from app import models
+        db.create_all()
+        admin_exists = User.query.filter_by(matricula="1234").first()
+        if not admin_exists:
+            print("Criando usuário administrador padrão...")
+            admin_user = User(
+                matricula="1234",
+                is_admin=True,
+                email="admin@siif.com", 
+                name="Administrador",
+                password_hash="admin"
+            )
+            admin_user.set_password("admin")
+            db.session.add(admin_user)
+            db.session.commit()
+            print("Usuário administrador '1234' criado com sucesso.")
 
     return app
