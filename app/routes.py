@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 import os
 import datetime
 from thefuzz import fuzz
-from app.models import Material, User, FAQ, Denuncia, Noticia, Evento, Perfil
+from app.models import Material, User, FAQ, Denuncia, Noticia, Evento, Perfil, Topico, PostSalvo, PostLike
 from app.extensions import db
 from app.forms import ProfileForm
 
@@ -71,7 +71,7 @@ def tela_mapa():
     return render_template('tela_mapa.html')
 
 @main_bp.route('/perfil', methods=['GET', 'POST'])
-@login_required  # <-- Protege a página, exigindo login
+@login_required 
 def tela_perfil():
     form = ProfileForm(obj=current_user.perfil)
     if form.validate_on_submit():
@@ -87,7 +87,19 @@ def tela_perfil():
             db.session.rollback()
             flash(f'Erro ao atualizar o perfil: {e}', 'danger')
         return redirect(url_for('main.tela_perfil'))
-    return render_template('tela_perfil.html', form=form)
+    # 1. Posts no Fórum (criados pelo usuário)
+    meus_posts = Topico.query.filter_by(autor_id=current_user.id).order_by(Topico.criado_em.desc()).all()
+    # 2. Materiais Compartilhados (criados pelo usuário)
+    meus_materiais = Material.query.filter_by(autor_id=current_user.id).order_by(Material.data_upload.desc()).all()
+    # 3. Itens Salvos (relação PostSalvo)
+    meus_salvos = PostSalvo.query.filter_by(user_id=current_user.id).all()
+    return render_template(
+        'tela_perfil.html', 
+        form=form,
+        posts=meus_posts,
+        materiais=meus_materiais,
+        salvos=meus_salvos
+    )
 
 @main_bp.route('/denuncias')
 def tela_denuncias():
