@@ -12,16 +12,11 @@ ARQUIVO CSS CENTRAL - style.css
 
 body {
   background-color: #d1d1d1; /* CINZA DE FUNDO */
-  padding: 20px;
 }
 
 .page-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  border-radius: 25px;
   overflow: hidden;
   background-color: #386641; /* VERDE PADRÃO */
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
 }
 
 main {
