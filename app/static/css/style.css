@@ -2081,3 +2081,114 @@ ESTILOS PARA BOTÃO "RELEVANTE" (CURTIR)
   transform: scale(0.95);
   transition: transform 0.1s ease;
 }
+
+/* ---
+============================================================
+ESTILOS DO WIDGET DE ACESSIBILIDADE (FLUTUANTE)
+============================================================
+--- */
+
+/* Botão Flutuante Azul/Ciano (Diferente do verde para destacar, ou use verde se preferir) */
+.btn-access-float {
+  position: fixed;
+  bottom: 100px; /* Fica acima do botão de suporte */
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #0d6efd; /* Azul Bootstrap ou use #386641 para verde */
+  color: white;
+  border: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1060; /* Acima de tudo */
+  transition: transform 0.2s;
+}
+
+.btn-access-float:hover {
+  transform: scale(1.1);
+  background-color: #0b5ed7;
+}
+
+/* O Menu (Card) */
+.access-menu-container {
+  display: none; /* Escondido por padrão */
+  position: fixed;
+  bottom: 160px; /* Acima do botão flutuante */
+  right: 30px;
+  width: 250px;
+  background-color: #ffffff;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+  z-index: 1060;
+  animation: fadeInUp 0.3s ease-in-out;
+}
+
+.access-menu-container.show {
+  display: block;
+}
+
+/* Animação de entrada */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- MODO ALTO CONTRASTE (Refinado) --- */
+body.high-contrast {
+  background-color: #000000 !important;
+  color: #ffff00 !important;
+}
+
+/* Ajustes gerais para elementos no modo contraste */
+body.high-contrast .page-container,
+body.high-contrast main,
+body.high-contrast .navbar-custom,
+body.high-contrast .site-footer,
+body.high-contrast .card,
+body.high-contrast .modal-content,
+body.high-contrast .list-group-item,
+body.high-contrast .access-menu-container {
+  background-color: #000000 !important;
+  color: #ffff00 !important;
+  border: 1px solid #ffff00 !important;
+}
+
+body.high-contrast a, 
+body.high-contrast h1, body.high-contrast h2, body.high-contrast h3, 
+body.high-contrast p, body.high-contrast span, body.high-contrast i,
+body.high-contrast button {
+  color: #ffff00 !important;
+}
+
+body.high-contrast .btn {
+  background-color: #000 !important;
+  border: 1px solid #ffff00 !important;
+  color: #ffff00 !important;
+}
+
+/* Remove imagens de fundo para leitura */
+body.high-contrast .profile-banner {
+  background-image: none !important;
+  background-color: #333 !important;
+}
+
+/* Ajuste para telas menores */
+@media (max-width: 768px) {
+  .btn-access-float {
+    bottom: 90px;
+    right: 20px;
+    width: 45px;
+    height: 45px;
+    font-size: 1.3rem;
+  }
+  .access-menu-container {
+    bottom: 145px;
+    right: 20px;
+  }
+}
