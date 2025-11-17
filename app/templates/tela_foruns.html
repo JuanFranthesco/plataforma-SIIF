@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
-<body class="role-user">
+<body class="{% if current_user.is_admin %}role-admin{% else %}role-user{% endif %}">
 
     <div class="page-container">
 
@@ -43,7 +43,7 @@
               </ul>
 
               <a href="{{ url_for('main.tela_perfil') }}" class="profile-link ms-lg-auto">
-                <span>Olá, Fulano de tal</span>
+                <span>Olá, {{ current_user.name }}</span>
                 <div class="profile-pic">
                   <img src="{{ url_for('static', filename='img/image.png') }}" alt="Perfil"> 
                 </div>
@@ -53,25 +53,38 @@
         </nav>
 
         <main>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
             <div class="row g-4">
                 <aside class="col-lg-3 d-none d-lg-block">
                     <div class="forum-left-sidebar">
-                        <a href="tela_perfil.html" class="sidebar-link"> <i class="bi bi-person-circle"></i>
+                        <a href="{{ url_for('main.tela_perfil') }}" class="sidebar-link"> <i class="bi bi-person-circle"></i>
                             <span>Perfil</span>
                         </a>
                         
-                        <a href="#" class="sidebar-link active d-flex justify-content-between align-items-center" data-bs-toggle="modal" data-bs-target="#modalNotificacoes">
+                        <a href="#" class="sidebar-link d-flex justify-content-between align-items-center" data-bs-toggle="modal" data-bs-target="#modalNotificacoes">
                             <div>
                                 <i class="bi bi-bell-fill"></i>
                                 <span class="truncate">Notificações</span>
                             </div>
-                            <span class="notification-badge">230</span>
+                            <span class="notification-badge">3</span> 
                         </a>
                         
-                        <a href="tela_perfil.html#salvos-tab" class="sidebar-link">
+                        <a href="{{ url_for('main.tela_foruns', filtro='salvos') }}" 
+                           class="sidebar-link {% if filtro_selecionado == 'salvos' %}active{% endif %}">
                             <i class="bi bi-bookmark-fill"></i>
                             <span>Posts salvos</span>
                         </a>
+
                         <div class="mt-4">
                             <button type="button" class="btn btn-light w-100 fw-bold new-post-btn" data-bs-toggle="modal" data-bs-target="#modalPostar">
                                 Novo Post
@@ -81,149 +94,152 @@
                 </aside>
 
                 <div class="col-lg-6 col-md-8">
-                    <div class="search-container mb-4">
-                        <input type="text" class="form-control forum-search" placeholder="Buscar no fórum...">
-                        <i class="bi bi-search search-icon-forum"></i>
-                    </div>
-
+                    
+                    <form class="search-container mb-4" method="GET" action="{{ url_for('main.tela_foruns') }}">
+                        <input type="text" class="form-control forum-search" placeholder="Buscar no fórum..." 
+                               name="q" value="{{ termo_pesquisado or '' }}">
+                        <button type="submit" class="search-icon-forum" style="border:none; background:none; z-index: 10; position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #386641; font-size: 1.2rem;">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+                
+                    {% for topico in topicos %}
                     <article class="forum-post-card">
                         <div class="post-header">
-                            <a href="#" class="d-flex align-items-center gap-2 text-decoration-none" data-bs-toggle="modal" data-bs-target="#modalVerPerfil">
-                                <img class="contact-avatar" src="https://placehold.co/40x40/ccc/fff?text=A1" alt="Avatar">
+                            <a href="#" class="d-flex align-items-center gap-2 text-decoration-none" 
+                               data-bs-toggle="modal" data-bs-target="#modalVerPerfil" 
+                               data-user-name="{{ topico.autor.name }}"
+                               data-user-bio="{{ topico.autor.perfil.bio if topico.autor.perfil else 'Estudante do IFRN' }}"
+                               data-user-curso="{{ topico.autor.perfil.curso if topico.autor.perfil else 'Informática' }}"
+                               data-user-campus="{{ topico.autor.perfil.campus if topico.autor.perfil else 'IFRN Apodi' }}">
+                                
+                                <img class="contact-avatar" src="https://placehold.co/40x40/ccc/fff?text={{ topico.autor.name[0] }}" alt="Avatar">
                                 <div>
-                                    <h3 class="post-author text-white">Aluno 1</h3>
+                                    <h3 class="post-author text-white">{{ topico.autor.name }}</h3>
                                 </div>
                             </a>
                             <div class="post-options-container">
-                                <input type="checkbox" id="post-options-1" class="comment-options-toggle">
-                                <label for="post-options-1" class="post-options-label-white">
+                                <input type="checkbox" id="post-options-{{ topico.id }}" class="comment-options-toggle">
+                                <label for="post-options-{{ topico.id }}" class="post-options-label-white">
                                     <i class="bi bi-three-dots-vertical fs-5"></i>
                                 </label>
                                 <div class="comment-options-menu">
-                                    <a href="#" class="comment-option-item"><i class="bi bi-bookmark-fill text-success"></i> <span>Salvar Post</span></a>
-                                    <a href="#" class="comment-option-item"><i class="bi bi-flag-fill text-danger"></i> <span class="text-danger">Denunciar</span></a>
+                                    <form action="{{ url_for('main.salvar_post', topico_id=topico.id) }}" method="POST" class="d-inline">
+                                        <button type="submit" class="comment-option-item" style="width: 100%; border: none; background: none; text-align: left;">
+                                            <i class="bi bi-bookmark-fill text-success"></i>
+                                            <span>{% if topico.id in salvos_usuario %}Remover dos Salvos{% else %}Salvar Post{% endif %}</span>
+                                        </button>
+                                    </form>
+                                    
+                                    <button type="button" class="comment-option-item" 
+                                            data-bs-toggle="modal" data-bs-target="#modalDenunciar" 
+                                            data-bs-topico-id="{{ topico.id }}" 
+                                            style="border:none; background:none; text-align: left; width: 100%;">
+                                        <i class="bi bi-flag-fill text-danger"></i> <span class="text-danger">Denunciar</span>
+                                    </button>
+                                    
+                                    {% if current_user.is_admin or topico.autor_id == current_user.id %}
                                     <div class="dropdown-divider admin-only"></div>
-                                    <a href="#" class="comment-option-item admin-only"><i class="bi bi-trash-fill text-danger"></i> <span class="text-danger">Excluir Post</span></a>
-                                    <a href="#" class="comment-option-item admin-only"><i class="bi bi-slash-circle-fill text-danger"></i> <span class="text-danger">Banir Usuário</span></a>
+                                    <form action="{{ url_for('main.excluir_post', topico_id=topico.id) }}" method="POST" class="d-inline admin-only">
+                                        <button type="submit" class="comment-option-item" style="width: 100%; border: none; background: none; text-align: left;" onclick="return confirm('Tem certeza que deseja excluir este post?');">
+                                            <i class="bi bi-trash-fill text-danger"></i> <span class="text-danger">Excluir Post</span>
+                                        </button>
+                                    </form>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
-
+                
                         <div class="post-body">
-                            <p>Alguém tem fotos do Lajedo? Estou precisando para meu TCC :/</p>
-                            <img class="img-fluid rounded" src="https://images.unsplash.com/photo-1593492283935-985856b3a38e?q=80&w=1932&auto-format&fit=crop" alt="Imagem Lajedo">
+                            <h4 class="fw-bold" style="font-size: 1.1rem;">{{ topico.titulo }}</h4>
+                            <p>{{ topico.conteudo | replace('\n', '<br>') | safe }}</p> 
                         </div>
-
+                
                         <div class="post-footer">
-                            <button class="post-action-btn js-like-btn"><span class="fw-bold">2</span> <span>Relevante</span></button>
-                            <button class="post-action-btn" type="button" data-bs-toggle="collapse" data-bs-target="#comments-post-1" aria-expanded="true" aria-controls="comments-post-1">
-                                <span class="fw-bold">2</span> <span>Comentários</span>
+                            <form action="{{ url_for('main.like_post', topico_id=topico.id) }}" method="POST" class="d-inline">
+                                <button class="post-action-btn js-like-btn {% if topico.id in likes_usuario %}active{% endif %}" type="submit">
+                                    <span class="fw-bold">{{ topico.likes|length }}</span> 
+                                    <span>Relevante</span>
+                                </button>
+                            </form>
+                            
+                            <button class="post-action-btn" type="button" data-bs-toggle="collapse" data-bs-target="#comments-post-{{ topico.id }}" aria-expanded="true">
+                                <span class="fw-bold">{{ topico.respostas|length }}</span> 
+                                <span>Comentários</span>
                             </button>
-                            <button class="post-action-btn"><i class="bi bi-share-fill"></i> <span>Compartilhar</span></button>
+                            
+                            <button class="post-action-btn" onclick="copiarLink(this, event)">
+                                <i class="bi bi-share-fill"></i> <span>Compartilhar</span>
+                            </button>
                         </div>
-
-                        <div class="collapse show comments-section" id="comments-post-1">
+                
+                        <div class="collapse show comments-section" id="comments-post-{{ topico.id }}">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="mb-0">Comentários</h5>
-                                <button type="button" class="btn btn-sm new-comment-btn" data-bs-toggle="modal" data-bs-target="#modalComentar">
+                                <button type="button" class="btn btn-sm new-comment-btn" 
+                                        data-bs-toggle="modal" data-bs-target="#modalComentar"
+                                        data-bs-topico-id="{{ topico.id }}">
                                   Comentar
                                 </button>
                             </div>
-
+                
                             <div class="vstack gap-3">
+                                {% for resposta in topico.respostas %}
                                 <div class="single-comment">
-                                    <a href="#" data-bs-toggle="modal" data-bs-target="#modalVerPerfil">
-                                      <img class="contact-avatar-sm" src="https://placehold.co/32x32/ddd/fff?text=A11" alt="Avatar">
+                                    <a href="#">
+                                      <img class="contact-avatar-sm" src="https://placehold.co/32x32/ddd/fff?text={{ resposta.autor.name[0] }}" alt="Avatar">
                                     </a>
                                     <div class="flex-grow-1">
-                                        <a href="#" class="fw-bold text-success mb-0 text-decoration-none" data-bs-toggle="modal" data-bs-target="#modalVerPerfil">Aluno 11</a>
-                                        <p class="mb-0">Procura no site oficial. Tem várias!</p>
-                                    </div>
-                                    <div class="post-options-container">
-                                        <input type="checkbox" id="comment-options-1" class="comment-options-toggle">
-                                        <label for="comment-options-1" class="post-options-label-gray"><i class="bi bi-three-dots-vertical"></i></label>
-                                        <div class="comment-options-menu">
-                                            <a href="#" class="comment-option-item"><i class="bi bi-bookmark-fill text-success"></i> <span>Salvar</span></a>
-                                            <a href="#" class="comment-option-item"><i class="bi bi-flag-fill text-danger"></i> <span class="text-danger">Denunciar</span></a>
-                                            <div class="dropdown-divider admin-only"></div>
-                                            <a href="#" class="comment-option-item admin-only"><i class="bi bi-trash-fill text-danger"></i> <span class="text-danger">Excluir Comentário</span></a>
-                                        </div>
+                                        <a href="#" class="fw-bold text-success mb-0 text-decoration-none">{{ resposta.autor.name }}</a>
+                                        <p class="mb-0">{{ resposta.conteudo }}</p>
                                     </div>
                                 </div>
-                                <div class="single-comment">
-                                    <a href="#" data-bs-toggle="modal" data-bs-target="#modalVerPerfil">
-                                      <img class="contact-avatar-sm" src="https://placehold.co/32x32/eee/fff?text=A404" alt="Avatar">
-                                    </a>
-                                    <div class="flex-grow-1">
-                                        <a href="#" class="fw-bold text-success mb-0 text-decoration-none" data-bs-toggle="modal" data-bs-target="#modalVerPerfil">Aluno 404</a>
-                                        <p class="mb-0">Não</p>
-                                    </div>
-                                    <div class="post-options-container">
-                                        <input type="checkbox" id="comment-options-2" class="comment-options-toggle">
-                                        <label for="comment-options-2" class="post-options-label-gray"><i class="bi bi-three-dots-vertical"></i></label>
-                                        <div class="comment-options-menu">
-                                            <a href="#" class="comment-option-item"><i class="bi bi-flag-fill text-danger"></i> <span class="text-danger">Denunciar</span></a>
-                                            <div class="dropdown-divider admin-only"></div>
-                                            <a href="#" class="comment-option-item admin-only"><i class="bi bi-trash-fill text-danger"></i> <span class="text-danger">Excluir Comentário</span></a>
-                                        </div>
-                                    </div>
-                                </div>
+                                {% endfor %}
+                
+                                {% if not topico.respostas %}
+                                <p class="text-center text-muted fst-italic">Seja o primeiro a comentar!</p>
+                                {% endif %}
                             </div>
                         </div>
                     </article>
-
-                    <article class="forum-post-card">
-                        <div class="post-header">
-                            <a href="#" class="d-flex align-items-center gap-2 text-decoration-none" data-bs-toggle="modal" data-bs-target="#modalVerPerfil">
-                                <img class="contact-avatar" src="https://placehold.co/40x40/aaa/fff?text=A12" alt="Avatar">
-                                <div>
-                                    <h3 class="post-author text-white">Pedro Augusto</h3>
-                                </div>
-                            </a>
-                            <div class="post-options-container">
-                                <input type="checkbox" id="post-options-2" class="comment-options-toggle">
-                                <label for="post-options-2" class="post-options-label-white"><i class="bi bi-three-dots-vertical fs-5"></i></label>
-                                 <div class="comment-options-menu">
-                                    <a href="#" class="comment-option-item"><i class="bi bi-bookmark-fill text-success"></i> <span>Salvar Post</span></a>
-                                    <a href="#" class="comment-option-item"><i class="bi bi-flag-fill text-danger"></i> <span class="text-danger">Denunciar</span></a>
-                                    <div class="dropdown-divider admin-only"></div>
-                                    <a href="#" class="comment-option-item admin-only"><i class="bi bi-trash-fill text-danger"></i> <span class="text-danger">Excluir Post</span></a>
-                                    <a href="#" class="comment-option-item admin-only"><i class="bi bi-slash-circle-fill text-danger"></i> <span class="text-danger">Banir Usuário</span></a>
-                                 </div>
-                            </div>
-                        </div>
-                        <div class="post-body">
-                            <p>Jackson vai mesmo deixar o campus????<br>Eu ainda nem superei Wigna!! :(</p>
-                        </div>
-                        <div class="post-footer">
-                             <button class="post-action-btn js-like-btn"><span class="fw-bold">1</span> <span>Relevante</span></button>
-                            <button class="post-action-btn" type="button" data-bs-toggle="collapse" data-bs-target="#comments-post-2" aria-expanded="false" aria-controls="comments-post-2">
-                                <span class="fw-bold">0</span> <span>Comentários</span>
-                            </button>
-                            <button class="post-action-btn"><i class="bi bi-share-fill"></i> <span>Compartilhar</span></button>
-                        </div>
-                         <div class="collapse comments-section" id="comments-post-2">
-                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="mb-0">Comentários</h5>
-                                <button type="button" class="btn btn-sm new-comment-btn" data-bs-toggle="modal" data-bs-target="#modalComentar">
-                                  Comentar
-                                </button>
-                            </div>
-                            <p class="text-center text-muted fst-italic">Seja o primeiro a comentar!</p>
-                         </div>
-                    </article>
+                    {% endfor %}
+                
+                    {% if not topicos %}
+                    <div class="text-center p-5">
+                        <h3 class="text-muted">Nenhum post encontrado.</h3>
+                        <p class="text-muted">
+                          {% if termo_pesquisado %}
+                            Nenhum post corresponde à sua busca por "{{ termo_pesquisado }}".
+                          {% elif filtro_selecionado == 'salvos' %}
+                            Você ainda não salvou nenhum post.
+                          {% else %}
+                            Que tal criar o primeiro?
+                          {% endif %}
+                        </p>
+                        <button type="button" class="btn btn-lg filter-btn" data-bs-toggle="modal" data-bs-target="#modalPostar">
+                            Novo Post
+                        </button>
+                    </div>
+                    {% endif %}
+                
                 </div>
 
                 <aside class="col-lg-3">
-                    <form class="forum-right-sidebar" method="GET" action="tela_foruns.html">
+                    <form class="forum-right-sidebar" method="GET" action="{{ url_for('main.tela_foruns') }}">
+                        {% if termo_pesquisado %}
+                        <input type="hidden" name="q" value="{{ termo_pesquisado }}">
+                        {% endif %}
+
                         <div class="mb-4">
                             <h5 class="sidebar-title">Ordenar por:</h5>
                             <div class="form-check">
-                                <input class="form-check-input custom-checkbox" type="radio" name="ordenarPor" value="relevancia" id="check-relevancia-desktop">
+                                <input class="form-check-input custom-checkbox" type="radio" name="ordenarPor" value="relevancia" id="check-relevancia-desktop"
+                                       {% if ordenacao_selecionada == 'relevancia' %}checked{% endif %}>
                                 <label class="form-check-label" for="check-relevancia-desktop">Relevância</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input custom-checkbox" type="radio" name="ordenarPor" value="recente" id="check-recente-desktop" checked>
+                                <input class="form-check-input custom-checkbox" type="radio" name="ordenarPor" value="recente" id="check-recente-desktop"
+                                       {% if not ordenacao_selecionada or ordenacao_selecionada == 'recente' %}checked{% endif %}>
                                 <label class="form-check-label" for="check-recente-desktop">Mais recente</label>
                             </div>
                         </div>
@@ -258,7 +274,6 @@
     <footer class="site-footer">
       <div class="container-fluid">
         <div class="row">
-          
           <div class="col-md-4 mb-4 mb-md-0">
             <a href="{{ url_for('main.tela_materiais') }}" class="footer-logo">
               <img src="{{ url_for('static', filename='img/LOGO.png') }}" alt="Logo SIIF">
@@ -269,7 +284,6 @@
               Projeto acadêmico desenvolvido por alunos do IFRN.
             </p>
           </div>
-    
           <div class="col-md-4 mb-4 mb-md-0">
             <h5>Navegação</h5>
             <ul class="list-unstyled footer-links">
@@ -280,7 +294,6 @@
               <li><a href="{{ url_for('main.tela_mapa') }}"><i class="bi bi-geo-alt-fill"></i> Mapa</a></li>
             </ul>
           </div>
-    
           <div class="col-md-4">
             <h5>Links Úteis</h5>
             <ul class="list-unstyled footer-links">
@@ -290,7 +303,6 @@
               <li><a href="{{ url_for('main.tela_perfil') }}">Meu Perfil</a></li>
             </ul>
           </div>
-    
         </div>
       </div>
     </footer>
@@ -302,15 +314,21 @@
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
       <div class="offcanvas-body d-flex flex-column">
-        <form class="flex-grow-1 d-flex flex-column" method="GET" action="tela_foruns.html">
+        <form class="flex-grow-1 d-flex flex-column" method="GET" action="{{ url_for('main.tela_foruns') }}">
+           {% if termo_pesquisado %}
+           <input type="hidden" name="q" value="{{ termo_pesquisado }}">
+           {% endif %}
+           
            <div class="mb-4">
               <h5 class="sidebar-title">Ordenar por:</h5>
               <div class="form-check">
-                  <input class="form-check-input custom-checkbox" type="radio" name="ordenarPorMobile" value="relevancia" id="check-relevancia-mobile">
+                  <input class="form-check-input custom-checkbox" type="radio" name="ordenarPor" value="relevancia" id="check-relevancia-mobile"
+                         {% if ordenacao_selecionada == 'relevancia' %}checked{% endif %}>
                   <label class="form-check-label" for="check-relevancia-mobile">Relevância</label>
               </div>
               <div class="form-check">
-                  <input class="form-check-input custom-checkbox" type="radio" name="ordenarPorMobile" value="recente" id="check-recente-mobile" checked>
+                  <input class="form-check-input custom-checkbox" type="radio" name="ordenarPor" value="recente" id="check-recente-mobile"
+                         {% if not ordenacao_selecionada or ordenacao_selecionada == 'recente' %}checked{% endif %}>
                   <label class="form-check-label" for="check-recente-mobile">Mais recente</label>
               </div>
           </div>
@@ -339,175 +357,85 @@
 
     <div class="modal fade" id="modalComentar" tabindex="-1" aria-labelledby="modalComentarLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-custom-verde">
-        <div class="modal-content">
+        <form class="modal-content" id="formComentario" action="" method="POST">
           <div class="modal-header">
             <h1 class="modal-title fs-5" id="modalComentarLabel">Escrever Comentário</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <textarea class="form-control" rows="5" placeholder="No que está pensando?" aria-label="Campo para escrever seu comentário"></textarea>
+            <textarea class="form-control" rows="5" placeholder="No que está pensando?" 
+                      aria-label="Campo para escrever seu comentário"
+                      name="conteudo_comentario" required></textarea>
           </div>
           <div class="modal-footer d-flex justify-content-between">
             <button type="button" class="btn btn-link" style="color: #386641; text-decoration: none;">
               <i class="bi bi-paperclip"></i> Anexar Mídia
             </button>
-            <button type="button" class="btn btn-primary filter-btn">Comentar</button>
+            <button type="submit" class="btn btn-primary filter-btn">Comentar</button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
 
     <div class="modal fade" id="modalPostar" tabindex="-1" aria-labelledby="modalPostarLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-custom-verde">
-        <div class="modal-content">
+        <form class="modal-content" action="{{ url_for('main.criar_post') }}" method="POST">
           <div class="modal-header">
             <h1 class="modal-title fs-5" id="modalPostarLabel">Criar Novo Post</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <textarea class="form-control" rows="5" placeholder="No que está pensando?" aria-label="Campo para escrever sua postagem"></textarea>
+            <textarea class="form-control" rows="5" placeholder="No que está pensando?" 
+                      aria-label="Campo para escrever sua postagem"
+                      name="conteudo_post" required></textarea>
           </div>
           <div class="modal-footer d-flex justify-content-between">
             <button type="button" class="btn btn-link" style="color: #386641; text-decoration: none;">
               <i class="bi bi-paperclip"></i> Anexar Mídia
             </button>
-            <button type="button" class="btn btn-primary filter-btn">Postar</button>
+            <button type="submit" class="btn btn-primary filter-btn">Postar</button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
 
-    <div class="modal fade" id="modalNotificacoes" tabindex="-1" aria-labelledby="modalNotificacoesLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-lg modal-custom-verde"> 
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="modalNotificacoesLabel">Suas Notificações</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body" style="padding: 0;">
-            <div class="list-group list-group-flush">
-              
-              <a href="#" class="list-group-item list-group-item-action py-3" style="background-color: #E7E7E4;"> 
-                <div class="d-flex w-100 justify-content-between">
-                  <h6 class="mb-1"><i class="bi bi-chat-fill text-success"></i> Novo Comentário</h6>
-                  <small class="text-muted">agora mesmo</small>
-                </div>
-                <p class="mb-0 small text-muted"><b>Aluno 11</b> comentou no seu post "Preciso de informações sobre os Tal".</p>
-              </a>
-
-              <a href="#" class="list-group-item list-group-item-action py-3" style="background-color: #E7E7E4;">
-                <div class="d-flex w-100 justify-content-between">
-                  <h6 class="mb-1"><i class="bi bi-arrow-up-circle-fill text-success"></i> Post Relevante</h6>
-                  <small class="text-muted">há 5 min</small>
-                </div>
-                <p class="mb-0 small text-muted">Seu post "Jackson vai mesmo deixar o campus????" recebeu um "Relevante".</p>
-              </a>
-
-              <a href="#" class="list-group-item list-group-item-action py-3">
-                <div class="d-flex w-100 justify-content-between">
-                  <h6 class="mb-1"><i class="bi bi-chat-fill text-secondary"></i> Novo Comentário</h6>
-                  <small class="text-muted">há 1 dia</small>
-                </div>
-                <p class="mb-0 small text-muted"><b>Aluno 404</b> comentou no seu post "Preciso de informações sobre os Tal".</p>
-              </a>
-              
-              <a href="#" class="list-group-item list-group-item-action py-3">
-                <div class="d-flex w-100 justify-content-between">
-                  <h6 class="mb-1"><i class="bi bi-megaphone-fill text-secondary"></i> Nova Divulgação</h6>
-                  <small class="text-muted">há 2 dias</small>
-                </div>
-                <p class="mb-0 small text-muted">Veja o novo "Seminário de Inovação" na página de Divulgação.</p>
-              </a>
-
-            </div>
-          </div>
-          <div class="modal-footer d-flex justify-content-center">
-            <button type="button" class_ ="btn btn-sm" style="color: #386641; text-decoration: none;">Marcar todas como lidas</button>
-          </div>
-        </div>
-      </div>
+    <div class="modal fade" id="modalNotificacoes" ...>
+      ...
     </div>
     
-    <div class="modal fade" id="modalVerPerfil" tabindex="-1" aria-labelledby="modalVerPerfilLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-centered modal-custom-verde"> 
-        <div class="modal-content">
+    <div class="modal fade" id="modalVerPerfil" ...>
+      ...
+    </div>
+
+    <div class="modal fade" id="modalDenunciar" tabindex="-1" aria-labelledby="modalDenunciarLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-custom-verde">
+        <form class="modal-content" id="formDenuncia" action="" method="POST">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="modalVerPerfilLabel">Perfil do Usuário</h1>
+            <h1 class="modal-title fs-5" id="modalDenunciarLabel">Denunciar Post</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          
-          <div class="modal-body" style="padding: 0; background-color: #E7E7E4;">
-            
-            <div class="profile-header-container" style="margin: 0; border-radius: 0;">
-              
-              <div class="profile-banner" style="background-image: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070&auto=format&fit=crop'); border-radius: 0;">
-              </div>
-
-              <div class="profile-info-bar">
-                
-                <img src="image.png" alt="Foto do Usuário" class="profile-avatar">
-
-                <div class="profile-actions">
-                  <div class="dropdown">
-                    <button class="btn btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      <i class="bi bi-three-dots"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                      <li><a class="dropdown-item" href="#"><i class="bi bi-share-fill me-2"></i> Compartilhar Perfil</a></li>
-                      <li class="admin-only"><a class="dropdown-item text-danger" href="#"><i class="bi bi-slash-circle-fill me-2"></i> Banir Usuário</a></li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div class="profile-user-details">
-                  <h2 class="profile-name">Aluno 1</h2>
-                  <p class="profile-bio">Estudante de Informática no IFRN-Apodi.</p>
-                  <p class="profile-course">
-                    <i class="bi bi-mortarboard-fill"></i> Informática – IFRN Apodi
-                  </p>
-                </div>
-
-              </div>
-            </div>
-
-            <div class="profile-content" style="border-radius: 0;">
-              
-              <ul class="nav profile-tabs" id="profileTabModal" role="tablist">
-                <li class="nav-item" role="presentation">
-                  <button class="nav-link active" id="posts-tab-modal" data-bs-toggle="tab" data-bs-target="#posts-tab-pane-modal" type="button" role="tab" aria-selected="true">
-                    Posts no Fórum
-                  </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                  <button class="nav-link" id="materiais-tab-modal" data-bs-toggle="tab" data-bs-target="#materiais-tab-pane-modal" type="button" role="tab" aria-selected="false">
-                    Materiais Compartilhados
-                  </button>
-                </li>
-              </ul>
-
-              <div class="tab-content" id="profileTabContentModal">
-                
-                <div class="tab-pane fade show active" id="posts-tab-pane-modal" role="tabpanel">
-                  <p class="text-center text-muted p-4 fst-italic">Carregando posts...</p>
-                  </div>
-
-                <div class="tab-pane fade" id="materiais-tab-pane-modal" role="tabpanel">
-                  <p class="text-center text-muted p-4 fst-italic">Carregando materiais...</p>
-                </div>
-              </div>
-
-            </div>
+          <div class="modal-body">
+            <p>Por favor, descreva o motivo da sua denúncia. Ela será enviada para a administração.</p>
+            <textarea class="form-control" rows="4" 
+                      placeholder="Motivo da denúncia..." 
+                      name="descricao" required></textarea>
           </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-danger"><i class="bi bi-flag-fill"></i> Enviar Denúncia</button>
           </div>
+        </form>
       </div>
     </div>
+
+
     <a href="{{ url_for('main.suporte') }}" class="help-btn help-btn-user">
       <i class="bi bi-headset"></i>
     </a>
-    
     <a href="{{ url_for('main.tela_denuncias') }}" class="help-btn help-btn-admin">
       <i class="bi bi-shield-check"></i>
     </a>
+    
     <div vw class="enabled">
     <div vw-access-button class="active"></div>
         <div vw-plugin-wrapper>
@@ -518,99 +446,128 @@
     <script>
         new window.VLibras.Widget('https://vlibras.gov.br/app');
     </script>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        const likeButtons = document.querySelectorAll('.js-like-btn');
-        likeButtons.forEach(button => {
-          button.addEventListener('click', function(event) {
-            event.preventDefault(); 
-            this.classList.toggle('active');
-            const countSpan = this.querySelector('span:first-child');
-            if (countSpan) {
-              let currentCount = parseInt(countSpan.textContent, 10);
-              if (this.classList.contains('active')) {
-                countSpan.textContent = currentCount + 1;
-              } else {
-                countSpan.textContent = currentCount - 1;
-              }
-            }
+        
+        // --- Lógica para o Modal de Comentário ---
+        const modalComentar = document.getElementById('modalComentar');
+        if (modalComentar) {
+          const formComentario = document.getElementById('formComentario');
+          
+          modalComentar.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const topicoId = button.getAttribute('data-bs-topico-id');
+            const formAction = `/forum/${topicoId}/comentar`;
+            formComentario.setAttribute('action', formAction);
           });
-        });
+        }
+
+        // --- NOVA LÓGICA: Modal de Denúncia ---
+        const modalDenunciar = document.getElementById('modalDenunciar');
+        if (modalDenunciar) {
+          const formDenuncia = document.getElementById('formDenuncia');
+          
+          modalDenunciar.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget; // Botão "Denunciar" que foi clicado
+            const topicoId = button.getAttribute('data-bs-topico-id'); // Pega o ID
+            
+            // Constrói a URL da nova rota
+            const formAction = `/forum/${topicoId}/denunciar`;
+            
+            // Atualiza a 'action' do formulário do modal
+            formDenuncia.setAttribute('action', formAction);
+          });
+        }
       });
+
+      // --- Lógica para o botão COPIAR LINK (Compartilhar) ---
+      function copiarLink(botao, event) {
+          event.preventDefault(); // Impede qualquer ação padrão do botão
+          const url = window.location.href; // Pega a URL atual
+          
+          navigator.clipboard.writeText(url).then(() => {
+              // Feedback visual de sucesso
+              const span = botao.querySelector('span');
+              if (span) {
+                  const originalText = span.textContent;
+                  span.textContent = 'Link Copiado!';
+                  botao.disabled = true;
+                  
+                  // Volta ao normal depois de 2 segundos
+                  setTimeout(() => {
+                      span.textContent = 'Compartilhar';
+                      botao.disabled = false;
+                  }, 2000);
+              }
+          }).catch(err => {
+              // Feedback de erro
+              console.error('Erro ao copiar link: ', err);
+              alert('Erro ao copiar link.');
+          });
+      }
     </script>
+
     <script>
-  // --- Lógica de Acessibilidade ---
-
-  // 1. Abrir/Fechar Menu
-  function toggleAccessMenu() {
-    const menu = document.getElementById('access-menu');
-    menu.classList.toggle('show');
-  }
-
-  // 2. Alto Contraste
-  function toggleContrast() {
-    document.body.classList.toggle('high-contrast');
-    if (document.body.classList.contains('high-contrast')) {
-      localStorage.setItem('contrast', 'true');
-    } else {
-      localStorage.removeItem('contrast');
-    }
-  }
-
-  // Verifica preferência salva
-  if (localStorage.getItem('contrast') === 'true') {
-    document.body.classList.add('high-contrast');
-  }
-
-  // 3. Controle de Fonte
-  let currentFontSize = 100; 
-
-  function increaseFont() {
-    if (currentFontSize < 150) {
-      currentFontSize += 10;
-      document.body.style.fontSize = currentFontSize + '%';
-    }
-  }
-
-  function decreaseFont() {
-    if (currentFontSize > 80) {
-      currentFontSize -= 10;
-      document.body.style.fontSize = currentFontSize + '%';
-    }
-  }
-
-  function resetAccess() {
-    currentFontSize = 100;
-    document.body.style.fontSize = '100%';
-    document.body.classList.remove('high-contrast');
-    localStorage.removeItem('contrast');
-  }
-</script>
-  <div id="access-menu" class="access-menu-container">
-    <h6 class="mb-3 border-bottom pb-2">Acessibilidade</h6>
-    <div class="d-grid gap-2">
-      <button class="btn btn-sm btn-outline-dark d-flex justify-content-between align-items-center" onclick="toggleContrast()">
-        <span>Alto Contraste</span>
-        <i class="bi bi-circle-half"></i>
-      </button>
-      <div class="btn-group" role="group">
-        <button class="btn btn-sm btn-outline-dark" onclick="increaseFont()">
-          <i class="bi bi-zoom-in"></i> Aumentar
+      function toggleAccessMenu() {
+        const menu = document.getElementById('access-menu');
+        menu.classList.toggle('show');
+      }
+      function toggleContrast() {
+        document.body.classList.toggle('high-contrast');
+        if (document.body.classList.contains('high-contrast')) {
+          localStorage.setItem('contrast', 'true');
+        } else {
+          localStorage.removeItem('contrast');
+        }
+      }
+      if (localStorage.getItem('contrast') === 'true') {
+        document.body.classList.add('high-contrast');
+      }
+      let currentFontSize = 100; 
+      function increaseFont() {
+        if (currentFontSize < 150) {
+          currentFontSize += 10;
+          document.body.style.fontSize = currentFontSize + '%';
+        }
+      }
+      function decreaseFont() {
+        if (currentFontSize > 80) {
+          currentFontSize -= 10;
+          document.body.style.fontSize = currentFontSize + '%';
+        }
+      }
+      function resetAccess() {
+        currentFontSize = 100;
+        document.body.style.fontSize = '100%';
+        document.body.classList.remove('high-contrast');
+        localStorage.removeItem('contrast');
+      }
+    </script>
+    <div id="access-menu" class="access-menu-container">
+      <h6 class="mb-3 border-bottom pb-2">Acessibilidade</h6>
+      <div class="d-grid gap-2">
+        <button class="btn btn-sm btn-outline-dark d-flex justify-content-between align-items-center" onclick="toggleContrast()">
+          <span>Alto Contraste</span>
+          <i class="bi bi-circle-half"></i>
         </button>
-        <button class="btn btn-sm btn-outline-dark" onclick="decreaseFont()">
-          <i class="bi bi-zoom-out"></i> Diminuir
+        <div class="btn-group" role="group">
+          <button class="btn btn-sm btn-outline-dark" onclick="increaseFont()">
+            <i class="bi bi-zoom-in"></i> Aumentar
+          </button>
+          <button class="btn btn-sm btn-outline-dark" onclick="decreaseFont()">
+            <i class="bi bi-zoom-out"></i> Diminuir
+          </button>
+        </div>
+        <button class="btn btn-sm btn-outline-danger" onclick="resetAccess()">
+          <i class="bi bi-arrow-counterclockwise"></i> Resetar
         </button>
       </div>
-      <button class="btn btn-sm btn-outline-danger" onclick="resetAccess()">
-        <i class="bi bi-arrow-counterclockwise"></i> Resetar
-      </button>
     </div>
-  </div>
-
-  <button class="btn-access-float" onclick="toggleAccessMenu()" title="Opções de Acessibilidade">
-    <i class="bi bi-universal-access"></i>
-  </button>
+    <button class="btn-access-float" onclick="toggleAccessMenu()" title="Opções de Acessibilidade">
+      <i class="bi bi-universal-access"></i>
+    </button>
 </body>
 </html>
