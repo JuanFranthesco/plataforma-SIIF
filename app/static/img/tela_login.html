@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SIIF</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="login-page">
+    
+    <main class="login-container">
+        <section class="info-panel">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='img/siif-logo.png') }}" alt="Logo do SIIF" class="logo-image">
+                <h1>INSTITUTO FEDERAL</h1>
+                <p>Rio Grande do Norte - Campus Apodi</p>
+            </div>
+            </section>
+
+        <section class="login-panel">
+            <h2>Login</h2>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="">
+                
+                {{ form.hidden_tag() }}
+
+                <div class="input-group">
+                    {{ form.matricula.label(for="matricula") }}
+                    
+                    {{ form.matricula(id="matricula", value="2022984901", required=True) }}
+                </div>
+                
+                <div class="input-group">
+                    {{ form.password.label(for="password") }}
+                    
+                    <div class="password-wrapper">
+                        {{ form.password(id="password", value="1234", required=True) }}
+                        
+                        <svg class="password-icon-svg" ...>
+                        </svg>
+                    </div>
+                </div>
+                
+                {{ form.submit(class="login-button") }}
+            </form>
+            
+            <div class="developer-credit">
+                </div>
+        </section>
+    </main>
+    <script>
+  // --- Lógica de Acessibilidade ---
+
+  // 1. Abrir/Fechar Menu
+  function toggleAccessMenu() {
+    const menu = document.getElementById('access-menu');
+    menu.classList.toggle('show');
+  }
+
+  // 2. Alto Contraste
+  function toggleContrast() {
+    document.body.classList.toggle('high-contrast');
+    if (document.body.classList.contains('high-contrast')) {
+      localStorage.setItem('contrast', 'true');
+    } else {
+      localStorage.removeItem('contrast');
+    }
+  }
+
+  // Verifica preferência salva
+  if (localStorage.getItem('contrast') === 'true') {
+    document.body.classList.add('high-contrast');
+  }
+
+  // 3. Controle de Fonte
+  let currentFontSize = 100; 
+
+  function increaseFont() {
+    if (currentFontSize < 150) {
+      currentFontSize += 10;
+      document.body.style.fontSize = currentFontSize + '%';
+    }
+  }
+
+  function decreaseFont() {
+    if (currentFontSize > 80) {
+      currentFontSize -= 10;
+      document.body.style.fontSize = currentFontSize + '%';
+    }
+  }
+
+  function resetAccess() {
+    currentFontSize = 100;
+    document.body.style.fontSize = '100%';
+    document.body.classList.remove('high-contrast');
+    localStorage.removeItem('contrast');
+  }
+</script>
+  <div id="access-menu" class="access-menu-container">
+    <h6 class="mb-3 border-bottom pb-2">Acessibilidade</h6>
+    <div class="d-grid gap-2">
+      <button class="btn btn-sm btn-outline-dark d-flex justify-content-between align-items-center" onclick="toggleContrast()">
+        <span>Alto Contraste</span>
+        <i class="bi bi-circle-half"></i>
+      </button>
+      <div class="btn-group" role="group">
+        <button class="btn btn-sm btn-outline-dark" onclick="increaseFont()">
+          <i class="bi bi-zoom-in"></i> Aumentar
+        </button>
+        <button class="btn btn-sm btn-outline-dark" onclick="decreaseFont()">
+          <i class="bi bi-zoom-out"></i> Diminuir
+        </button>
+      </div>
+      <button class="btn btn-sm btn-outline-danger" onclick="resetAccess()">
+        <i class="bi bi-arrow-counterclockwise"></i> Resetar
+      </button>
+    </div>
+  </div>
+
+  <button class="btn-access-float" onclick="toggleAccessMenu()" title="Opções de Acessibilidade">
+    <i class="bi bi-universal-access"></i>
+  </button>
+</body>
+</html>
