@@ -16,7 +16,7 @@
     <main class="login-container">
         <section class="info-panel">
             <div class="logo">
-                <img src="img/siif-logo.png" alt="Logo do SIIF" class="logo-image">
+                <img src="{{ url_for('static', filename='img/siif-logo.png') }}" alt="Logo do SIIF" class="logo-image">
                 <h1>INSTITUTO FEDERAL</h1>
                 <p>Rio Grande do Norte - Campus Apodi</p>
             </div>
@@ -65,8 +65,8 @@
             </form>
             
             <div class="developer-credit">
-                <img src="img/credito-texto.png" alt="Desenvolvido por" class="credit-text-image">
-                <img src="img/credito-logo-in4.png" alt="Logo IN4" class="credit-logo-image">
+                <img src="{{ url_for('static', filename='img/credito-texto.png') }}" alt="Desenvolvido por" class="credit-text-image">
+                <img src="{{ url_for('static', filename='img/credito-logo-in4.png') }}" alt="Logo IN4" class="credit-logo-image">
             </div>
         </section>
     </main>
