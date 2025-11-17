@@ -25,25 +25,10 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.tela_inicial') }}"><i class="bi bi-house-door-fill"></i> Página Inicial</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.tela_foruns') }}"><i class="bi bi-chat-left-dots-fill"></i> Fóruns</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.tela_divulgacao') }}"><i class="bi bi-megaphone-fill"></i> Divulgação</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.tela_materiais') }}"><i class="bi bi-file-earmark-text-fill"></i> Materiais</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.tela_mapa') }}"><i class="bi bi-geo-alt-fill"></i> Mapa</a>
-            </li>
-          </ul>
+            </ul>
 
           <a href="{{ url_for('main.tela_perfil') }}" class="profile-link ms-lg-auto">
-            <span>Olá, Fulano de tal</span>
+            <span>Olá, {{ current_user.name }}</span>
             <div class="profile-pic">
               <img src="{{ url_for('static', filename='img/image.png') }}" alt="Perfil"> 
             </div>
@@ -56,39 +41,76 @@
       
       <div class="header-row">
         <h1 class="title">Painel de Denúncias</h1>
-        </div>
+      </div>
+      
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" style="margin: 0 20px 20px 20px;">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+        {% endif %}
+      {% endwith %}
 
       <div class="grid" id="main-content">
         
         <div>
           <h2 class="section-title mb-3">Resumo</h2>
           <div class="stats-container">
+            
             <div class="stat-card">
-              <div class="stat-number" id="openCount">8</div>
+              <div class="stat-number" id="openCount">{{ total_abertas }}</div>
               <div class="stat-sub">denúncias em aberto</div>
             </div>
 
             <div class="stat-card">
-              <div class="stat-number" id="resolvedCount">2/10</div>
+              <div class="stat-number" id="resolvedCount">{{ total_resolvidas }}/{{ total_denuncias }}</div>
               <div class="stat-sub">das denúncias resolvidas</div>
             </div>
           </div>
           
-          </div>
+        </div>
 
         <div class="right-col">
           <div class="d-flex align-items-center justify-content-between mb-3">
-            <h2 class="section-title">Denúncias Recebidas</h2>
-            <button class="download" title="Baixar denúncias (simulação)">
-              <i class="bi bi-download"></i>
-            </button>
-          </div>
-
-          <div class="list" id="reportList" role="list" aria-label="Denúncias em aberto">
+            <h2 class="section-title">Denúncias Recebidas (Em Aberto)</h2>
             </div>
 
+          <div class="list" id="reportList" role="list" aria-label="Denúncias em aberto">
+            
+            {% for denuncia in denuncias %}
+              <div class="item" role="listitem">
+                <div class="label">
+                  <strong>{% if denuncia.denunciante %}{{ denuncia.denunciante.name }}{% else %}Anônimo{% endif %}</strong> 
+                  ({{ denuncia.tipo_denuncia }})
+                  <span class="text-muted">• {{ denuncia.data_envio.strftime('%d/%m/%Y') }}</span>
+                  <p class="mb-0">{{ denuncia.descricao | truncate(200) }}</p>
+                </div>
+
+                <div class="controls">
+                  
+                  <form action="{{ url_for('main.resolver_denuncia', denuncia_id=denuncia.id) }}" method="POST" class="d-inline">
+                    <button class="icon" title="Marcar como resolvida">✓</button>
+                  </form>
+                  
+                  <form action="{{ url_for('main.excluir_denuncia', denuncia_id=denuncia.id) }}" method="POST" class="d-inline">
+                    <button class="icon" title="Remover">✕</button>
+                  </form>
+
+                </div>
+              </div>
+            {% else %}
+              <div class="item">
+                <div class="label">Nenhuma denúncia em aberto no momento.</div>
+              </div>
+            {% endfor %}
+
+          </div>
+          
           <div class="d-flex justify-content-center">
-            <a class="view-all" href="#">Ver Todas</a>
+            <a class="view-all" href="#">Ver Todas (incluindo resolvidas)</a>
           </div>
 
         </div>
@@ -97,49 +119,11 @@
       <footer class="denuncia-footer">© 2025 SIIF — Projeto acadêmico</footer>
 
     </main>
-    <footer class="site-footer">
-      <div class="container-fluid">
-        <div class="row">
-          
-          <div class="col-md-4 mb-4 mb-md-0">
-            <a href="{{ url_for('main.tela_materiais') }}" class="footer-logo">
-              <img src="{{ url_for('static', filename='img/LOGO.png') }}" alt="Logo SIIF">
-              <span>SIIF</span>
-            </a>
-            <p class="footer-copyright">
-              © 2025 SIIF - Sistema de Interação do Instituto Federal.<br>
-              Projeto acadêmico desenvolvido por alunos do IFRN.
-            </p>
-          </div>
-    
-          <div class="col-md-4 mb-4 mb-md-0">
-            <h5>Navegação</h5>
-            <ul class="list-unstyled footer-links">
-              <li><a href="{{ url_for('main.tela_inicial') }}"><i class="bi bi-house-door-fill"></i> Página Inicial</a></li>
-              <li><a href="{{ url_for('main.tela_foruns') }}"><i class="bi bi-chat-left-dots-fill"></i> Fóruns</a></li>
-              <li><a href="{{ url_for('main.tela_divulgacao') }}"><i class="bi bi-megaphone-fill"></i> Divulgação</a></li>
-              <li><a href="{{ url_for('main.tela_materiais') }}"><i class="bi bi-file-earmark-text-fill"></i> Materiais</a></li>
-              <li><a href="{{ url_for('main.tela_mapa') }}"><i class="bi bi-geo-alt-fill"></i> Mapa</a></li>
-            </ul>
-          </div>
-    
-          <div class="col-md-4">
-            <h5>Links Úteis</h5>
-            <ul class="list-unstyled footer-links">
-              <li><a href="https://portal.ifrn.edu.br" target="_blank">Site Oficial IFRN</a></li>
-              <li><a href="https://suap.ifrn.edu.br/" target="_blank">Acessar SUAP</a></li>
-              <li><a href="{{ url_for('main.suporte') }}">Suporte & Denúncias</a></li>
-              <li><a href="{{ url_for('main.tela_perfil') }}">Meu Perfil</a></li>
-            </ul>
-          </div>
-    
-        </div>
-      </div>
-    </footer>
 
-  </div> 
+    </div> 
   
   <a href="{{ url_for('main.suporte') }}" class="help-btn"><i class="bi bi-headset"></i></a>
+  
   <div vw class="enabled">
     <div vw-access-button class="active"></div>
     <div vw-plugin-wrapper>
@@ -149,103 +133,6 @@
   <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
   <script>
     new window.VLibras.Widget('https://vlibras.gov.br/app');
-  </script>
-  <script>
-    (function(){
-      const sample = [
-        'Perderam um celular no ônibus',
-        'Assédio sexual',
-        'Racismo',
-        'Mussum Ipsum, cacilds vidis litro abertis',
-        'XXX',
-        'XXX',
-        'XXX'
-      ];
-
-      const list = document.getElementById('reportList');
-
-      // live region for screen readers (ainda é útil para acessibilidade)
-      const live = document.createElement('div');
-      live.setAttribute('aria-live','polite');
-      live.setAttribute('role','status');
-      live.className = 'sr-only';
-      document.body.appendChild(live);
-
-      function createItem(text, idx){
-        const el = document.createElement('div');
-        el.className = 'item';
-        el.setAttribute('role','listitem');
-        el.tabIndex = -1;
-
-        const left = document.createElement('div');
-        left.className = 'label';
-        left.textContent = 'Denúncia anônima • ' + text;
-
-        const controls = document.createElement('div');
-        controls.className = 'controls';
-
-        const ok = document.createElement('button');
-        ok.className = 'icon'; ok.innerHTML='✓';
-        ok.title='Marcar como resolvida';
-        ok.setAttribute('aria-pressed','false');
-        ok.addEventListener('click', ()=>{
-          const pressed = ok.getAttribute('aria-pressed') === 'true';
-          ok.setAttribute('aria-pressed', String(!pressed));
-          if(!pressed){
-            left.style.textDecoration='line-through'; left.style.opacity='0.6';
-            ok.disabled = true;
-            // A linha 'live.textContent' foi REMOVIDA
-          }
-        });
-
-        const del = document.createElement('button');
-        del.className = 'icon'; del.innerHTML='✕';
-        del.title='Remover';
-        del.addEventListener('click', ()=>{
-          el.style.transform='translateX(20px)'; el.style.opacity='0';
-          // A linha 'live.textContent' foi REMOVIDA
-          setTimeout(()=>{ el.remove(); },260);
-        });
-
-        controls.appendChild(ok); controls.appendChild(del);
-        el.appendChild(left); el.appendChild(controls);
-        return el;
-      }
-
-      // populate
-      sample.forEach((s,i)=>{ list.appendChild(createItem(s,i)); });
-
-      // make keyboard accessible: allow Enter on items to focus first control
-      list.addEventListener('keydown', function(e){
-        if(e.key === 'Enter' && document.activeElement && document.activeElement.classList.contains('item')){
-          const btn = document.activeElement.querySelector('.controls .icon');
-          if(btn) btn.focus();
-        }
-      });
-
-      // expose function to add a new item (for future form)
-      window.addReport = function(text){
-        const it = createItem(text);
-        list.insertBefore(it, list.firstChild);
-        it.scrollIntoView({behavior:'smooth',block:'center'});
-        it.focus();
-        // A linha 'live.textContent' foi REMOVIDA
-      }
-
-    })();
-  </script>
-
-  <script>
-    (function(){
-      const openCountEl = document.getElementById('openCount');
-
-      function updateCounts(){
-        const totalOpen = document.querySelectorAll('.list .item').length;
-        if(openCountEl) openCountEl.textContent = String(totalOpen);
-      }
-      
-      updateCounts();
-    })();
   </script>
   <script>
   // --- Lógica de Acessibilidade ---
@@ -320,5 +207,5 @@
     <i class="bi bi-universal-access"></i>
   </button>
   
-</body>
+  </body>
 </html>
