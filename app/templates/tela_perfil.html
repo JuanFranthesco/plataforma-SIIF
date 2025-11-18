@@ -16,41 +16,7 @@
 <body class="role-user"> 
   <div class="page-container">
 
-    <nav class="navbar navbar-expand-lg navbar-custom">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="{{ url_for('main.tela_inicial') }}">
-          <img src="{{ url_for('static', filename='img/LOGO.png') }}" alt="Logo SIIF" style="filter: brightness(0) invert(1);">
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <i class="bi bi-list text-white fs-1"></i> 
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.tela_inicial') }}"><i class="bi bi-house-door-fill"></i> Página Inicial</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.tela_foruns') }}"><i class="bi bi-chat-left-dots-fill"></i> Fóruns</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.tela_divulgacao') }}"><i class="bi bi-megaphone-fill"></i> Divulgação</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.tela_materiais') }}"><i class="bi bi-file-earmark-text-fill"></i> Materiais</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.tela_mapa') }}"><i class="bi bi-geo-alt-fill"></i> Mapa</a>
-            </li>
-          </ul>
-          <a href="{{ url_for('main.tela_perfil') }}" class="profile-link ms-lg-auto">
-            <span>Olá, {{ current_user.name }}</span>
-            <div class="profile-pic">
-              <img src="{{ url_for('static', filename='image.png') }}" alt="Perfil"> 
-            </div>
-          </a>
-        </div>
-      </div>
-    </nav>
+    {% include 'header.html' %}
 
     <main>
       
@@ -206,8 +172,7 @@
       
     </main>
     
-    <footer class="site-footer">
-        </footer>
+    {% include 'footer.html' %}
 
   </div> 
   

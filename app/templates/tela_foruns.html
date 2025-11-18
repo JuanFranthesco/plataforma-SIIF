@@ -15,42 +15,7 @@
 
     <div class="page-container">
 
-        <nav class="navbar navbar-expand-lg navbar-custom">
-          <div class="container-fluid">
-            <a class="navbar-brand" href="{{ url_for('main.tela_materiais') }}">
-              <img src="{{ url_for('static', filename='img/LOGO.png') }}" alt="Logo"> 
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-              <i class="bi bi-list text-white fs-1"></i> 
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                  <a class="nav-link" href="{{ url_for('main.tela_inicial') }}"><i class="bi bi-house-door-fill"></i> Página Inicial</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link active" href="{{ url_for('main.tela_foruns') }}"><i class="bi bi-chat-left-dots-fill"></i> Fóruns</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{{ url_for('main.tela_divulgacao') }}"><i class="bi bi-megaphone-fill"></i> Divulgação</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{{ url_for('main.tela_materiais') }}"><i class="bi bi-file-earmark-text-fill"></i> Materiais</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{{ url_for('main.tela_mapa') }}"><i class="bi bi-geo-alt-fill"></i> Mapa</a>
-                </li>
-              </ul>
-
-              <a href="{{ url_for('main.tela_perfil') }}" class="profile-link ms-lg-auto">
-                <span>Olá, {{ current_user.name }}</span>
-                <div class="profile-pic">
-                  <img src="{{ url_for('static', filename='img/image.png') }}" alt="Perfil"> 
-                </div>
-              </a>
-            </div>
-          </div>
-        </nav>
+      {% include 'header.html' %}
 
         <main>
             {% with messages = get_flashed_messages(with_categories=true) %}
@@ -271,41 +236,8 @@
             </div>
         </main>
 
-    <footer class="site-footer">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-md-4 mb-4 mb-md-0">
-            <a href="{{ url_for('main.tela_materiais') }}" class="footer-logo">
-              <img src="{{ url_for('static', filename='img/LOGO.png') }}" alt="Logo SIIF">
-              <span>SIIF</span>
-            </a>
-            <p class="footer-copyright">
-              © 2025 SIIF - Sistema de Interação do Instituto Federal.<br>
-              Projeto acadêmico desenvolvido por alunos do IFRN.
-            </p>
-          </div>
-          <div class="col-md-4 mb-4 mb-md-0">
-            <h5>Navegação</h5>
-            <ul class="list-unstyled footer-links">
-              <li><a href="{{ url_for('main.tela_inicial') }}"><i class="bi bi-house-door-fill"></i> Página Inicial</a></li>
-              <li><a href="{{ url_for('main.tela_foruns') }}"><i class="bi bi-chat-left-dots-fill"></i> Fóruns</a></li>
-              <li><a href="{{ url_for('main.tela_divulgacao') }}"><i class="bi bi-megaphone-fill"></i> Divulgação</a></li>
-              <li><a href="{{ url_for('main.tela_materiais') }}"><i class="bi bi-file-earmark-text-fill"></i> Materiais</a></li>
-              <li><a href="{{ url_for('main.tela_mapa') }}"><i class="bi bi-geo-alt-fill"></i> Mapa</a></li>
-            </ul>
-          </div>
-          <div class="col-md-4">
-            <h5>Links Úteis</h5>
-            <ul class="list-unstyled footer-links">
-              <li><a href="https://portal.ifrn.edu.br" target="_blank">Site Oficial IFRN</a></li>
-              <li><a href="https://suap.ifrn.edu.br/" target="_blank">Acessar SUAP</a></li>
-              <li><a href="{{ url_for('main.suporte') }}">Suporte & Denúncias</a></li>
-              <li><a href="{{ url_for('main.tela_perfil') }}">Meu Perfil</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </footer>
+    {% include 'footer.html' %}
+
   </div> 
     
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasFiltros" aria-labelledby="offcanvasFiltrosLabel">

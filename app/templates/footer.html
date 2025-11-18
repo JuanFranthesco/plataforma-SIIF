@@ -1,0 +1,35 @@
+<footer class="site-footer">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4 mb-4 mb-md-0">
+                <a href="{{ url_for('main.tela_materiais') }}" class="footer-logo">
+                    <img src="{{ url_for('static', filename='img/LOGO.png') }}" alt="Logo SIIF">
+                    <span>SIIF</span>
+                </a>
+                <p class="footer-copyright">
+                    © 2025 SIIF - Sistema de Interação do Instituto Federal.<br>
+                    Projeto acadêmico desenvolvido por alunos do IFRN.
+                </p>
+            </div>
+            <div class="col-md-4 mb-4 mb-md-0">
+                <h5>Navegação</h5>
+                <ul class="list-unstyled footer-links">
+                    <li><a href="{{ url_for('main.tela_inicial') }}"><i class="bi bi-house-door-fill"></i> Página Inicial</a></li>
+                    <li><a href="{{ url_for('main.tela_foruns') }}"><i class="bi bi-chat-left-dots-fill"></i> Fóruns</a></li>
+                    <li><a href="{{ url_for('main.tela_divulgacao') }}"><i class="bi bi-megaphone-fill"></i> Divulgação</a></li>
+                    <li><a href="{{ url_for('main.tela_materiais') }}"><i class="bi bi-file-earmark-text-fill"></i> Materiais</a></li>
+                    <li><a href="{{ url_for('main.tela_mapa') }}"><i class="bi bi-geo-alt-fill"></i> Mapa</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h5>Links Úteis</h5>
+                <ul class="list-unstyled footer-links">
+                    <li><a href="https://portal.ifrn.edu.br" target="_blank">Site Oficial IFRN</a></li>
+                    <li><a href="https://suap.ifrn.edu.br/" target="_blank">Acessar SUAP</a></li>
+                    <li><a href="{{ url_for('main.suporte') }}">Suporte & Denúncias</a></li>
+                    <li><a href="{{ url_for('main.tela_perfil') }}">Meu Perfil</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    </footer>
