@@ -24,61 +24,60 @@
       <div class="container px-3">
 
                 <div class="row g-4 mb-4">
-          <div class="col-12 col-lg-8">
-                        <a href="{{ url_for('main.tela_divulgacao') }}" class="app-card-link-wrapper h-100" aria-label="Ir para divulgação">
-              <article class="app-card news-block h-100 d-flex flex-column" role="region" aria-labelledby="news-title">
-                <header class="card-header">
+          
+                    <div class="col-12 col-lg-8">
+            <a href="{{ url_for('main.tela_divulgacao') }}" class="card-link-wrapper h-100" aria-label="Ir para divulgação de notícias">
+                            <article class="noticias app-card h-100 d-flex flex-column" role="region" aria-labelledby="news-title">
+                <header class="card-header border-0 bg-transparent p-0">
                   <h3 id="news-title" class="card-title-icon mb-2">
                     <i class="bi bi-megaphone-fill me-2" aria-hidden="true"></i>
                     Notícias recentes
                   </h3>
                 </header>
 
-                <div class="news-list flex-grow-1" aria-live="polite">
+                                <div class="news-list flex-grow-1" aria-live="polite">
                   {% if noticias and noticias|length > 0 %}
                     <ul class="list-unstyled mb-0">
                       {% for n in noticias %}
-                        <li class="news-item py-2 border-bottom">
-                          <strong class="news-title d-block text-truncate">{{ n.titulo }}</strong>
+                        <li class="news-item py-2 border-bottom border-light">
+                          <strong class="news-title d-block text-truncate text-white">{{ n.titulo }}</strong>
                           {% if n.subtitulo %}
-                            <small class="d-block text-muted small">{{ n.subtitulo }}</small>
+                            <small class="d-block text-white-50 small">{{ n.subtitulo }}</small>
                           {% endif %}
                         </li>
                       {% endfor %}
                     </ul>
                   {% else %}
-                    <div class="news-item text-muted p-3">
+                    <div class="news-item text-white-50 p-3">
                       Nenhuma notícia cadastrada ainda.
                     </div>
                   {% endif %}
                 </div>
 
-                <div class="card-footer mt-3 text-end">
-                  <small class="text-muted">Últimas atualizações</small>
+                <div class="card-footer bg-transparent border-0 mt-3 text-end p-0">
+                  <small class="text-white-50">Últimas atualizações</small>
                 </div>
               </article>
             </a>
           </div>
 
-          <div class="col-12 col-lg-4">
-                        <a href="{{ url_for('main.tela_mapa') }}" class="app-card-link-wrapper h-100" aria-label="Ir para mapa do campus">
-              <aside class="app-card map-block h-100 d-flex flex-column" role="region" aria-labelledby="map-title">
+                    <div class="col-12 col-lg-4">
+            <a href="{{ url_for('main.tela_mapa') }}" class="card-link-wrapper h-100" aria-label="Ir para mapa do campus">
+                            <aside class="mapa app-card h-100 d-flex flex-column" role="region" aria-labelledby="map-title">
                 <header>
-                  <h3 id="map-title" class="card-title-icon mb-2 text-secondary-green">
+                                    <h3 id="map-title" class="card-title-icon mb-2 text-white">
                     <i class="bi bi-geo-alt-fill me-2" aria-hidden="true"></i>
                     Mapa IFRN - Campus Apodi
                   </h3>
                 </header>
 
-                <div class="map-container flex-grow-1" title="Mapa do campus">
-                  <div class="responsive-iframe">
-                    <iframe
-                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4218.752729359187!2d-37.80725470000001!3d-5.627263199999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7baf7f6172a76a7%3A0x4df8711927cb367!2sIFRN%20-%20Campus%20Apodi!5e1!3m2!1spt-BR!2sbr!4v1763338919324!5m2!1spt-BR!2sbr"
-                      loading="lazy"
-                      referrerpolicy="no-referrer-when-downgrade"
-                      aria-label="Mapa do IFRN - Campus Apodi">
-                    </iframe>
-                  </div>
+                                <div class="map-container flex-grow-1" title="Mapa do campus">
+                                    <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4218.752729359187!2d-37.80725470000001!3d-5.627263199999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7baf7f6172a76a7%3A0x4df8711927cb367!2sIFRN%20-%20Campus%20Apodi!5e1!3m2!1spt-BR!2sbr!4v1763338919324!5m2!1spt-BR!2sbr"
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    aria-label="Mapa do IFRN - Campus Apodi">
+                  </iframe>
                 </div>
               </aside>
             </a>
@@ -86,53 +85,48 @@
         </div>
 
                 <div class="row g-4">
-          <div class="col-12 col-md-6 col-lg-4">
-                        <div class="app-card action-card h-100 d-flex flex-column text-center">
+          
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="card-home app-card h-100 d-flex flex-column text-center">
               <div class="flex-grow-1 p-3">
-                <img src="{{ url_for('static', filename='img/obmep.jpg') }}" alt="Materiais OBMEP" class="img-fluid mb-3 rounded-3">
+                                <img src="{{ url_for('static', filename='img/obmep.jpg') }}" alt="Materiais OBMEP" class="img-fluid mb-3 rounded-3">
                 <p class="mb-0">Prepare-se para a OBMEP — acesse a aba Materiais na plataforma.</p>
               </div>
-              <a href="{{ url_for('main.tela_materiais') }}" class="btn app-btn-primary w-100 mt-3" aria-label="Ir para materiais OBMEP">
+                            <a href="{{ url_for('main.tela_materiais') }}" class="card-home-btn w-100 mt-3" aria-label="Ir para materiais OBMEP">
                 <i class="bi bi-file-earmark-text-fill me-2" aria-hidden="true"></i> Materiais OBMEP
               </a>
             </div>
           </div>
 
-          <div class="col-12 col-md-6 col-lg-4">
-                        <div class="app-card action-card h-100 d-flex flex-column text-center">
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="card-home app-card h-100 d-flex flex-column text-center">
               <div class="flex-grow-1 p-3">
-                <img src="{{ url_for('static', filename='img/ilustracao.png') }}" alt="Fóruns" class="img-fluid mb-3 rounded-3">
+                                <img src="{{ url_for('static', filename='img/ilustracao.png') }}" alt="Fóruns" class="img-fluid mb-3 rounded-3">
                 <p class="mb-0">Dúvidas? Vá para a aba Fóruns — nossa comunidade responde.</p>
               </div>
-              <a href="{{ url_for('main.tela_foruns') }}" class="btn app-btn-primary w-100 mt-3" aria-label="Ir para fóruns">
+                            <a href="{{ url_for('main.tela_foruns') }}" class="card-home-btn w-100 mt-3" aria-label="Ir para fóruns">
                 <i class="bi bi-chat-left-dots-fill me-2" aria-hidden="true"></i> Fóruns
               </a>
             </div>
-            
           </div>
 
-          <div class="col-12 col-lg-4">
-                        <a href="{{ url_for('main.tela_divulgacao') }}" class="app-card-link-wrapper h-100" aria-label="Ir para próximos eventos">
-              <section class="app-card events-block h-100 d-flex flex-column" role="region" aria-labelledby="events-title">
-                <header>
+                    <div class="col-12 col-lg-4">
+            <a href="{{ url_for('main.tela_divulgacao') }}" class="card-link-wrapper h-100" aria-label="Ir para próximos eventos">
+                            <section class="eventos app-card h-100 d-flex flex-column" role="region" aria-labelledby="events-title">
+                <header class="p-0">
                   <h3 id="events-title" class="card-title-icon mb-2 text-white">
                     <i class="bi bi-calendar-event-fill me-2" aria-hidden="true"></i> Próximos eventos
                   </h3>
                 </header>
 
-                                <div class="eventos-lista flex-grow-1 p-3">
+                                <div class="eventos-lista flex-grow-1" style="margin-top: 15px;">
                   {% if eventos and eventos|length > 0 %}
-                    <ul class="list-unstyled mb-0">
-                      {% for e in eventos %}
-                        <li class="event-item d-flex align-items-center mb-3">
-                          <span class="event-date-badge flex-shrink-0 me-3 text-center p-2 rounded">
-                            <strong class="d-block">{{ e.data_hora_inicio.strftime('%d') }}</strong>
-                            <small class="d-block">{{ e.data_hora_inicio.strftime('%b')|upper }}</small>
-                          </span>
-                          <span class="event-title text-white">{{ e.titulo }}</span>
-                        </li>
-                      {% endfor %}
-                    </ul>
+                                        {% for e in eventos %}
+                      <div class="evento">
+                        <strong class="d-block">{{ e.data_hora_inicio.strftime('%d') }}/{{ e.data_hora_inicio.strftime('%b')|upper }}</strong>
+                        <small class="d-block">{{ e.titulo }}</small>
+                      </div>
+                    {% endfor %}
                   {% else %}
                     <p class="text-white-50 m-0">Nenhum evento futuro cadastrado.</p>
                   {% endif %}
