@@ -7,6 +7,17 @@ from app.forms import LoginForm, RegisterForm
 
 auth_bp = Blueprint('auth', __name__)
 
+@auth_bp.after_request
+def add_header(response):
+    """
+    Adiciona cabeçalhos para proibir o cache do navegador e de proxies.
+    Isso evita que um aluno receba o cookie de sessão de outro.
+    """
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, public, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
+
 # --- CONFIGURAÇÕES DO SUAP ---
 # Em produção, coloque isso em variáveis de ambiente (os.environ)
 SUAP_CLIENT_ID = 'KKX443djD2LvDhApYTXDJIlCesqD2xGWuPhlZjqN'
