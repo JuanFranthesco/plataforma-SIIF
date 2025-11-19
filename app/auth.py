@@ -1,6 +1,6 @@
 import os
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session, current_app
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required, current_user
 from requests_oauthlib import OAuth2Session
 from app.models import User, db
 from app.forms import LoginForm, RegisterForm
@@ -22,7 +22,7 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     # Se o usuário já está logado, manda para a home
-    if current_app.is_authenticated:
+    if current_user.is_authenticated:
         return redirect(url_for('main.tela_inicial'))
 
     form = LoginForm()
@@ -42,7 +42,7 @@ def login():
 def login_suap():
     # --- CORREÇÃO DE SEGURANÇA 1: LIMPEZA ---
     # Antes de começar um novo login OAuth, garantimos que não há ninguem logado
-    if current_app.is_authenticated:
+    if current_user.is_authenticated:
         logout_user()
     
     # Limpa completamente a sessão (remove dados antigos, states velhos, etc)
