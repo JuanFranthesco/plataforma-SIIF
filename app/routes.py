@@ -29,6 +29,11 @@ def tela_inicial():
     - Últimas notícias
     - Próximos eventos
     """
+
+    # Impedindo do adm ir em outras páginas
+    if current_user.is_admin:
+        return redirect(url_for('main.tela_admin'))
+
     noticias = Noticia.query.order_by(Noticia.data_postagem.desc()).limit(4).all()
     agora = datetime.datetime.now(datetime.timezone.utc)
     eventos = (
@@ -556,3 +561,13 @@ def suporte():
         faqs_resultados=faqs_resultados,
         termo_busca=termo_busca
     )
+
+@main_bp.route('/tela_admin')
+@login_required
+def tela_admin():
+    if current_user.is_admin:
+        return render_template('tela_admin.html')
+    
+    return redirect(request.referrer)
+
+
