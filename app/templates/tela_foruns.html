@@ -30,8 +30,14 @@
             {% endwith %}
 
             <div class="row g-4">
-                <aside class="col-lg-3 d-none d-lg-block">
-                    <div class="forum-left-sidebar">
+                <aside id="sidebar" class="col-lg-3 d-none d-lg-block">
+                    <div class="sidebar-header d-flex justify-content-end mb-3">
+                        <button class="btn btn-outline-success btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-content" aria-expanded="true" aria-controls="sidebar-content">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                    </div>
+                    <div id="sidebar-content" class="collapse show">
+                        <div class="forum-left-sidebar">
                         <a href="{{ url_for('main.tela_perfil') }}" class="sidebar-link"> <i class="bi bi-person-circle"></i>
                             <span>Perfil</span>
                         </a>
@@ -345,12 +351,12 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            
+
             // --- Lógica para o Modal de Comentário ---
             const modalComentar = document.getElementById('modalComentar');
             if (modalComentar) {
                 const formComentario = document.getElementById('formComentario');
-                
+
                 modalComentar.addEventListener('show.bs.modal', function(event) {
                     const button = event.relatedTarget;
                     const topicoId = button.getAttribute('data-bs-topico-id');
@@ -363,16 +369,28 @@
             const modalDenunciar = document.getElementById('modalDenunciar');
             if (modalDenunciar) {
                 const formDenuncia = document.getElementById('formDenuncia');
-                
+
                 modalDenunciar.addEventListener('show.bs.modal', function(event) {
                     const button = event.relatedTarget; // Botão "Denunciar" que foi clicado
                     const topicoId = button.getAttribute('data-bs-topico-id'); // Pega o ID
-                    
+
                     // Constrói a URL da nova rota
                     const formAction = `/forum/${topicoId}/denunciar`;
-                    
+
                     // Atualiza a 'action' do formulário do modal
                     formDenuncia.setAttribute('action', formAction);
+                });
+            }
+
+            // --- Lógica para o botão de recolher sidebar ---
+            const toggleBtn = document.querySelector('[data-bs-toggle="collapse"][data-bs-target="#sidebar-content"]');
+            const sidebarContent = document.getElementById('sidebar-content');
+            if (toggleBtn && sidebarContent) {
+                sidebarContent.addEventListener('shown.bs.collapse', function () {
+                    toggleBtn.innerHTML = '<i class="bi bi-chevron-left"></i>';
+                });
+                sidebarContent.addEventListener('hidden.bs.collapse', function () {
+                    toggleBtn.innerHTML = '<i class="bi bi-chevron-right"></i>';
                 });
             }
         });
