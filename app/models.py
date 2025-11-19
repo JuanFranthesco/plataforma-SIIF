@@ -24,9 +24,10 @@ class User(db.Model, UserMixin):
     matricula = db.Column(db.String(80), unique=True, nullable=False)
     name = db.Column(db.String(100), nullable=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128))
+    password_hash = db.Column(db.String(128), nullable=True)
     is_admin = db.Column(db.Boolean, default=False)
-
+    foto_url = db.Column(db.String(255), nullable=True)
+    campus = db.Column(db.String(50), nullable=True)
     # Relações
     perfil = db.relationship('Perfil', backref='user', uselist=False, lazy=True)
     topicos = db.relationship('Topico', backref='autor', lazy=True)
@@ -53,7 +54,6 @@ class Perfil(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     curso = db.Column(db.String(100), nullable=True)
-    campus = db.Column(db.String(100), nullable=True)
     bio = db.Column(db.Text, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True, nullable=False)
 

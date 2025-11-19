@@ -37,9 +37,9 @@
                 </li>
             </ul>
             <a href="{{ url_for('main.tela_perfil') }}" class="profile-link ms-lg-auto">
-                <span>Olá, Fulano de tal</span>
+                <span>Olá, {{ current_user.name }}</span>
                 <div class="profile-pic">
-                    <img src="{{ url_for('static', filename='img/image.png') }}" alt="Perfil"> 
+                    <img src="{{ current_user.foto_url }}" alt="Perfil"> 
                 </div>
             </a>
         </div>

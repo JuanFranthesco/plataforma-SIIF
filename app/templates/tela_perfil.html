@@ -37,7 +37,7 @@
         <div class="profile-banner" style="background-image: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070&auto=format&fit=crop');">
         </div>
         <div class="profile-info-bar">
-          <img src="{{ url_for('static', filename='image.png') }}" alt="Avatar do usuário" class="profile-avatar">
+          <img src="{{ current_user.foto_url }}" alt="Avatar do usuário" class="profile-avatar">
           <div class="profile-actions">
             <div class="dropdown">
               <button class="btn btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -57,7 +57,7 @@
             <p class="profile-bio">{{ current_user.perfil.bio or 'Sem bio definida. Edite seu perfil para adicionar uma.' }}</p>
             <p class="profile-course">
               <i class="bi bi-mortarboard-fill"></i>
-              {{ current_user.perfil.curso or 'Curso não informado' }} – {{ current_user.perfil.campus or 'Campus não informado' }}
+              {{ current_user.perfil.curso or 'Curso não informado' }} – {{ ("Campus " + current_user.campus) or 'Campus não informado' }}
             </p>
           </div>
         </div>
