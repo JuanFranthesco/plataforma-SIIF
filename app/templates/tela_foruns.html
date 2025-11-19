@@ -63,9 +63,9 @@
                         <div class="input-group">
                             <input type="text" class="form-control" placeholder="Buscar no fórum..." 
                                 name="q" value="{{ termo_pesquisado or '' }}" aria-label="Buscar no fórum">
-                            <button class="btn btn-success" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFiltros" aria-controls="offcanvasFiltros">
-                                <i class="bi bi-list"></i>
-                            </button>
+                                <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#modalFiltros" aria-controls="modalFiltros">
+                                    <i class="bi bi-list"></i>
+                                </button>
                             <button class="btn btn-success" type="submit"><i class="bi bi-search"></i></button>
                         </div>
                     </form>
@@ -197,48 +197,55 @@
 
     </div> 
     
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasFiltros" aria-labelledby="offcanvasFiltrosLabel">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title sidebar-title" id="offcanvasFiltrosLabel">Filtros</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    <div class="modal fade" id="modalFiltros" tabindex="-1" aria-labelledby="modalFiltrosLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalFiltrosLabel">Opções de Filtro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body d-flex flex-column">
+                    <form class="flex-grow-1 d-flex flex-column" method="GET" action="{{ url_for('main.tela_foruns') }}">
+                        {% if termo_pesquisado %}
+                        <input type="hidden" name="q" value="{{ termo_pesquisado }}">
+                        {% endif %}
+                        
+                        <div class="mb-4">
+                            <h5 class="sidebar-title">Ordenar por:</h5>
+                            <div class="form-check">
+                                <input class="form-check-input custom-checkbox" type="radio" name="ordenarPor" value="relevancia" id="check-relevancia-mobile"
+                                        {% if ordenacao_selecionada == 'relevancia' %}checked{% endif %}>
+                                <label class="form-check-label" for="check-relevancia-mobile">Relevância</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input custom-checkbox" type="radio" name="ordenarPor" value="recente" id="check-recente-mobile"
+                                        {% if not ordenacao_selecionada or ordenacao_selecionada == 'recente' %}checked{% endif %}>
+                                <label class="form-check-label" for="check-recente-mobile">Mais recente</label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h5 class="sidebar-title">Exibir publicações:</h5>
+                            <div class="form-check">
+                                <input class="form-check-input custom-checkbox" type="checkbox" name="exibir[]" value="professores" id="check-prof-mobile">
+                                <label class="form-check-label" for="check-prof-mobile">Professores</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input custom-checkbox" type="checkbox" name="exibir[]" value="estudantes" id="check-estudantes-mobile">
+                                <label class="form-check-label" for="check-estudantes-mobile">Estudantes</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input custom-checkbox" type="checkbox" name="exibir[]" value="servidores" id="check-servidores-mobile">
+                                <label class="form-check-label" for="check-servidores-mobile">Servidores</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary filter-btn w-100 mt-auto">
+                            Aplicar Filtros
+                        </button>
+                    </form>
+                </div>
             </div>
-            <div class="offcanvas-body d-flex flex-column">
-            <form class="flex-grow-1 d-flex flex-column" method="GET" action="{{ url_for('main.tela_foruns') }}">
-                {% if termo_pesquisado %}
-                <input type="hidden" name="q" value="{{ termo_pesquisado }}">
-                {% endif %}
-                <div class="mb-4">
-                    <h5 class="sidebar-title">Ordenar por:</h5>
-                    <div class="form-check">
-                        <input class="form-check-input custom-checkbox" type="radio" name="ordenarPor" value="relevancia" id="check-relevancia-mobile"
-                                {% if ordenacao_selecionada == 'relevancia' %}checked{% endif %}>
-                        <label class="form-check-label" for="check-relevancia-mobile">Relevância</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input custom-checkbox" type="radio" name="ordenarPor" value="recente" id="check-recente-mobile"
-                                {% if not ordenacao_selecionada or ordenacao_selecionada == 'recente' %}checked{% endif %}>
-                        <label class="form-check-label" for="check-recente-mobile">Mais recente</label>
-                    </div>
-                </div>
-                <div class="mb-4">
-                    <h5 class="sidebar-title">Exibir publicações:</h5>
-                    <div class="form-check">
-                        <input class="form-check-input custom-checkbox" type="checkbox" name="exibir[]" value="professores" id="check-prof-mobile">
-                        <label class="form-check-label" for="check-prof-mobile">Professores</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input custom-checkbox" type="checkbox" name="exibir[]" value="estudantes" id="check-estudantes-mobile">
-                        <label class="form-check-label" for="check-estudantes-mobile">Estudantes</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input custom-checkbox" type="checkbox" name="exibir[]" value="servidores" id="check-servidores-mobile">
-                        <label class="form-check-label" for="check-servidores-mobile">Servidores</label>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary filter-btn w-100 mt-auto">
-                    Aplicar Filtros
-                </button>
-            </form>
         </div>
     </div>
 
