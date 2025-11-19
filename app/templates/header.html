@@ -36,7 +36,14 @@
                     </a>
                 </li>
             </ul>
-            <a href="{{ url_for('main.tela_perfil') }}" class="profile-link ms-lg-auto">
+            <a href="#" class="nav-link ms-3" data-bs-toggle="modal" data-bs-target="#modalNotificacoes">
+                <i class="bi bi-bell-fill position-relative">
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        3
+                    </span>
+                </i>
+            </a>
+            <a href="{{ url_for('main.tela_perfil') }}" class="profile-link ms-lg-5">
                 <span>Olá, {{ current_user.name }}</span>
                 <div class="profile-pic">
                     <img src="{{ current_user.foto_url }}" alt="Perfil"> 
@@ -45,3 +52,34 @@
         </div>
     </div>
 </nav>
+
+<div class="modal fade" id="modalNotificacoes" tabindex="-1" aria-labelledby="modalNotificacoesLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalNotificacoesLabel">Notificações</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <ul class="list-group">
+                    {% for notificacao in notificacoes %}
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">{{ notificacao.titulo }}</div>
+                            {{ notificacao.mensagem }}
+                        </div>
+                        <span class="badge bg-primary rounded-pill">{{ notificacao.hora }}</span>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item text-center text-muted">
+                        Nenhuma notificação no momento.
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
