@@ -150,134 +150,6 @@ main {
   }
 }
 
-/* ---
-ESTILOS DA PÁGINA INICIAL (tela_inicial.html)
---- */
-.noticias {
-  background-color: #386641; /* VERDE PADRÃO */
-  border-radius: 15px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  height: 100%;
-}
-.noticias h3 {
-  color: white; /* TEXTO BRANCO */
-  font-weight: 600;
-  font-size: 1.1rem;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.noticias h3 i { font-size: 1.2rem; }
-.noticia-card {
-  background-color: #e7e7e4; /* CINZA CLARO PADRÃO */
-  border-radius: 10px;
-  padding: 15px;
-  color: #386641; /* VERDE PADRÃO */
-  font-size: 0.95rem;
-  line-height: 1.4rem;
-}
-.card-home {
-  background-color: #386641; /* VERDE PADRÃO */
-  border-radius: 15px;
-  padding: 15px;
-  text-align: center;
-  color: white; /* TEXTO BRANCO */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  border: none;
-  height: 100%;
-}
-.card-home img {
-  width: 100%;
-  height: 180px;
-  border-radius: 12px;
-  background-color: #ccc; /* CINZA PLACEHOLDER */
-  margin-bottom: 15px;
-  object-fit: cover;
-}
-.card-home p {
-  font-size: 0.9rem;
-  line-height: 1.4rem;
-  color: #e7e7e4; /* CINZA CLARO PADRÃO */
-  margin-bottom: 10px;
-}
-.card-home button {
-  margin-top: 10px;
-  background-color: #e7e7e4; /* CINZA CLARO PADRÃO */
-  color: #386641; /* VERDE PADRÃO */
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-weight: 500;
-  cursor: pointer;
-  align-self: center;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.card-home button:hover { background-color: #dcdcd8; /* CINZA MAIS ESCURO */ }
-.eventos {
-  background-color: #386641; /* VERDE PADRÃO */
-  border-radius: 15px;
-  padding: 20px;
-  color: white; /* TEXTO BRANCO */
-  height: 100%;
-}
-.eventos h3 {
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.eventos h3 i { font-size: 1.2rem; }
-.eventos-lista {
-  display: flex;
-  gap: 20px;
-  margin-top: 20px;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-}
-.evento {
-  background-color: white; /* FUNDO BRANCO */
-  color: #386641; /* VERDE PADRÃO */
-  border-radius: 15px;
-  width: 110px;
-  min-height: 100px;
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  text-align: center;
-  font-size: 0.85rem;
-  word-wrap: break-word;
-  line-height: 1.2rem;
-}
-.mapa {
-  background-color: #386641; /* VERDE PADRÃO */
-  border-radius: 15px;
-  padding: 15px;
-  color: white; /* TEXTO BRANCO */
-  height: 100%;
-}
-.mapa h3 {
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-.mapa iframe {
-  width: 100%;
-  height: 280px;
-  border-radius: 10px;
-  border: none;
-}
-@media (max-width: 991px) { .mapa iframe { height: 250px; } }
-@media (max-width: 768px) { .eventos-lista { justify-content: center; } }
-
 
 /* ---
 ESTILOS DA CENTRAL DE AJUDA (central_de_ajuda.html)
@@ -388,6 +260,303 @@ main h1 {
   color: #E7E7E4; /* CINZA CLARO PADRÃO */
 }
 
+/* ---
+============================================================
+NOVA PÁGINA INICIAL (HOME DASHBOARD) - ESTILO APP
+============================================================
+--- */
+
+/* IMPORTANTE: Usamos a classe .home-dashboard (definida no HTML)
+   antes de cada regra. Isso garante que estas alterações 
+   NÃO afetem o Login, Perfil ou Suporte.
+*/
+
+/* Ajuste do Main apenas na Home */
+main.home-dashboard {
+  background-color: #f8f9fa; /* Cinza bem clarinho para destacar os cards brancos */
+  min-height: 80vh;
+}
+
+/* Título de Boas Vindas */
+.home-dashboard .page-title {
+  color: #386641;
+  font-weight: 700;
+  margin-bottom: 5px;
+  font-size: 1.75rem;
+}
+
+/* --- ESTILO GERAL DOS CARDS (BRANCOS) --- */
+.home-dashboard .card-custom {
+  background-color: #FFFFFF; 
+  border-radius: 20px; /* Cantos bem arredondados estilo Android 14 */
+  border: 1px solid rgba(0,0,0,0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* Sombra suave */
+  transition: all 0.3s ease;
+  overflow: hidden; 
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
+/* Link wrapper: cobre o card inteiro para ser clicável */
+.home-dashboard a.text-decoration-none {
+  color: inherit;
+  display: block;
+  height: 100%;
+}
+
+/* Efeito Hover: O cartão sobe */
+.home-dashboard .card-custom:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(56, 102, 65, 0.15); /* Sombra levemente verde */
+  border-color: rgba(56, 102, 65, 0.3);
+}
+
+/* --- CABEÇALHOS (Títulos dos Cards) --- */
+.home-dashboard .card-header-custom {
+  padding: 25px 25px 15px 25px;
+}
+
+.home-dashboard .card-header-custom h3 {
+  color: #386641; /* Verde Padrão */
+  font-weight: 700;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.home-dashboard .card-header-custom h3 i {
+  font-size: 1.3rem;
+  background-color: #e7e7e4;
+  padding: 8px;
+  border-radius: 10px;
+}
+
+/* --- CORPO DOS CARDS --- */
+.home-dashboard .card-body-custom {
+  padding: 0 25px 25px 25px;
+  flex-grow: 1;
+}
+
+/* --- LISTA DE NOTÍCIAS --- */
+.home-dashboard .noticia-item {
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+  padding: 12px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: #444;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: background-color 0.2s;
+}
+
+.home-dashboard .noticia-item:last-child {
+  border-bottom: none;
+}
+
+.home-dashboard .icon-bullet {
+  color: #386641;
+  min-width: 24px;
+}
+
+/* --- CARDS DE IMAGEM (OBMEP/FÓRUM) --- */
+.home-dashboard .card-action {
+  text-align: center;
+}
+
+.home-dashboard .card-img-wrapper {
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+  position: relative;
+}
+
+.home-dashboard .card-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.home-dashboard .card-custom:hover .card-img-wrapper img {
+  transform: scale(1.08); /* Zoom na imagem */
+}
+
+.home-dashboard .card-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
+}
+
+.home-dashboard .card-content p {
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.home-dashboard .btn-action {
+  background-color: #386641;
+  color: white;
+  border-radius: 50px;
+  padding: 10px 20px;
+  font-weight: 600;
+  border: none;
+  width: 100%;
+  transition: background-color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.home-dashboard .btn-action:hover {
+  background-color: #2a4b30;
+  color: white;
+}
+
+/* --- LISTA DE EVENTOS --- */
+.home-dashboard .eventos-lista {
+  padding: 0 25px 25px 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.home-dashboard .evento-badge {
+  display: flex;
+  align-items: center;
+  background-color: #f8f9fa;
+  border-radius: 15px;
+  padding: 10px;
+  gap: 15px;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.home-dashboard .card-custom:hover .evento-badge {
+  background-color: #fff;
+  border-color: #eee;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+}
+
+.home-dashboard .date-box {
+  background-color: #386641;
+  color: white;
+  border-radius: 12px;
+  min-width: 55px;
+  height: 55px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  box-shadow: 0 4px 10px rgba(56, 102, 65, 0.2);
+}
+
+.home-dashboard .date-box .day {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.home-dashboard .date-box .month {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.home-dashboard .event-info {
+  color: #333;
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.3;
+}
+
+/* --- MAPA RESPONSIVO (Correção para Android) --- */
+.home-dashboard .card-map {
+  padding: 0; /* Mapa ocupa borda a borda no fundo */
+}
+
+.home-dashboard .map-responsive-wrapper {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  /* Esta % define a altura. 56.25% = 16:9. 
+     Aumentei para 65% para ficar melhor no celular */
+  padding-top: 65%; 
+  background-color: #eee;
+  border-radius: 0 0 20px 20px;
+}
+
+.home-dashboard .map-responsive-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* --- ESTADO VAZIO --- */
+.home-dashboard .empty-state {
+  text-align: center;
+  color: #999;
+  padding: 30px 0;
+}
+.home-dashboard .empty-state i {
+  font-size: 2.5rem;
+  opacity: 0.5;
+  margin-bottom: 10px;
+  display: block;
+}
+
+/* --- AJUSTES ESPECÍFICOS PARA MOBILE (ANDROID) --- */
+@media (max-width: 768px) {
+  
+  /* Remove o padding arredondado do main global e usa full width */
+  main.home-dashboard {
+    border-radius: 0;
+    padding: 20px 15px !important; /* Menos padding lateral */
+  }
+
+  .home-dashboard .page-title {
+    font-size: 1.5rem;
+    margin-left: 5px;
+  }
+
+  .home-dashboard .card-custom {
+    border-radius: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* Sombra mais leve no mobile */
+  }
+
+  .home-dashboard .card-header-custom {
+    padding: 20px 20px 10px 20px;
+  }
+
+  .home-dashboard .card-body-custom {
+    padding: 0 20px 20px 20px;
+  }
+  
+  /* Mapa mais alto no celular para facilitar o toque */
+  .home-dashboard .map-responsive-wrapper {
+    padding-top: 80%; 
+  }
+  
+  /* Botões maiores para toque (Touch targets) */
+  .home-dashboard .btn-action {
+    padding: 12px 20px;
+    font-size: 1rem;
+  }
+}
 
 /* ---
 ESTILOS DA PÁGINA DO FÓRUM (forum.html)
