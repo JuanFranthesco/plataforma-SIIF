@@ -21,9 +21,14 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
+    # Se o usuário já está logado, manda para a home
+    if current_user.is_authenticated:
+        return redirect(url_for('main.tela_inicial'))
+
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(matricula=form.matricula.data).first()
+        # Verifica senha apenas se o usuário tiver senha (usuários SUAP podem não ter)
         if user and user.password_hash and user.check_password(form.password.data):
             login_user(user)
             next_page = request.args.get('next')
@@ -35,15 +40,29 @@ def login():
 
 @auth_bp.route('/login/suap')
 def login_suap():
+    # --- CORREÇÃO DE SEGURANÇA 1: LIMPEZA ---
+    # Antes de começar um novo login OAuth, garantimos que não há ninguem logado
+    if current_user.is_authenticated:
+        logout_user()
+    
+    # Limpa completamente a sessão (remove dados antigos, states velhos, etc)
+    session.clear()
+    
+    # Inicia o fluxo
     suap = OAuth2Session(SUAP_CLIENT_ID, redirect_uri=REDIRECT_URI)
     authorization_url, state = suap.authorization_url(SUAP_AUTH_URL)
     
+    # Salva o novo state limpo
     session['oauth_state'] = state
     return redirect(authorization_url)
 
 @auth_bp.route('/suap/callback')
 def suap_callback():
     try:
+        if 'oauth_state' not in session:
+            flash('Sessão inválida. Tente o login novamente.', 'danger')
+            return redirect(url_for('auth.login'))
+        
         suap = OAuth2Session(SUAP_CLIENT_ID, state=session.get('oauth_state'), redirect_uri=REDIRECT_URI)
         
         # 1. Troca o código de autorização pelo token de acesso
