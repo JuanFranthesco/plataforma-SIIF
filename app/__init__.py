@@ -37,6 +37,16 @@ def create_app():
     login_manager.login_view = 'auth.login'
     login_manager.login_message_category = 'info'
 
+    # --- [CORREÇÃO IMPORTANTE AQUI] ---
+    # O Flask-Login precisa saber como buscar o usuário pelo ID
+    from app.models import User
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        # Retorna o usuário do banco ou None se não achar
+        return User.query.get(int(user_id))
+    # ----------------------------------
+
     # Registrar blueprints
     from app.routes import main_bp
     app.register_blueprint(main_bp)
@@ -57,7 +67,7 @@ def create_app():
     # Criar tabelas no DB
     # --------------------------
     with app.app_context():
-        from app.models import User
+        # O import já foi feito acima, mas não tem problema repetir ou usar o já importado
         db.create_all()
         admin_exists = User.query.filter_by(matricula="1234").first()
         if not admin_exists:
@@ -67,9 +77,10 @@ def create_app():
                 is_admin=True,
                 email="admin@siif.com", 
                 name="Administrador",
-                password_hash="admin"
+                password_hash="admin" 
             )
-            admin_user.set_password("admin")
+            # Nota: Idealmente use set_password aqui também se o modelo exigir hash
+            admin_user.set_password("admin") 
             db.session.add(admin_user)
             db.session.commit()
             print("Usuário administrador '1234' criado com sucesso.")
