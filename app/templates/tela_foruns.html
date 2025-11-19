@@ -83,14 +83,14 @@
                             <a href="#" class="d-flex align-items-center gap-3 text-decoration-none" 
                                 data-bs-toggle="modal" data-bs-target="#modalVerPerfil" 
                                 data-user-name="{{ topico.autor.name }}"
-                                data-user-bio="{{ topico.autor.perfil.bio if topico.autor.perfil else 'Estudante do IFRN' }}"
-                                data-user-curso="{{ topico.autor.perfil.curso if topico.autor.perfil else 'Informática' }}"
-                                data-user-campus="{{ topico.autor.perfil.campus if topico.autor.perfil else 'IFRN Apodi' }}">
+                                data-user-bio="{% if topico.autor.perfil %}{{ topico.autor.perfil.bio }}{% else %}Estudante do IFRN{% endif %}"
+                                data-user-curso="{% if topico.autor.perfil %}{{ topico.autor.perfil.curso }}{% else %}Curso não informado{% endif %}"
+                                data-user-campus="{% if topico.autor.perfil %}{{ topico.autor.perfil.campus }}{% else %}IFRN{% endif %}">
                                 
                                 <img class="contact-avatar" src="https://placehold.co/45x45/386641/fff?text={{ topico.autor.name[0] }}" alt="Avatar">
                                 <div class="d-flex flex-column">
                                     <h3 class="post-author text-dark mb-0">{{ topico.autor.name }}</h3>
-                                    <small class="text-muted" style="font-size: 0.75rem;">Há 2 horas • Aluno</small>
+                                    <small class="text-muted" style="font-size: 0.75rem;">Postado recentemente</small>
                                 </div>
                             </a>
 
@@ -102,7 +102,7 @@
                                 <div class="comment-options-menu shadow">
                                     <form action="{{ url_for('main.salvar_post', topico_id=topico.id) }}" method="POST">
                                         <button type="submit" class="comment-option-item w-100 text-start btn-reset">
-                                            <i class="bi bi-bookmark"></i> <span>Salvar</span>
+                                            <i class="bi bi-bookmark"></i> <span>{% if topico.id in salvos_usuario %}Remover{% else %}Salvar{% endif %}</span>
                                         </button>
                                     </form>
                                     
@@ -191,24 +191,184 @@
             </div>
         </main>
 
-    {% include 'footer.html' %}
+        {% include 'footer.html' %}
 
     </div> 
+
+    <div class="modal fade" id="modalFiltros" tabindex="-1" aria-labelledby="modalFiltrosLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalFiltrosLabel">Opções de Filtro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex flex-column">
+                    <form class="flex-grow-1 d-flex flex-column" method="GET" action="{{ url_for('main.tela_foruns') }}">
+                        {% if termo_pesquisado %}
+                        <input type="hidden" name="q" value="{{ termo_pesquisado }}">
+                        {% endif %}
+                        
+                        <div class="mb-4">
+                            <h5 class="sidebar-title">Ordenar por:</h5>
+                            <div class="form-check">
+                                <input class="form-check-input custom-checkbox" type="radio" name="ordenarPor" value="relevancia" id="check-relevancia-mobile"
+                                       {% if ordenacao_selecionada == 'relevancia' %}checked{% endif %}>
+                                <label class="form-check-label" for="check-relevancia-mobile">Relevância</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input custom-checkbox" type="radio" name="ordenarPor" value="recente" id="check-recente-mobile"
+                                       {% if not ordenacao_selecionada or ordenacao_selecionada == 'recente' %}checked{% endif %}>
+                                <label class="form-check-label" for="check-recente-mobile">Mais recente</label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h5 class="sidebar-title">Exibir publicações:</h5>
+                            <div class="form-check">
+                                <input class="form-check-input custom-checkbox" type="checkbox" name="exibir[]" value="professores" id="check-prof-mobile">
+                                <label class="form-check-label" for="check-prof-mobile">Professores</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input custom-checkbox" type="checkbox" name="exibir[]" value="estudantes" id="check-estudantes-mobile">
+                                <label class="form-check-label" for="check-estudantes-mobile">Estudantes</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input custom-checkbox" type="checkbox" name="exibir[]" value="servidores" id="check-servidores-mobile">
+                                <label class="form-check-label" for="check-servidores-mobile">Servidores</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary filter-btn w-100 mt-auto">
+                            Aplicar Filtros
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalComentar" tabindex="-1" aria-labelledby="modalComentarLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-custom-verde">
+            <form class="modal-content" id="formComentario" action="" method="POST">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalComentarLabel">Escrever Comentário</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea class="form-control" rows="5" placeholder="No que está pensando?" 
+                            aria-label="Campo para escrever seu comentário"
+                            name="conteudo_comentario" required></textarea>
+                </div>
+                <div class="modal-footer d-flex justify-content-between">
+                    <button type="button" class="btn btn-link" style="color: #386641; text-decoration: none;">
+                        <i class="bi bi-paperclip"></i> Anexar Mídia
+                    </button>
+                    <button type="submit" class="btn btn-primary filter-btn">Comentar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalPostar" tabindex="-1" aria-labelledby="modalPostarLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-custom-verde">
+            <form class="modal-content" action="{{ url_for('main.criar_post') }}" method="POST">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalPostarLabel">Criar Novo Post</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea class="form-control" rows="5" placeholder="No que está pensando?" 
+                            aria-label="Campo para escrever sua postagem"
+                            name="conteudo_post" required></textarea>
+                </div>
+                <div class="modal-footer d-flex justify-content-between">
+                    <button type="button" class="btn btn-link" style="color: #386641; text-decoration: none;">
+                        <i class="bi bi-paperclip"></i> Anexar Mídia
+                    </button>
+                    <button type="submit" class="btn btn-primary filter-btn">Postar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalNotificacoes" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-custom-verde">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Notificações</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Sem novas notificações.</p>
+                </div>
+            </div>
+        </div>
+    </div>
     
-    {% include 'modais_forum_placeholder.html' %} 
-    <a href="{{ url_for('main.suporte') }}" class="help-btn help-btn-user"><i class="bi bi-headset"></i></a>
-    <a href="{{ url_for('main.tela_denuncias') }}" class="help-btn help-btn-admin"><i class="bi bi-shield-check"></i></a>
-    <div vw class="enabled"><div vw-access-button class="active"></div><div vw-plugin-wrapper><div class="vw-plugin-top-wrapper"></div></div></div>
+    <div class="modal fade" id="modalVerPerfil" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-custom-verde">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Perfil do Usuário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img src="https://placehold.co/100x100" class="rounded-circle mb-3" alt="User">
+                    <h4>Nome do Usuário</h4>
+                    <p class="text-muted">Biografia do usuário...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalDenunciar" tabindex="-1" aria-labelledby="modalDenunciarLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-custom-verde">
+            <form class="modal-content" id="formDenuncia" action="" method="POST">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalDenunciarLabel">Denunciar Post</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Por favor, descreva o motivo da sua denúncia.</p>
+                    <textarea class="form-control" rows="4" 
+                                placeholder="Motivo da denúncia..." 
+                                name="descricao" required></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger"><i class="bi bi-flag-fill"></i> Enviar Denúncia</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <a href="{{ url_for('main.suporte') }}" class="help-btn help-btn-user">
+        <i class="bi bi-headset"></i>
+    </a>
+    <a href="{{ url_for('main.tela_denuncias') }}" class="help-btn help-btn-admin">
+        <i class="bi bi-shield-check"></i>
+    </a>
+    
+    <div vw class="enabled">
+        <div vw-access-button class="active"></div>
+        <div vw-plugin-wrapper>
+            <div class="vw-plugin-top-wrapper"></div>
+        </div>
+    </div>
     <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-    <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        new window.VLibras.Widget('https://vlibras.gov.br/app');
+    </script>
     
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Lógica Modais (Copie do seu original)
+            
+            // --- Lógica para o Modal de Comentário ---
             const modalComentar = document.getElementById('modalComentar');
             if (modalComentar) {
                 const formComentario = document.getElementById('formComentario');
+                
                 modalComentar.addEventListener('show.bs.modal', function(event) {
                     const button = event.relatedTarget;
                     const topicoId = button.getAttribute('data-bs-topico-id');
@@ -216,24 +376,120 @@
                     formComentario.setAttribute('action', formAction);
                 });
             }
-             const modalDenunciar = document.getElementById('modalDenunciar');
+
+            // --- Lógica: Modal de Denúncia ---
+            const modalDenunciar = document.getElementById('modalDenunciar');
             if (modalDenunciar) {
                 const formDenuncia = document.getElementById('formDenuncia');
+                
                 modalDenunciar.addEventListener('show.bs.modal', function(event) {
-                    const button = event.relatedTarget;
-                    const topicoId = button.getAttribute('data-bs-topico-id');
+                    const button = event.relatedTarget; 
+                    const topicoId = button.getAttribute('data-bs-topico-id'); 
+                    
                     const formAction = `/forum/${topicoId}/denunciar`;
                     formDenuncia.setAttribute('action', formAction);
                 });
             }
+
+            // Modal Ver Perfil Dinâmico
+            const modalVerPerfil = document.getElementById('modalVerPerfil');
+            if (modalVerPerfil) {
+                modalVerPerfil.addEventListener('show.bs.modal', function(event) {
+                    const button = event.relatedTarget;
+                    const nome = button.getAttribute('data-user-name');
+                    const bio = button.getAttribute('data-user-bio');
+                    
+                    const modalTitle = modalVerPerfil.querySelector('.modal-body h4');
+                    const modalBio = modalVerPerfil.querySelector('.modal-body p');
+                    const modalImg = modalVerPerfil.querySelector('.modal-body img');
+                    
+                    modalTitle.textContent = nome;
+                    modalBio.textContent = bio;
+                    // Opcional: colocar inicial na imagem
+                    modalImg.src = `https://placehold.co/100x100/386641/fff?text=${nome.charAt(0)}`;
+                });
+            }
         });
-        function copiarLink(botao, event) { /* Seu script original */ }
-        function toggleAccessMenu() { document.getElementById('access-menu').classList.toggle('show'); }
-        function toggleContrast() { document.body.classList.toggle('high-contrast'); /* resto do script */ }
-        // ... resto dos scripts de fonte ...
+
+        // --- Lógica para o botão COPIAR LINK (Compartilhar) ---
+        function copiarLink(botao, event) {
+            event.preventDefault(); 
+            const url = window.location.href; 
+            
+            navigator.clipboard.writeText(url).then(() => {
+                // Feedback visual simples trocando o ícone
+                const originalHtml = botao.innerHTML;
+                botao.innerHTML = '<i class="bi bi-check-lg"></i>';
+                botao.classList.add('text-success');
+                
+                setTimeout(() => {
+                    botao.innerHTML = originalHtml;
+                    botao.classList.remove('text-success');
+                }, 2000);
+            }).catch(err => {
+                console.error('Erro ao copiar link: ', err);
+            });
+        }
+    </script>
+
+    <script>
+        function toggleAccessMenu() {
+            const menu = document.getElementById('access-menu');
+            menu.classList.toggle('show');
+        }
+        function toggleContrast() {
+            document.body.classList.toggle('high-contrast');
+            if (document.body.classList.contains('high-contrast')) {
+                localStorage.setItem('contrast', 'true');
+            } else {
+                localStorage.removeItem('contrast');
+            }
+        }
+        if (localStorage.getItem('contrast') === 'true') {
+            document.body.classList.add('high-contrast');
+        }
+        let currentFontSize = 100; 
+        function increaseFont() {
+            if (currentFontSize < 150) {
+                currentFontSize += 10;
+                document.body.style.fontSize = currentFontSize + '%';
+            }
+        }
+        function decreaseFont() {
+            if (currentFontSize > 80) {
+                currentFontSize -= 10;
+                document.body.style.fontSize = currentFontSize + '%';
+            }
+        }
+        function resetAccess() {
+            currentFontSize = 100;
+            document.body.style.fontSize = '100%';
+            document.body.classList.remove('high-contrast');
+            localStorage.removeItem('contrast');
+        }
     </script>
     <div id="access-menu" class="access-menu-container">
-       </div>
-    <button class="btn-access-float" onclick="toggleAccessMenu()"><i class="bi bi-universal-access"></i></button>
+        <h6 class="mb-3 border-bottom pb-2">Acessibilidade</h6>
+        <div class="d-grid gap-2">
+            <button class="btn btn-sm btn-outline-dark d-flex justify-content-between align-items-center" onclick="toggleContrast()">
+                <span>Alto Contraste</span>
+                <i class="bi bi-circle-half"></i>
+            </button>
+            <div class="btn-group" role="group">
+                <button class="btn btn-sm btn-outline-dark" onclick="increaseFont()">
+                    <i class="bi bi-zoom-in"></i> Aumentar
+                </button>
+                <button class="btn btn-sm btn-outline-dark" onclick="decreaseFont()">
+                    <i class="bi bi-zoom-out"></i> Diminuir
+                </button>
+            </div>
+            <button class="btn btn-sm btn-outline-danger" onclick="resetAccess()">
+                <i class="bi bi-arrow-counterclockwise"></i> Resetar
+            </button>
+        </div>
+    </div>
+    <button class="btn-access-float" onclick="toggleAccessMenu()" title="Opções de Acessibilidade">
+        <i class="bi bi-universal-access"></i>
+    </button>
 </body>
 </html>
