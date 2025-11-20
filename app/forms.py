@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, PasswordField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Length
 from app.models import db, User
@@ -44,4 +45,8 @@ class ProfileForm(FlaskForm):
     curso = StringField('Curso')
     campus = StringField('Campus')
     bio = TextAreaField('Sobre mim', validators=[Length(min=0, max=500)])
+    foto = FileField('Atualizar Foto de Perfil', validators=[
+        FileAllowed(['jpg', 'png', 'jpeg'], 'Apenas imagens jpg e png são permitidas!')
+    ])
+    banner = FileField('Alterar Banner', validators=[FileAllowed(['jpg', 'png'])])
     submit = SubmitField('Salvar Alterações')

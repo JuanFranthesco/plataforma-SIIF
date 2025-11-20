@@ -56,7 +56,8 @@ class Perfil(db.Model):
     curso = db.Column(db.String(100), nullable=True)
     bio = db.Column(db.Text, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True, nullable=False)
-
+    foto_perfil = db.Column(db.String(120), nullable=False, default='default.png') 
+    banner_perfil = db.Column(db.String(120), default='default_banner.jpg') 
     def __repr__(self):
         return f'<Perfil do usuário {self.user_id}>'
 

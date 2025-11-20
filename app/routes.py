@@ -3,11 +3,35 @@ from flask_login import login_required, current_user
 from sqlalchemy import or_, desc, func
 from werkzeug.utils import secure_filename
 import os
+import secrets
 import datetime
+from PIL import Image
 from thefuzz import fuzz
 from app.models import Material, User, FAQ, Denuncia, Noticia, Evento, Perfil, Topico, Resposta, PostSalvo, PostLike, Notificacao
 from app.extensions import db
 from app.forms import ProfileForm
+
+def salvar_imagem_perfil(imagem_enviada):
+
+    nomeador_unico = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(imagem_enviada.filename)
+    picture_fn = nomeador_unico + f_ext
+    picture_path = os.path.join(current_app.root_path, 'static/fotos_perfil', picture_fn)
+    output_size = (300, 300)
+    i = Image.open(imagem_enviada)
+    i.thumbnail(output_size)
+    i.save(picture_path)
+    return picture_fn
+
+def deletar_imagem_antiga(nome_arquivo):
+    imagens_padrao = ['default_profile.png', 'default_banner.jpg', 'default.png']
+    if nome_arquivo and nome_arquivo not in imagens_padrao:
+        caminho_arquivo = os.path.join(current_app.root_path, 'static/fotos_perfil', nome_arquivo)
+        if os.path.exists(caminho_arquivo):
+            try:
+                os.remove(caminho_arquivo)
+            except Exception as e:
+                print(f"Erro ao excluir imagem antiga: {e}")
 
 main_bp = Blueprint('main', __name__)
 
@@ -294,6 +318,20 @@ def tela_perfil():
             perfil = Perfil(user_id=current_user.id)
             db.session.add(perfil)
         form.populate_obj(perfil)
+        # --- LÓGICA DA FOTO DE PERFIL ---
+        if form.foto.data:
+            novo_nome_foto = salvar_imagem_perfil(form.foto.data)
+            if perfil.foto_perfil:
+                deletar_imagem_antiga(perfil.foto_perfil)
+            perfil.foto_perfil = novo_nome_foto
+
+        # --- LÓGICA DO BANNER ---
+        if form.banner.data:
+            # 1. Salva a nova imagem
+            novo_nome_banner = salvar_imagem_perfil(form.banner.data)
+            if perfil.banner_perfil:
+                deletar_imagem_antiga(perfil.banner_perfil)
+            perfil.banner_perfil = novo_nome_banner
         try:
             db.session.commit()
             flash('Perfil atualizado com sucesso!', 'success')

@@ -5,6 +5,9 @@ site.db
 *.sqlite3
 
 app/static/uploads/
+app/static/fotos_perfil/*
+!app/static/fotos_perfil/default.png
+!app/static/fotos_perfil/default_banner.jpg
 
 __pycache__/
 *.pyc
@@ -13,3 +16,4 @@ migrations/versions/*.pyc
 
 .DS_Store
 Thumbs.db
+

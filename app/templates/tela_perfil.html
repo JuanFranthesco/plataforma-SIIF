@@ -10,7 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-
 </head>
 
 <body class="role-user"> 
@@ -34,10 +33,18 @@
       {% endwith %}
 
       <div class="profile-header-container">
-        <div class="profile-banner" style="background-image: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070&auto=format&fit=crop');">
+        
+        {% set banner_img = 'fotos_perfil/' + current_user.perfil.banner_perfil if current_user.perfil and current_user.perfil.banner_perfil else 'img/default_banner.jpg' %}
+        
+        <div class="profile-banner" style="background-image: url('{{ url_for('static', filename=banner_img) }}');">
         </div>
+
         <div class="profile-info-bar">
-          <img src="{{ current_user.foto_url }}" alt="Avatar do usuário" class="profile-avatar">
+          
+          {% set avatar_img = 'fotos_perfil/' + current_user.perfil.foto_perfil if current_user.perfil and current_user.perfil.foto_perfil else 'img/default_profile.png' %}
+          
+          <img src="{{ url_for('static', filename=avatar_img) }}" alt="Avatar do usuário" class="profile-avatar">
+          
           <div class="profile-actions">
             <div class="dropdown">
               <button class="btn btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -52,12 +59,13 @@
               EDITAR PERFIL
             </button>
           </div>
+          
           <div class="profile-user-details">
             <h2 class="profile-name">{{ current_user.name }}</h2>
             <p class="profile-bio">{{ current_user.perfil.bio or 'Sem bio definida. Edite seu perfil para adicionar uma.' }}</p>
             <p class="profile-course">
               <i class="bi bi-mortarboard-fill"></i>
-              {{ current_user.perfil.curso or 'Curso não informado' }} – {{ ("Campus " + current_user.campus) or 'Campus não informado' }}
+              {{ current_user.perfil.curso or 'Curso não informado' }} – {{ current_user.perfil.campus or 'Campus não informado' }}
             </p>
           </div>
         </div>
@@ -86,41 +94,27 @@
         <div class="tab-content" id="profileTabContent">
           
           <div class="tab-pane fade show active" id="posts-tab-pane" role="tabpanel" aria-labelledby="posts-tab" tabindex="0">
-            
             {% for post in posts %}
               <article class="post-card-profile">
                 <div class="post-card-header">
-                  <img src="{{ url_for('static', filename='img/image.png') }}" alt="Avatar" class="post-card-avatar">
+                   {% set post_avatar = 'fotos_perfil/' + post.autor.perfil.foto_perfil if post.autor.perfil and post.autor.perfil.foto_perfil else 'img/default_profile.png' %}
+                  <img src="{{ url_for('static', filename=post_avatar) }}" alt="Avatar" class="post-card-avatar">
+                  
                   <div class="post-card-info">
                     <strong>{{ post.autor.name }}</strong>
                     <span class="text-muted">• {{ post.criado_em.strftime('%d/%m/%Y') }}</span>
                   </div>
-                  <div class="dropdown ms-auto">
-                    <button class="btn btn-light btn-sm btn-icon-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      <i class="bi bi-three-dots-vertical"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                      <li><a class="dropdown-item" href="#"><i class="bi bi-trash-fill me-2"></i> Excluir Post</a></li>
-                    </ul>
                   </div>
-                </div>
                 <div class="post-card-body">
                   <h5 class="post-card-title">{{ post.titulo }}</h5>
                   <p>{{ post.conteudo }}</p>
                 </div>
-                
                 <div class="post-card-footer">
-                  <a href="#" class="post-interaction-btn"> <i class="bi bi-arrow-up-circle-fill"></i> 0 </a>
-                  <a href="#" class="post-interaction-btn"> <i class="bi bi-arrow-down-circle-fill"></i> 0 </a>
-                  <a href="#" class="post-interaction-btn" role="button">
-                    <i class="bi bi-chat-fill"></i> {{ post.respostas|length }}
-                  </a>
-                </div>
-                </article>
+                    </div>
+              </article>
             {% else %}
-              <p class="text-center text-muted p-5">Você ainda não criou nenhum post no fórum.</p>
+                <p class="text-center text-muted p-5">Você ainda não criou nenhum post no fórum.</p>
             {% endfor %}
-            
           </div>
 
           <div class="tab-pane fade" id="materiais-tab-pane" role="tabpanel" aria-labelledby="materiais-tab" tabindex="0">
@@ -141,33 +135,18 @@
           </div>
 
           <div class="tab-pane fade" id="salvos-tab-pane" role="tabpanel" aria-labelledby="salvos-tab" tabindex="0">
-            
             {% for item_salvo in salvos %}
               {% set post = item_salvo.topico %}
-              {% if post %} <article class="post-card-profile">
-                  <div class="post-card-header">
-                    <img src="{{ url_for('static', filename='img/image.png') }}" alt="Avatar" class="post-card-avatar">
-                    <div class="post-card-info">
-                      <strong>{{ post.autor.name }}</strong>
-                      <span class="text-muted">• {{ post.criado_em.strftime('%d/%m/%Y') }}</span>
-                    </div>
-                  </div>
-                  <div class="post-card-body">
-                    <h5 class="post-card-title">{{ post.titulo }}</h5>
-                    <p>{{ post.conteudo }}</p>
-                  </div>
-                  <div class="post-card-footer">
-                    <a href="#" class="btn btn-sm" style="background-color: #f0f0f0;">Ver no Fórum</a>
-                  </div>
-                </article>
+              {% if post %} 
+                <article class="post-card-profile">
+                   </article>
               {% endif %}
             {% else %}
               <p class="text-center text-muted p-5">Você ainda não salvou nenhum item.</p>
             {% endfor %}
-
           </div>
-        </div>
 
+        </div>
       </div>
       
     </main>
@@ -183,7 +162,7 @@
     <div class="modal-dialog modal-dialog-centered modal-custom-verde"> 
       <div class="modal-content">
       
-        <form method="POST" action="{{ url_for('main.tela_perfil') }}">
+        <form method="POST" action="{{ url_for('main.tela_perfil') }}" enctype="multipart/form-data">
           
           {{ form.hidden_tag() }} 
           
@@ -193,13 +172,21 @@
           </div>
           
           <div class="modal-body">
+            
             <div class="mb-3">
-              <label for="inputBanner" class="form-label fw-bold">Alterar Banner</label>
-              <input class="form-control" type="file" id="inputBanner" accept="image/*" disabled> 
+              {{ form.banner.label(class="form-label fw-bold") }}
+              {{ form.banner(class="form-control", id="inputBanner") }}
+              {% for error in form.banner.errors %}
+                <span class="text-danger">{{ error }}</span>
+              {% endfor %}
             </div>
+
             <div class="mb-3">
-              <label for="inputFotoPerfil" class="form-label fw-bold">Alterar Foto de Perfil</label>
-              <input class="form-control" type="file" id="inputFotoPerfil" accept="image/*" disabled>
+              {{ form.foto.label(class="form-label fw-bold") }}
+              {{ form.foto(class="form-control", id="inputFotoPerfil") }}
+              {% for error in form.foto.errors %}
+                <span class="text-danger">{{ error }}</span>
+              {% endfor %}
             </div>
             
             <div class="mb-3">
@@ -233,74 +220,66 @@
   </div>
   
   <div class="modal fade" id="modalComentar" tabindex="-1" aria-labelledby="modalComentarLabel" aria-hidden="true">
-    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Pega o hash da URL (ex: #salvos-tab)
       const hash = window.location.hash;
       if (hash) {
-        
-        // O seletor foi trocado de '.nav-tabs' para '.profile-tabs'
         const tabTrigger = document.querySelector(`.profile-tabs button[id="${hash.substring(1)}"]`);
-        
         if (tabTrigger) {
-          // "Clica" na tab para ativá-la
           const tab = new bootstrap.Tab(tabTrigger);
           tab.show();
         }
       }
     });
   </script>
+
   <script>
-  // --- Lógica de Acessibilidade ---
+    function toggleAccessMenu() {
+      const menu = document.getElementById('access-menu');
+      menu.classList.toggle('show');
+    }
 
-  // 1. Abrir/Fechar Menu
-  function toggleAccessMenu() {
-    const menu = document.getElementById('access-menu');
-    menu.classList.toggle('show');
-  }
+    function toggleContrast() {
+      document.body.classList.toggle('high-contrast');
+      if (document.body.classList.contains('high-contrast')) {
+        localStorage.setItem('contrast', 'true');
+      } else {
+        localStorage.removeItem('contrast');
+      }
+    }
 
-  // 2. Alto Contraste
-  function toggleContrast() {
-    document.body.classList.toggle('high-contrast');
-    if (document.body.classList.contains('high-contrast')) {
-      localStorage.setItem('contrast', 'true');
-    } else {
+    if (localStorage.getItem('contrast') === 'true') {
+      document.body.classList.add('high-contrast');
+    }
+
+    let currentFontSize = 100; 
+
+    function increaseFont() {
+      if (currentFontSize < 150) {
+        currentFontSize += 10;
+        document.body.style.fontSize = currentFontSize + '%';
+      }
+    }
+
+    function decreaseFont() {
+      if (currentFontSize > 80) {
+        currentFontSize -= 10;
+        document.body.style.fontSize = currentFontSize + '%';
+      }
+    }
+
+    function resetAccess() {
+      currentFontSize = 100;
+      document.body.style.fontSize = '100%';
+      document.body.classList.remove('high-contrast');
       localStorage.removeItem('contrast');
     }
-  }
+  </script>
 
-  // Verifica preferência salva
-  if (localStorage.getItem('contrast') === 'true') {
-    document.body.classList.add('high-contrast');
-  }
-
-  // 3. Controle de Fonte
-  let currentFontSize = 100; 
-
-  function increaseFont() {
-    if (currentFontSize < 150) {
-      currentFontSize += 10;
-      document.body.style.fontSize = currentFontSize + '%';
-    }
-  }
-
-  function decreaseFont() {
-    if (currentFontSize > 80) {
-      currentFontSize -= 10;
-      document.body.style.fontSize = currentFontSize + '%';
-    }
-  }
-
-  function resetAccess() {
-    currentFontSize = 100;
-    document.body.style.fontSize = '100%';
-    document.body.classList.remove('high-contrast');
-    localStorage.removeItem('contrast');
-  }
-</script>
   <div id="access-menu" class="access-menu-container">
     <h6 class="mb-3 border-bottom pb-2">Acessibilidade</h6>
     <div class="d-grid gap-2">
