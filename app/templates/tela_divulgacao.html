@@ -12,106 +12,74 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
+    <script>
+        const IS_ADMIN = {{ current_user.is_admin | tojson }};
+    </script>
 </head>
 
-<body class="role-admin">
+<body class="{% if current_user.is_admin %}role-admin{% else %}role-user{% endif %}">
     <div class="page-container">
 
         {% include 'header.html' %}
 
-        <main id="conteudo-principal" role="main">
-            <a href="#conteudo-principal" class="visually-hidden-focusable skip-link">Pular para o conteúdo
-                principal</a>
-
-            <h1>Divulgação</h1>
-
-            <section class="row g-3 mb-4">
-                <div class="col-lg-6">
-                    <form class="divulgacao-filters shadow-sm">
-                        <label for="filtrar-campus" class="visually-hidden">Filtrar por Campus</label>
-                        <select id="filtrar-campus" name="campus" class="form-select" aria-label="Filtrar Campus">
-                            <option value="">Todos os Campus</option>
-                            <option value="mossoro">Mossoró</option>
-                            <option value="paudosferros">Pau dos Ferros</option>
-                        </select>
-                        <label for="filtrar-categoria" class="visually-hidden">Filtrar por Categoria</label>
-                        <select id="filtrar-categoria" name="categoria" class="form-select"
-                            aria-label="Filtrar Categoria">
-                            <option value="">Todas as Categorias</option>
-                            <option value="eventos">Eventos</option>
-                            <option value="pesquisa">Pesquisa</option>
-                        </select>
-                        <button type="submit" class="btn btn-primary filter-btn">Buscar</button>
-                    </form>
-                </div>
-                <div class="col-lg-6">
-                    <form class="divulgacao-search shadow-sm" role="search">
-                        <label for="pesquisar" class="visually-hidden">Campo de Pesquisa</label>
-                        <input type="search" id="pesquisar" class="form-control"
-                            placeholder="Pesquisar notícias e eventos...">
-                        <button type="submit" class="btn-search-icon" aria-label="Executar Pesquisa"><i
-                                class="bi bi-search"></i></button>
-                    </form>
-                </div>
-            </section>
+        <main id="conteudo-principal" role="main" class="forum-dashboard container-fluid py-4">
+            <a href="#conteudo-principal" class="visually-hidden-focusable skip-link">Pular para o conteúdo principal</a>
 
             <div class="row g-4">
 
-                <div class="col-lg-8">
+                <div id="sidebar-wrapper" class="col-lg-3 d-none d-lg-block">
+                    <div class="p-3">
+                        <div class="d-flex justify-content-end mb-2">
+                            <button id="btn-collapse-sidebar" class="btn btn-outline-success btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-content" aria-expanded="true" aria-controls="sidebar-content">
+                                <i class="bi bi-chevron-left"></i>
+                            </button>
+                        </div>
+                        <div id="sidebar-content" class="collapse show">
+                            <div class="divulgacao-filters-sidebar card-custom bg-white shadow-sm p-3">
 
-                    <section class="mb-4" aria-labelledby="highlights-title">
-                        <h2 id="highlights-title" class="visually-hidden">Notícias e Eventos em Destaque</h2>
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <article class="divulgacao-card card h-100 shadow-sm">
-                                    <div class="card-body d-flex flex-column">
-                                        <h3 class="card-title">Seminário de Inovação</h3>
-                                        <p class="card-text">Evento sobre as mais novas tecnologias através de palestras
-                                            e presença.</p>
+                                <h2 class="mb-3 fw-bold text-success" style="font-size: 1.1rem;">Buscar Notícias</h2>
 
-                                        <button type="button" class="btn btn-divulgacao mt-auto" data-bs-toggle="modal"
-                                            data-bs-target="#modalVerNoticia"
-                                            data-noticia-titulo="Seminário de Inovação"
-                                            data-noticia-conteudo="Este é o conteúdo completo sobre o Seminário de Inovação. Evento sobre as mais novas tecnologias através de palestras e presença. Detalhes adicionais, datas e links irão aqui.">
-                                            Ver mais
+                                <form class="mb-4" onsubmit="event.preventDefault(); aplicarFiltros();" role="search">
+                                    <div class="input-group search-card-wrapper shadow-sm rounded-pill overflow-hidden bg-white">
+                                        <input type="search" id="pesquisar" class="form-control border-0 ps-4 py-2" placeholder="Pesquisar..." aria-label="Pesquisar no sistema de divulgação">
+                                        <button class="btn btn-success px-4" type="submit" aria-label="Executar Pesquisa">
+                                            <i class="bi bi-search"></i>
                                         </button>
                                     </div>
-                                </article>
-                            </div>
-                            <div class="col-md-4">
-                                <article class="divulgacao-card card h-100 shadow-sm">
-                                    <div class="card-body d-flex flex-column">
-                                        <h3 class="card-title">Pesquisa em IA</h3>
-                                        <p class="card-text">O projeto visa explorar soluções e estudá-las para
-                                            problemas.</p>
+                                </form>
 
-                                        <button type="button" class="btn btn-divulgacao mt-auto" data-bs-toggle="modal"
-                                            data-bs-target="#modalVerNoticia" data-noticia-titulo="Pesquisa em IA"
-                                            data-noticia-conteudo="O projeto visa explorar soluções e estudá-las para problemas complexos utilizando Inteligência Artificial. Mais informações sobre os pesquisadores envolvidos e como participar.">
-                                            Ver mais
-                                        </button>
-                                    </div>
-                                </article>
-                            </div>
-                            <div class="col-md-4">
-                                <article class="divulgacao-card card h-100 shadow-sm">
-                                    <div class="card-body d-flex flex-column">
-                                        <h3 class="card-title">Olimpíada de Matemática</h3>
-                                        <p class="card-text">Pesquisas sobre os efeitos da inteligência artificial.</p>
+                                <h5 class="sidebar-title fw-bold text-success">Filtros</h5>
 
-                                        <button type="button" class="btn btn-divulgacao mt-auto" data-bs-toggle="modal"
-                                            data-bs-target="#modalVerNoticia"
-                                            data-noticia-titulo="Olimpíada de Matemática"
-                                            data-noticia-conteudo="Detalhes sobre a Olimpíada de Matemática. Datas, locais de prova, e links para materiais de estudo. (O texto 'Pesquisas sobre os efeitos da inteligência artificial' parece ser um placeholder e deve ser trocado).">
-                                            Ver mais
-                                        </button>
+                                <form class="divulgacao-filters" onsubmit="event.preventDefault(); aplicarFiltros();">
+                                    <div class="mb-3">
+                                        <label for="filtrar-campus" class="form-label fw-bold small text-muted">Campus:</label>
+                                        <select id="filtrar-campus" name="campus" class="form-select" aria-label="Filtrar Campus">
+                                            <option value="">Todos os Campus</option>
+                                            <option value="mossoro">Mossoró</option>
+                                            <option value="paudosferros">Pau dos Ferros</option>
+                                        </select>
                                     </div>
-                                </article>
+                                    <div class="mb-3">
+                                        <label for="filtrar-categoria" class="form-label fw-bold small text-muted">Categoria:</label>
+                                        <select id="filtrar-categoria" name="categoria" class="form-select" aria-label="Filtrar Categoria">
+                                            <option value="">Todas as Categorias</option>
+                                            <option value="eventos">Eventos</option>
+                                            <option value="pesquisa">Pesquisa</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary filter-btn w-100 d-none">Aplicar Filtros</button>
+                                </form>
+
                             </div>
                         </div>
-                    </section>
+                    </div>
+                </div>
 
-                    <section class="post-news-section card shadow-sm mb-4 admin-only" aria-labelledby="post-news-title">
+                <div class="col-lg-9 col-md-12">
+                    <h1>Divulgação</h1>
+
+                    {% if current_user.is_admin %}
+                    <section class="post-news-section card shadow-sm mb-4" aria-labelledby="post-news-title">
                         <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3">
                             <h2 id="post-news-title" class="post-news-title mb-0">Painel de Admin:</h2>
 
@@ -121,63 +89,64 @@
                             </button>
                         </div>
                     </section>
+                    {% endif %}
 
-                    <section aria-labelledby="latest-news-title">
-                        <h2 id="latest-news-title" class="visually-hidden">Últimas Notícias e Projetos</h2>
-                        <div id="latest-news-list" class="row g-3">
+                    <div class="row g-4">
+                        <div class="col-lg-8">
+                            <section aria-labelledby="latest-news-title">
+                                <h2 id="latest-news-title" class="mb-3 fw-bold text-success" style="font-size: 1.5rem;">Últimas Notícias e Projetos</h2>
+                                <div id="latest-news-list" class="row g-3">
+                                    </div>
+                            </section>
                         </div>
-                    </section>
 
+                        <aside class="col-lg-4">
+                            <div class="sticky-top" style="top: 20px;">
+                                <section class="sidebar-widget-green shadow-sm mb-4 p-3" aria-labelledby="upcoming-events-title">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h2 id="upcoming-events-title" class="mb-0 fw-bold">Próximos Eventos</h2>
 
-                </div> <!-- fecha col-lg-8 -->
+                                        {% if current_user.is_admin %}
+                                        <button class="btn btn-light btn-sm" data-bs-toggle="modal"
+                                            data-bs-target="#modalAdicionarEvento"
+                                            style="border-radius: 50%; width: 32px; height: 32px; padding: 0;">
+                                            <i class="bi bi-plus-lg"></i>
+                                        </button>
+                                        {% endif %}
+                                    </div>
 
+                                    <ul id="upcoming-events-list">
+                                        <li>
+                                            <a href="#" aria-label="Detalhes da Semana de Tecnologia">Semana de Tecnologia</a>
+                                            <span>25/10</span>
+                                        </li>
+                                        <li>
+                                            <a href="#" aria-label="Detalhes da Feira de Ciências em 27 de Junho">Feira de Ciências</a>
+                                            <span>27/11</span>
+                                        </li>
+                                    </ul>
+                                </section>
 
-                >
-                <aside class="col-lg-4">
-                    <div class="sticky-top" style="top: 20px;">
-
-                        <section class="sidebar-widget-green shadow-sm mb-4" aria-labelledby="upcoming-events-title">
-
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h2 id="upcoming-events-title" class="mb-0">Próximos Eventos</h2>
-                                <button class="btn btn-light btn-sm admin-only" data-bs-toggle="modal"
-                                    data-bs-target="#modalAdicionarEvento"
-                                    style="border-radius: 50%; width: 32px; height: 32px; padding: 0;">
-                                    <i class="bi bi-plus-lg"></i>
-                                </button>
+                                <section class="sidebar-widget-green shadow-sm p-3" aria-labelledby="calendar-title">
+                                    <h2 id="calendar-title" class="fw-bold">Calendário de Eventos</h2>
+                                    <div class="calendar-embed-container">
+                                        <iframe
+                                            src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FSao_Paulo&bgcolor=%23386641&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&src=cHRicjM0OHM1ZzZnM2IzZnBnbnBqMHFvY2NAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&color=%23ffffff"
+                                            style="border:solid 1px #777" width="100%" height="400" frameborder="0"
+                                            scrolling="no"></iframe>
+                                    </div>
+                                </section>
                             </div>
-
-                            <ul id="upcoming-events-list">
-                                <li>
-                                    <a href="#" aria-label="Detalhes da Semana de Tecnologia">Semana de Tecnologia</a>
-                                    <span>25/10</span>
-                                </li>
-                                <li>
-                                    <a href="#" aria-label="Detalhes da Feira de Ciências em 27 de Junho">Feira de
-                                        Ciências</a>
-                                    <span>27/11</span>
-                                </li>
-                            </ul>
-                        </section>
-
-                        <section class="sidebar-widget-green shadow-sm" aria-labelledby="calendar-title">
-                            <h2 id="calendar-title">Calendário de Eventos</h2>
-                            <div class="calendar-embed-container">
-                                <iframe
-                                    src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FSao_Paulo&bgcolor=%23386641&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&src=cHRicjM0OHM1ZzZnM2IzZnBnbnBqMHFvY2NAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&color=%23ffffff"
-                                    style="border:solid 1px #777" width="800" height="600" frameborder="0"
-                                    scrolling="no"></iframe>
-                            </div>
-                        </section>
-
+                        </aside>
                     </div>
-                </aside>
-            </div>
+
+                </div> </div>
         </main>
 
         {% include 'footer.html' %}
 
     </div>
+
     <div class="modal fade" id="modalPostarNoticia" tabindex="-1" aria-labelledby="modalPostarNoticiaLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg modal-custom-verde">
@@ -243,67 +212,38 @@
         </div>
     </div>
 
-   <div class="modal fade" id="modalVerNoticia" tabindex="-1" aria-labelledby="modalVerNoticiaLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg modal-custom-verde">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalVerNoticiaLabel">Carregando...</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                
-                                <div class="modal-body">
-                    <img src="" id="modalVerNoticiaImagem" class="img-fluid rounded mb-3" alt="Imagem da Notícia"
-                        style="display: none; width: 100%;">
+    <div class="modal fade" id="modalVerNoticia" tabindex="-1" aria-labelledby="modalVerNoticiaLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg modal-custom-verde">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalVerNoticiaLabel">Carregando...</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
 
-                    <p id="modalVerNoticiaConteudo">Carregando conteúdo da notícia...</p>
-                
-                    <hr>
-                    <a href="#" id="modalVerNoticiaLinkExterno" class="btn btn-primary filter-btn me-2" target="_blank"
-                        style="display: none;">
-                        <i class="bi bi-link-45deg"></i> Acessar Link Externo
-                    </a>
-                    <a href="#" id="modalVerNoticiaArquivo" class="btn btn-secondary" target="_blank"
-                        style="display: none;">
-                        <i class="bi bi-paperclip"></i> Baixar Anexo
-                    </a>
-                </div>
-                
-                                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                </div>
-            </div>         </div>     </div>         <div class="modal fade" id="modalAdicionarEvento" tabindex="-1" aria-labelledby="modalAdicionarEventoLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-custom-verde">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalAdicionarEventoLabel">Adicionar Novo Evento</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="formAdicionarEvento">
-                        <div class="mb-3">
-                            <label for="eventoTitulo" class="form-label fw-bold">Nome do Evento:</label>
-                            <input type="text" class="form-control" id="eventoTitulo"
-                                placeholder="Ex: Semana de Tecnologia">
-                        </div>
-                        <div class="mb-3">
-                            <label for="eventoData" class="form-label fw-bold">Data do Evento:</label>
-                            <input type="text" class="form-control" id="eventoData" placeholder="Ex: 25/10">
-                        </div>
-                        <div class="mb-3">
-                            <label for="eventoLink" class="form-label fw-bold">Link (Opcional):</label>
-                            <input type="url" class="form-control" id="eventoLink" placeholder="https://...">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer" style="background-color: #f8f9fa;">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary filter-btn">Adicionar Evento</button>
-                </div>
-            </div>
-        </div>
-    </div>
+                <div class="modal-body">
+                    <img src="" id="modalVerNoticiaImagem" class="img-fluid rounded mb-3" alt="Imagem da Notícia"
+                        style="display: none; width: 100%;">
+
+                    <p id="modalVerNoticiaConteudo">Carregando conteúdo da notícia...</p>
+
+                    <hr>
+                    <a href="#" id="modalVerNoticiaLinkExterno" class="btn btn-primary filter-btn me-2" target="_blank"
+                        style="display: none;">
+                        <i class="bi bi-link-45deg"></i> Acessar Link Externo
+                    </a>
+                    <a href="#" id="modalVerNoticiaArquivo" class="btn btn-secondary" target="_blank"
+                        style="display: none;">
+                        <i class="bi bi-paperclip"></i> Baixar Anexo
+                    </a>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="modal fade" id="modalAdicionarEvento" tabindex="-1" aria-labelledby="modalAdicionarEventoLabel"
         aria-hidden="true">
@@ -337,18 +277,21 @@
             </div>
         </div>
     </div>
+
     <a href="{{ url_for('main.suporte') }}" class="help-btn help-btn-user"><i class="bi bi-headset"></i></a>
     <a href="{{ url_for('main.tela_denuncias') }}" class="help-btn help-btn-admin"><i class="bi bi-shield-check"></i></a>
+
     <div vw class="enabled">
         <div vw-access-button class="active"></div>
         <div vw-plugin-wrapper>
-          <div class="vw-plugin-top-wrapper"></div>
+            <div class="vw-plugin-top-wrapper"></div>
         </div>
-      </div>
-      <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    </div>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
     <script>
-     new window.VLibras.Widget('https://vlibras.gov.br/app');
+        new window.VLibras.Widget('https://vlibras.gov.br/app');
     </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
@@ -361,21 +304,21 @@
                 const titulo = button.getAttribute('data-noticia-titulo');
                 const conteudo = button.getAttribute('data-noticia-conteudo');
                 const imagemUrl = button.getAttribute('data-noticia-imagem-url');
-                const linkExterno = button.getAttribute('data-noticia-link-externo'); // <-- NOVO
-                const arquivoUrl = button.getAttribute('data-noticia-arquivo-url'); // <-- NOVO
+                const linkExterno = button.getAttribute('data-noticia-link-externo');
+                const arquivoUrl = button.getAttribute('data-noticia-arquivo-url');
 
                 // 2. Selecionar TODOS os elementos do Modal
                 const modalTitle = modalVerNoticia.querySelector('.modal-title');
                 const modalBody = modalVerNoticia.querySelector('#modalVerNoticiaConteudo');
                 const modalImage = modalVerNoticia.querySelector('#modalVerNoticiaImagem');
-                const modalLinkExterno = modalVerNoticia.querySelector('#modalVerNoticiaLinkExterno'); // <-- NOVO
-                const modalArquivo = modalVerNoticia.querySelector('#modalVerNoticiaArquivo'); // <-- NOVO
+                const modalLinkExterno = modalVerNoticia.querySelector('#modalVerNoticiaLinkExterno');
+                const modalArquivo = modalVerNoticia.querySelector('#modalVerNoticiaArquivo');
 
                 // 3. Atualizar Título e Conteúdo
                 modalTitle.textContent = titulo ? titulo : "Carregando...";
                 modalBody.textContent = conteudo ? conteudo : "Carregando conteúdo...";
 
-                // 4. Lógica da Imagem (como antes)
+                // 4. Lógica da Imagem
                 if (imagemUrl && modalImage) {
                     modalImage.src = imagemUrl;
                     modalImage.style.display = 'block';
@@ -384,30 +327,30 @@
                     modalImage.style.display = 'none';
                 }
 
-                // 5. LÓGICA DOS LINKS (NOVA)
+                // 5. LÓGICA DOS LINKS
 
                 // Link Externo
                 if (linkExterno && modalLinkExterno) {
                     modalLinkExterno.href = linkExterno;
-                    modalLinkExterno.style.display = 'inline-block'; // Mostra o botão
+                    modalLinkExterno.style.display = 'inline-block';
                 } else if (modalLinkExterno) {
                     modalLinkExterno.href = '#';
-                    modalLinkExterno.style.display = 'none'; // Esconde o botão
+                    modalLinkExterno.style.display = 'none';
                 }
 
                 // Arquivo Anexo
                 if (arquivoUrl && modalArquivo) {
                     modalArquivo.href = arquivoUrl;
-                    modalArquivo.style.display = 'inline-block'; // Mostra o botão
+                    modalArquivo.style.display = 'inline-block';
                 } else if (modalArquivo) {
                     modalArquivo.href = '#';
-                    modalArquivo.style.display = 'none'; // Esconde o botão
+                    modalArquivo.style.display = 'none';
                 }
             });
         }
     </script>
-    <script>
 
+    <script>
         const selFiltroCampus = document.getElementById('filtrar-campus');
         const selFiltroCategoria = document.getElementById('filtrar-categoria');
 
@@ -416,14 +359,16 @@
 
         const modalPostar = document.getElementById('modalPostarNoticia');
 
-        modalPostar.addEventListener('show.bs.modal', () => {
-            selModalCampus.value = selFiltroCampus.value;
-            selModalCategoria.value = selFiltroCategoria.value;
-        });
+        if (modalPostar) {
+            modalPostar.addEventListener('show.bs.modal', () => {
+                // Preenche o modal de postar com os valores dos filtros atuais
+                selModalCampus.value = selFiltroCampus.value;
+                selModalCategoria.value = selFiltroCategoria.value;
+            });
+        }
     </script>
 
     <script>
-
         const selCampus = document.getElementById('filtrar-campus');
         const selCategoria = document.getElementById('filtrar-categoria');
         const inputBusca = document.getElementById('pesquisar');
@@ -478,26 +423,38 @@
 
         document.addEventListener('DOMContentLoaded', aplicarFiltros);
     </script>
-    <script>
 
+    <script>
         document.addEventListener("DOMContentLoaded", async () => {
             const noticiasContainer = document.getElementById("latest-news-list");
-            const eventosContainer = document.getElementById("upcoming-events-list"); // Agora vai funcionar
+            const eventosContainer = document.getElementById("upcoming-events-list");
 
             // 1. Carregar Notícias
             try {
-                const response = await fetch("/api/noticias"); // Rota corrigida
+                const response = await fetch("/api/noticias");
                 const noticias = await response.json();
 
                 noticiasContainer.innerHTML = "";
                 noticias.forEach(n => {
+                    // 1.1. Lógica do Botão de Excluir (apenas se for admin)
+                    let deleteButtonHtml = '';
+                    if (IS_ADMIN) {
+                        deleteButtonHtml = `
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-outline-danger position-absolute top-0 end-0 mt-2 me-2"
+                                data-id="${n.id}"
+                                onclick="event.preventDefault(); event.stopPropagation(); deletarNoticia(${n.id}, this);">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        `;
+                    }
+
                     const card = document.createElement("div");
                     card.classList.add("col-md-6");
 
-                    // Este HTML está ótimo, pois inclui os data-attributes para o filtro
-                    // ...
                     card.innerHTML = `
-                                <a href="#" class="latest-news-card card shadow-sm text-decoration-none h-100" 
+                                <a href="#" class="latest-news-card card shadow-sm text-decoration-none h-100"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modalVerNoticia"
                                     data-noticia-titulo="${n.titulo}"
@@ -505,29 +462,20 @@
                                     data-noticia-imagem-url="${n.imagem_url || ''}"
                                     data-noticia-link-externo="${n.link_externo || ''}"
                                     data-noticia-arquivo-url="${n.arquivo_url || ''}"
-                                    data-campus="${n.campus || ''}" 
+                                    data-campus="${n.campus || ''}"
                                     data-categoria="${n.categoria || ''}">
 
                                 <div class="card-body position-relative">
-                                    <button 
-                                        type="button" 
-                                        class="btn btn-sm btn-outline-danger admin-only position-absolute top-0 end-0 mt-2 me-2"
-                                        data-id="${n.id}"
-                                        onclick="event.preventDefault(); event.stopPropagation(); deletarNoticia(${n.id}, this);">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-
-                                    <h3 class="card-title pe-4">${n.titulo}</h3> <p class="card-text text-muted mb-0">
+                                    ${deleteButtonHtml} <h3 class="card-title pe-4">${n.titulo}</h3> <p class="card-text text-muted mb-0">
                                         Campus: ${n.campus || "Não informado"}
                                     </p>
                                 </div>
                                 </a>
                                 `;
-                    // ...
+
                     noticiasContainer.appendChild(card);
                 });
 
-                // IMPORTANTE: Aplica os filtros DEPOIS que as notícias foram carregadas
                 if (typeof aplicarFiltros === 'function') {
                     aplicarFiltros();
                 }
@@ -539,34 +487,47 @@
 
             // 2. Carregar Eventos
             try {
-                const resp = await fetch('/api/eventos'); // Rota que criamos no Ponto 2.2
+                const resp = await fetch('/api/eventos');
                 const eventos = await resp.json();
 
-                if (eventosContainer) { // Verifica se o container existe
-                    eventosContainer.innerHTML = ''; // Limpa os eventos estáticos
-                    if (eventos.length === 0) {
+                if (eventosContainer) {
+                    // Limpa os eventos estáticos, se existirem
+                    const staticEvents = eventosContainer.querySelectorAll('li');
+                    staticEvents.forEach(li => {
+                        if (li.querySelector('span')) { // Heurística simples para manter o JS carregando dinamicamente
+                            li.remove();
+                        }
+                    });
+
+                    if (eventos.length === 0 && eventosContainer.children.length === 0) {
                         eventosContainer.innerHTML = "<li>Nenhum evento futuro.</li>";
                     }
+
                     eventos.forEach(e => {
-                        // Formata a data
                         const dataEvento = new Date(e.data_hora_inicio).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
-                        // ...
+
+                        // 2.1. Lógica do Botão de Excluir Evento (apenas se for admin)
+                        let deleteEventButtonHtml = '';
+                        if (IS_ADMIN) {
+                            deleteEventButtonHtml = `
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-outline-danger"
+                                    data-id="${e.id}"
+                                    onclick="deletarEvento(${e.id}, this)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            `;
+                        }
+
                         const li = `
-<li class="d-flex justify-content-between align-items-center mb-2">
-    <div>
-        <a href="#" aria-label="Detalhes de ${e.titulo}">${e.titulo}</a>
-        <span class="ms-2 text-muted">${dataEvento}</span>
-    </div>
-    <button 
-        type="button"
-        class="btn btn-sm btn-outline-danger admin-only" 
-        data-id="${e.id}"
-        onclick="deletarEvento(${e.id}, this)">
-        <i class="bi bi-trash"></i>
-    </button>
-</li>`;
+                            <li class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                    <a href="#" aria-label="Detalhes de ${e.titulo}">${e.titulo}</a>
+                                    <span class="ms-2 text-muted">${dataEvento}</span>
+                                </div>
+                                ${deleteEventButtonHtml} </li>`;
                         eventosContainer.insertAdjacentHTML('beforeend', li);
-                        // ...
                     });
                 }
             } catch (err) {
@@ -576,42 +537,46 @@
         });
 
     </script>
+
     <script>
         // --- Lógica para ENVIAR NOVA NOTÍCIA ---
         const formNoticia = document.getElementById('formPostarNoticia');
         const btnNoticia = document.querySelector('#modalPostarNoticia .btn-primary.filter-btn');
 
         if (formNoticia && btnNoticia) {
-            // Mapeia o clique do botão para "submeter" o formulário
             btnNoticia.addEventListener('click', () => {
                 formNoticia.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
             });
 
             formNoticia.addEventListener('submit', async (e) => {
-                e.preventDefault(); // Impede o envio tradicional
+                e.preventDefault();
                 btnNoticia.disabled = true;
                 btnNoticia.textContent = "Publicando...";
 
                 const formData = new FormData();
 
-                // Mapeia os IDs do form para os nomes que a API espera
                 formData.append('titulo', document.getElementById('noticiaTitulo').value);
                 formData.append('conteudo', document.getElementById('noticiaConteudo').value);
                 formData.append('campus', document.getElementById('noticiaCampus').value);
                 formData.append('categoria', document.getElementById('noticiaCategoria').value);
                 formData.append('link_externo', document.getElementById('noticiaLink').value);
-                formData.append('imagem', document.getElementById('noticiaImagem').files[0]);
-                formData.append('arquivo', document.getElementById('noticiaArquivo').files[0]);
+
+                const imagemFile = document.getElementById('noticiaImagem').files[0];
+                const arquivoFile = document.getElementById('noticiaArquivo').files[0];
+
+                if (imagemFile) formData.append('imagem', imagemFile);
+                if (arquivoFile) formData.append('arquivo', arquivoFile);
+
 
                 try {
-                    const response = await fetch('/api/noticias', { // Rota POST
+                    const response = await fetch('/api/noticias', {
                         method: 'POST',
                         body: formData
                     });
 
                     if (response.ok) {
                         alert('Notícia publicada com sucesso!');
-                        location.reload(); // Recarrega a página
+                        location.reload();
                     } else {
                         alert('Erro ao publicar notícia.');
                     }
@@ -630,7 +595,6 @@
         const btnEvento = document.querySelector('#modalAdicionarEvento .btn-primary.filter-btn');
 
         if (formEvento && btnEvento) {
-            // Mapeia o clique do botão
             btnEvento.addEventListener('click', () => {
                 formEvento.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
             });
@@ -642,11 +606,11 @@
 
                 const formData = new FormData();
                 formData.append('titulo', document.getElementById('eventoTitulo').value);
-                formData.append('data', document.getElementById('eventoData').value); // API espera 'data'
-                formData.append('link', document.getElementById('eventoLink').value); // API espera 'link'
+                formData.append('data', document.getElementById('eventoData').value);
+                formData.append('link', document.getElementById('eventoLink').value);
 
                 try {
-                    const response = await fetch('/api/eventos', { // Rota POST que criamos
+                    const response = await fetch('/api/eventos', {
                         method: 'POST',
                         body: formData
                     });
@@ -670,6 +634,7 @@
 
     <script>
         async function deletarNoticia(id, buttonElement) {
+            if (!IS_ADMIN) return alert('Acesso negado.');
             if (!confirm('Tem certeza que deseja excluir esta notícia? Esta ação não pode ser desfeita.')) {
                 return;
             }
@@ -683,7 +648,6 @@
                 });
 
                 if (response.ok) {
-                    // Encontra o 'col-md-6' mais próximo e remove
                     buttonElement.closest('.col-md-6').remove();
                 } else {
                     alert('Erro ao excluir a notícia.');
@@ -699,6 +663,7 @@
         }
 
         async function deletarEvento(id, buttonElement) {
+            if (!IS_ADMIN) return alert('Acesso negado.');
             if (!confirm('Tem certeza que deseja excluir este evento?')) {
                 return;
             }
@@ -712,7 +677,6 @@
                 });
 
                 if (response.ok) {
-                    // Encontra o 'li' mais próximo e remove
                     buttonElement.closest('li').remove();
                 } else {
                     alert('Erro ao excluir o evento.');
@@ -727,78 +691,93 @@
             }
         }
     </script>
+
     <script>
-  // --- Lógica de Acessibilidade ---
+        // --- Lógica de Acessibilidade ---
 
-  // 1. Abrir/Fechar Menu
-  function toggleAccessMenu() {
-    const menu = document.getElementById('access-menu');
-    menu.classList.toggle('show');
-  }
+        // Inicializa o estado da sidebar (recolhida em telas pequenas)
+        const sidebarWrapper = document.getElementById('sidebar-wrapper');
+        const btnCollapse = document.getElementById('btn-collapse-sidebar');
+        const sidebarContent = document.getElementById('sidebar-content');
 
-  // 2. Alto Contraste
-  function toggleContrast() {
-    document.body.classList.toggle('high-contrast');
-    if (document.body.classList.contains('high-contrast')) {
-      localStorage.setItem('contrast', 'true');
-    } else {
-      localStorage.removeItem('contrast');
-    }
-  }
+        // Lógica de colapso do botão (Desktop)
+        if (btnCollapse && sidebarContent) {
+            sidebarContent.addEventListener('shown.bs.collapse', function () {
+                btnCollapse.innerHTML = '<i class="bi bi-chevron-left"></i>';
+            });
+            sidebarContent.addEventListener('hidden.bs.collapse', function () {
+                btnCollapse.innerHTML = '<i class="bi bi-chevron-right"></i>';
+            });
+        }
 
-  // Verifica preferência salva
-  if (localStorage.getItem('contrast') === 'true') {
-    document.body.classList.add('high-contrast');
-  }
+        // Acessibilidade
+        function toggleAccessMenu() {
+            const menu = document.getElementById('access-menu');
+            menu.classList.toggle('show');
+        }
 
-  // 3. Controle de Fonte
-  let currentFontSize = 100; 
+        function toggleContrast() {
+            document.body.classList.toggle('high-contrast');
+            if (document.body.classList.contains('high-contrast')) {
+                localStorage.setItem('contrast', 'true');
+            } else {
+                localStorage.removeItem('contrast');
+            }
+        }
 
-  function increaseFont() {
-    if (currentFontSize < 150) {
-      currentFontSize += 10;
-      document.body.style.fontSize = currentFontSize + '%';
-    }
-  }
+        if (localStorage.getItem('contrast') === 'true') {
+            document.body.classList.add('high-contrast');
+        }
 
-  function decreaseFont() {
-    if (currentFontSize > 80) {
-      currentFontSize -= 10;
-      document.body.style.fontSize = currentFontSize + '%';
-    }
-  }
+        let currentFontSize = 100;
 
-  function resetAccess() {
-    currentFontSize = 100;
-    document.body.style.fontSize = '100%';
-    document.body.classList.remove('high-contrast');
-    localStorage.removeItem('contrast');
-  }
-</script>
-  <div id="access-menu" class="access-menu-container">
-    <h6 class="mb-3 border-bottom pb-2">Acessibilidade</h6>
-    <div class="d-grid gap-2">
-      <button class="btn btn-sm btn-outline-dark d-flex justify-content-between align-items-center" onclick="toggleContrast()">
-        <span>Alto Contraste</span>
-        <i class="bi bi-circle-half"></i>
-      </button>
-      <div class="btn-group" role="group">
-        <button class="btn btn-sm btn-outline-dark" onclick="increaseFont()">
-          <i class="bi bi-zoom-in"></i> Aumentar
-        </button>
-        <button class="btn btn-sm btn-outline-dark" onclick="decreaseFont()">
-          <i class="bi bi-zoom-out"></i> Diminuir
-        </button>
-      </div>
-      <button class="btn btn-sm btn-outline-danger" onclick="resetAccess()">
-        <i class="bi bi-arrow-counterclockwise"></i> Resetar
-      </button>
+        function increaseFont() {
+            if (currentFontSize < 150) {
+                currentFontSize += 10;
+                document.body.style.fontSize = currentFontSize + '%';
+            }
+        }
+
+        function decreaseFont() {
+            if (currentFontSize > 80) {
+                currentFontSize -= 10;
+                document.body.style.fontSize = currentFontSize + '%';
+            }
+        }
+
+        function resetAccess() {
+            currentFontSize = 100;
+            document.body.style.fontSize = '100%';
+            document.body.classList.remove('high-contrast');
+            localStorage.removeItem('contrast');
+        }
+    </script>
+
+    <div id="access-menu" class="access-menu-container">
+        <h6 class="mb-3 border-bottom pb-2">Acessibilidade</h6>
+        <div class="d-grid gap-2">
+            <button class="btn btn-sm btn-outline-dark d-flex justify-content-between align-items-center"
+                onclick="toggleContrast()">
+                <span>Alto Contraste</span>
+                <i class="bi bi-circle-half"></i>
+            </button>
+            <div class="btn-group" role="group">
+                <button class="btn btn-sm btn-outline-dark" onclick="increaseFont()">
+                    <i class="bi bi-zoom-in"></i> Aumentar
+                </button>
+                <button class="btn btn-sm btn-outline-dark" onclick="decreaseFont()">
+                    <i class="bi bi-zoom-out"></i> Diminuir
+                </button>
+            </div>
+            <button class="btn btn-sm btn-outline-danger" onclick="resetAccess()">
+                <i class="bi bi-arrow-counterclockwise"></i> Resetar
+            </button>
+        </div>
     </div>
-  </div>
 
-  <button class="btn-access-float" onclick="toggleAccessMenu()" title="Opções de Acessibilidade">
-    <i class="bi bi-universal-access"></i>
-  </button>
+    <button class="btn-access-float" onclick="toggleAccessMenu()" title="Opções de Acessibilidade">
+        <i class="bi bi-universal-access"></i>
+    </button>
 </body>
 
 </html>
