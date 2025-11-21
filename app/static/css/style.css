@@ -2388,3 +2388,443 @@ body.high-contrast .profile-banner {
     right: 20px;
   }
 }
+
+/* --- ESTILO TELA DE COMUNIDADES (DESIGN NOVO) --- */
+
+/* Fundo geral da área de conteúdo para dar o efeito de "folha branca" */
+.content-wrapper-rounded {
+    background-color: #fff;
+    border-radius: 40px 40px 0 0; /* Arredonda só em cima */
+    padding: 40px;
+    min-height: 80vh;
+    margin-top: -30px; /* Puxa um pouco para cima se quiser sobrepor o header, ajuste conforme sua navbar */
+    position: relative;
+    z-index: 10;
+}
+
+/* Barra de Ferramentas (Pesquisa, Abas, Botão +) */
+.community-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+/* Barra de Pesquisa Cinza */
+.search-bar-gray {
+    background-color: #EAEAEA;
+    border-radius: 30px;
+    padding: 10px 20px;
+    border: none;
+    min-width: 300px;
+    display: flex;
+    align-items: center;
+}
+.search-bar-gray input {
+    background: transparent;
+    border: none;
+    outline: none;
+    width: 100%;
+    color: #555;
+}
+.search-bar-gray i {
+    color: #999;
+    margin-right: 10px;
+}
+
+/* Botões de Aba (Explorar / Minhas Comunidades) */
+.nav-pills-custom {
+    display: flex;
+    gap: 10px;
+    background: transparent;
+}
+
+.btn-tab {
+    border: 2px solid #386641;
+    color: #386641;
+    background: transparent;
+    border-radius: 30px;
+    padding: 8px 25px;
+    font-weight: 600;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.btn-tab.active {
+    background-color: #386641;
+    color: white;
+}
+
+.btn-tab:hover {
+    background-color: #2a4b30;
+    color: white;
+    border-color: #2a4b30;
+}
+
+/* Botão de Adicionar (+) */
+.btn-add-circle {
+    width: 45px;
+    height: 45px;
+    background-color: #386641;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    border: none;
+    transition: transform 0.2s;
+}
+.btn-add-circle:hover {
+    transform: scale(1.1);
+    background-color: #2a4b30;
+    color: white;
+}
+
+/* --- CARD ESTILO REFERÊNCIA (VERDE SÓLIDO + FOTO ESQUERDA) --- */
+
+.card-ref-green {
+    background-color: #386641; /* Verde IFRN Sólido */
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;       /* Alinha itens lado a lado */
+    align-items: center; /* Centraliza verticalmente */
+    gap: 20px;           /* Espaço entre foto e texto */
+    color: white;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: none;
+    height: 100%;        /* Garante altura igual na grid */
+    min-height: 150px;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-ref-green:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(56, 102, 65, 0.3);
+}
+
+/* Foto da Comunidade (Grande e Redonda na Esquerda) */
+.card-ref-img {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #fff; /* Fundo branco se a img for transparente */
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    flex-shrink: 0; /* Impede a imagem de esmagar */
+}
+
+/* Corpo de Texto (Direita) */
+.card-ref-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.card-ref-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    line-height: 1.2;
+    color: #fff;
+}
+
+.card-ref-desc {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    margin-bottom: 12px;
+    color: #e0e0e0;
+    display: -webkit-box;
+
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Botão "Visitar" (Pílula Cinza/Branca) */
+.btn-visit-pill {
+    background-color: #E0E0E0;
+    color: #222;
+    border-radius: 30px;
+    padding: 6px 24px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-decoration: none;
+    display: inline-block;
+    width: fit-content;
+    transition: all 0.2s;
+    border: none;
+}
+
+.btn-visit-pill:hover {
+    background-color: #fff;
+    transform: scale(1.05);
+    color: #000;
+}
+
+/* Ícone de Seta/Canto Superior Direito */
+.icon-corner {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255,255,255,0.15);
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+/* Texto do Card */
+.comm-info h5 {
+    font-weight: 700;
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+}
+.comm-info p {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    line-height: 1.3;
+    margin-bottom: 15px;
+}
+
+/* Botão Visitar (Pílula Branca) */
+.btn-visit {
+    background-color: #D9D9D9; /* Cinza claro/Branco gelo */
+    color: #333;
+    border-radius: 20px;
+    padding: 5px 25px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    display: inline-block;
+    border: none;
+}
+.btn-visit:hover {
+    background-color: #fff;
+    color: #000;
+}
+
+/* Ícone de alfinete/fixado no canto */
+.icon-top-right {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255,255,255,0.2);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+}
+
+/* Layout de Scroll Horizontal (Minhas Comunidades) */
+.horizontal-scroll-wrapper {
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+    padding-bottom: 20px; /* Espaço para scrollbar */
+}
+/* Esconder scrollbar padrão mas manter funcionalidade */
+.horizontal-scroll-wrapper::-webkit-scrollbar {
+    height: 8px;
+}
+.horizontal-scroll-wrapper::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+
+/* --- ESTILOS DA TELA DE DETALHE DA COMUNIDADE --- */
+
+/* Avatar Grande no Topo */
+.comm-header-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #386641;
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 5px solid #f8f9fa; /* Borda para separar */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Cards da Sidebar (Sobre, Regras) */
+.sidebar-card {
+    background-color: #f8f9fa; /* Cinza bem claro */
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 20px;
+    border: 1px solid #eee;
+}
+
+.sidebar-title {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #386641;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 10px;
+}
+
+/* Lista de Moderadores */
+.mod-list-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* --- FILTROS DE CATEGORIA (TAGS) --- */
+
+.category-scroll-wrapper {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+    /* Esconde a barra de rolagem feia mas mantém a função */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE 10+ */
+}
+.category-scroll-wrapper::-webkit-scrollbar { 
+    display: none; /* Chrome/Safari */
+}
+
+.btn-tag {
+    white-space: nowrap; /* Impede quebra de linha */
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: 1px solid #ddd;
+    background-color: white;
+    color: #555;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-tag:hover {
+    background-color: #f0f0f0;
+    color: #333;
+    border-color: #ccc;
+    transform: translateY(-2px);
+}
+
+/* Tag Ativa (Selecionada) */
+.btn-tag.active {
+    background-color: #386641;
+    color: white;
+    border-color: #386641;
+    box-shadow: 0 4px 10px rgba(56, 102, 65, 0.3);
+}
+
+/* --- ESTILO DE COMENTÁRIOS (ATUALIZADO) --- */
+
+/* Container do Comentário */
+.comment-wrapper {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+/* O Balão do Comentário */
+.comment-bubble {
+    background-color: #f0f2f5; /* Cinza estilo Facebook */
+    border-radius: 18px;
+    padding: 12px 18px;
+    position: relative;
+    display: inline-block;
+    min-width: 200px;
+}
+
+/* Nome do Autor */
+.comment-author-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    display: block;
+    margin-bottom: 4px;
+    text-decoration: none;
+}
+
+/* Texto do Comentário */
+.comment-content-text {
+    font-size: 1rem; /* Fonte MAIOR */
+    color: #333;
+    line-height: 1.5;
+    white-space: pre-line; /* Mantém parágrafos */
+    margin-bottom: 0;
+}
+
+/* Data e Botão Responder (Ficam fora do balão) */
+.comment-actions {
+    display: flex;
+    gap: 15px;
+    margin-left: 15px;
+    margin-top: 5px;
+    font-size: 0.8rem;
+}
+
+.comment-date {
+    color: #888;
+}
+
+.btn-reply-action {
+    color: #555;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.btn-reply-action:hover {
+    color: #386641;
+    text-decoration: underline;
+}
+
+/* Imagem dentro do comentário */
+.comment-image-preview {
+    max-width: 100%;
+    border-radius: 12px;
+    margin-top: 10px;
+    border: 1px solid rgba(0,0,0,0.1);
+    max-height: 300px;
+    object-fit: cover;
+}
+
+/* --- ESTILO "INSTAGRAM" (SEM ESCADINHA INFINITA) --- */
+
+.replies-container {
+    display: block !important;
+    margin-left: 50px !important; /* Empurra 50px para a direita */
+    padding-left: 15px !important;
+    border-left: 4px solid #386641 !important; /* Linha verde grossa para ver se funcionou */
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+}
+
+/* Diferenciar a cor do filho */
+.replies-container .comment-bubble {
+    background-color: #e8f5e9 !important; /* Fundo levemente verde */
+}
