@@ -905,10 +905,13 @@ def suporte():
         termo_busca=termo_busca
     )
 
+# PARTE ADMIN IIIIINNNNNNNN
 @main_bp.route('/tela_admin')
 @login_required
 def tela_admin():
     if current_user.is_admin:
-        return render_template('tela_admin.html')
-    
+        # Pega a quantidade exata de usuarios cadastrados
+        users_count = User.query.count()
+
+        return render_template('tela_admin.html', users_count=users_count)
     return redirect(request.referrer)

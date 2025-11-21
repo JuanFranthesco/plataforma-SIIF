@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, render_template, current_app
-from app.models import Noticia, Evento, db 
+from app.models import Noticia, Evento, db, User
 from datetime import datetime, timezone
 import os
 from werkzeug.utils import secure_filename
@@ -192,3 +192,22 @@ def excluir_evento(evento_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"erro": str(e)}), 500
+
+
+# Api para buscar usuarios na parte de controle pelo admin
+@api.route("/api/usuarios")
+def api_usuarios():
+    # retorna usuários ordenados pela matrícula
+    users = User.query.order_by(User.matricula.asc()).all()
+
+    return {
+        "usuarios": [
+            {
+                "name": u.name if hasattr(u, "name") else "",
+                "matricula": u.matricula
+            }
+            for u in users
+        ]
+    }
+
+
