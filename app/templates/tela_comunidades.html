@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Comunidades - SIIF</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="role-user" style="background-color: #386641;">
+
+    <div class="page-container" style="background: transparent; box-shadow: none;">
+        
+        <nav class="navbar navbar-expand-lg navbar-custom">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="#"><img src="{{ url_for('static', filename='img/LOGO.png') }}" alt="Logo"></a>
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><i class="bi bi-list text-white"></i></button>
+              <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('main.tela_inicial') }}">Início</a></li>
+                  <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('main.tela_foruns') }}">Fórum</a></li>
+                  <li class="nav-item"><a class="nav-link active text-white fw-bold" href="{{ url_for('main.tela_comunidades') }}" style="border-bottom: 2px solid white;">Comunidades</a></li>
+                  <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('main.tela_materiais') }}">Materiais</a></li>
+                </ul>
+                <a href="{{ url_for('main.tela_perfil') }}" class="profile-link ms-lg-auto">
+                  <span>{{ current_user.name }}</span>
+                  <div class="profile-pic"><img src="{{ current_user.foto_url or url_for('static', filename='img/image.png') }}"></div>
+                </a>
+              </div>
+            </div>
+        </nav>
+
+        <div class="content-wrapper-rounded mt-2">
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm rounded-4 mb-4">
+                            {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h2 style="color: #386641; font-weight: 800; letter-spacing: -1px;">Comunidades</h2>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                <form class="search-bar-gray flex-grow-1" method="GET">
+                    <i class="bi bi-search"></i>
+                    {% if categoria_atual %}
+                        <input type="hidden" name="categoria" value="{{ categoria_atual }}">
+                    {% endif %}
+                    <input type="text" name="q" placeholder="Buscar comunidades..." value="{{ busca or '' }}">
+                </form>
+
+                <div class="nav-pills-custom">
+                    <button class="btn-tab active" id="btn-explorar" onclick="showTab('explorar')">Explorar Todas</button>
+                    <button class="btn-tab" id="btn-minhas" onclick="showTab('minhas')">Minhas Comunidades</button>
+                </div>
+
+                <button class="btn-add-circle shadow" data-bs-toggle="modal" data-bs-target="#modalCriarComunidade" title="Criar Nova Comunidade">
+                    <i class="bi bi-plus"></i>
+                </button>
+            </div>
+
+            <div id="filter-bar-container">
+                <h6 class="fw-bold text-muted small mb-2 ps-1">FILTRAR POR TEMA</h6>
+                <div class="category-scroll-wrapper">
+                    <a href="{{ url_for('main.tela_comunidades') }}" 
+                       class="btn-tag {% if not categoria_atual or categoria_atual == 'Todas' %}active{% endif %}">
+                       Todas
+                    </a>
+
+                    {% for cat in categorias %}
+                        <a href="{{ url_for('main.tela_comunidades', categoria=cat) }}" 
+                           class="btn-tag {% if categoria_atual == cat %}active{% endif %}">
+                           {{ cat }}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div id="view-explorar">
+                <div class="row g-4">
+                    {% for com in comunidades %}
+                    <div class="col-lg-6">
+                        <div class="card-ref-green">
+                            <div class="icon-corner"><i class="bi bi-arrow-up-right"></i></div>
+                            
+                            {% if com.imagem_url and 'static' in com.imagem_url %}
+                                <img src="{{ com.imagem_url }}" class="card-ref-img" alt="Logo">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='img/image.png') }}" class="card-ref-img" alt="Logo">
+                            {% endif %}
+                            
+                            <div class="card-ref-body">
+                                <div class="card-ref-title">{{ com.nome }}</div>
+                                
+                                <div class="mb-2">
+                                    <span class="badge bg-white text-success bg-opacity-25 border border-white border-opacity-25 rounded-pill" style="font-weight: normal; font-size: 0.7rem;">
+                                        {{ com.categoria }}
+                                    </span>
+                                </div>
+
+                                <p class="card-ref-desc">{{ com.descricao }}</p>
+                                
+                                <div class="d-flex align-items-center justify-content-between w-100">
+                                    {% if current_user in com.membros %}
+                                        <a href="{{ url_for('main.ver_comunidade', comunidade_id=com.id) }}" class="btn-visit-pill">Visitar</a>
+                                    {% else %}
+                                        <a href="{{ url_for('main.ver_comunidade', comunidade_id=com.id) }}" class="btn-visit-pill">Visitar</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                        <div class="col-12 text-center py-5 text-muted">
+                            <i class="bi bi-search fs-1 mb-3 d-block opacity-25"></i>
+                            <p>Nenhuma comunidade encontrada nesta categoria.</p>
+                            <a href="{{ url_for('main.tela_comunidades') }}" class="btn btn-outline-success btn-sm rounded-pill">Ver Todas</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div id="view-minhas" class="d-none">
+                {% if current_user.comunidades_seguidas %}
+                <div class="row g-4">
+                    {% for com in current_user.comunidades_seguidas %}
+                    <div class="col-lg-6">
+                        <div class="card-ref-green">
+                            <div class="icon-corner bg-white text-success"><i class="bi bi-check-lg"></i></div>
+                            
+                            {% if com.imagem_url and 'static' in com.imagem_url %}
+                                <img src="{{ com.imagem_url }}" class="card-ref-img">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='img/image.png') }}" class="card-ref-img">
+                            {% endif %}
+
+                            <div class="card-ref-body">
+                                <div class="card-ref-title">{{ com.nome }}</div>
+                                <p class="card-ref-desc">{{ com.descricao }}</p>
+                                <a href="{{ url_for('main.ver_comunidade', comunidade_id=com.id) }}" class="btn-visit-pill">Acessar</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                    <div class="text-center py-5 text-muted">
+                        <p>Você ainda não participa de nenhuma comunidade.</p>
+                        <button class="btn btn-outline-success btn-sm rounded-pill" onclick="showTab('explorar')">Começar a Explorar</button>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalCriarComunidade" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <form class="modal-content border-0 shadow-lg rounded-4" method="POST" action="{{ url_for('main.criar_comunidade') }}" enctype="multipart/form-data">
+                <div class="modal-header bg-success text-white border-0 p-4">
+                    <div><h5 class="modal-title fw-bold">Fundar Nova Comunidade</h5></div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-4">
+                        <div class="col-md-7">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-secondary">NOME</label>
+                                <input type="text" class="form-control bg-light border-0 p-2" name="nome" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-secondary">DESCRIÇÃO</label>
+                                <textarea class="form-control bg-light border-0 p-3" name="descricao" rows="4" required></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-secondary">CATEGORIA</label>
+                                <select class="form-select bg-light border-0 p-2" name="categoria">
+                                    <option value="Geral">Geral</option>
+                                    <option value="Grupo de Estudo">📚 Grupo de Estudo</option>
+                                    <option value="Projeto de Pesquisa">🔬 Projeto de Pesquisa</option>
+                                    <option value="Esportes">⚽ Esportes</option>
+                                    <option value="Eventos">📅 Eventos</option>
+                                    <option value="Tecnologia">💻 Tecnologia</option>
+                                    <option value="Artes">🎨 Artes e Cultura</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-secondary">TIPO</label>
+                                <select class="form-select bg-light border-0 p-2" name="tipo">
+                                    <option value="Público">Público</option>
+                                    <option value="Restrito">Restrito</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-secondary">LOGO</label>
+                                <input type="file" class="form-control form-control-sm" name="imagem" accept="image/*">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0 bg-white rounded-bottom-4">
+                    <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success fw-bold rounded-pill px-5 shadow-sm">Criar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        function showTab(tabName) {
+            document.getElementById('view-explorar').classList.add('d-none');
+            document.getElementById('view-minhas').classList.add('d-none');
+            document.getElementById('btn-explorar').classList.remove('active');
+            document.getElementById('btn-minhas').classList.remove('active');
+
+            document.getElementById('view-' + tabName).classList.remove('d-none');
+            document.getElementById('btn-' + tabName).classList.add('active');
+            
+            // Oculta a barra de filtros se estiver na aba "Minhas"
+            const filterBar = document.getElementById('filter-bar-container');
+            if (tabName === 'minhas') {
+                filterBar.classList.add('d-none');
+            } else {
+                filterBar.classList.remove('d-none');
+            }
+        }
+    </script>
+</body>
+</html>
