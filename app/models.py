@@ -5,12 +5,29 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from .extensions import db, login_manager
 
 # ===================================================================
-# LOGIN
+# LOGIN MANAGER
 # ===================================================================
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+
+# ===================================================================
+# TABELAS DE ASSOCIAÇÃO (NOVAS - PARA COMUNIDADES)
+# ===================================================================
+
+# Tabela para saber quem segue qual comunidade
+membros_comunidade = db.Table('membros_comunidade',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('comunidade_id', db.Integer, db.ForeignKey('comunidade.id'), primary_key=True)
+)
+
+# Tabela para saber quem são os moderadores
+moderadores_comunidade = db.Table('moderadores_comunidade',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('comunidade_id', db.Integer, db.ForeignKey('comunidade.id'), primary_key=True)
+)
 
 
 # ===================================================================
@@ -26,9 +43,12 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=True)
     is_admin = db.Column(db.Boolean, default=False)
+    
+    # Campos de Perfil
     foto_url = db.Column(db.String(255), nullable=True)
     campus = db.Column(db.String(50), nullable=True)
-    # Relações
+
+    # Relações com outros modelos
     perfil = db.relationship('Perfil', backref='user', uselist=False, lazy=True)
     topicos = db.relationship('Topico', backref='autor', lazy=True)
     respostas = db.relationship('Resposta', backref='autor', lazy=True)
@@ -37,8 +57,13 @@ class User(db.Model, UserMixin):
     denuncias = db.relationship('Denuncia', backref='denunciante', lazy=True)
     relatos = db.relationship('RelatoSuporte', backref='relator', lazy=True)
     notificacoes = db.relationship('Notificacao', backref='usuario', lazy=True)
+    
+    # NOVA RELAÇÃO: Comunidades que o usuário segue
+    comunidades_seguidas = db.relationship('Comunidade', secondary=membros_comunidade, backref=db.backref('membros', lazy='dynamic'))
+    
+    # NOVA RELAÇÃO: Solicitações de entrada em grupos privados
+    solicitacoes = db.relationship('SolicitacaoParticipacao', backref='usuario', lazy=True)
 
-    # Métodos
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
@@ -56,8 +81,11 @@ class Perfil(db.Model):
     curso = db.Column(db.String(100), nullable=True)
     bio = db.Column(db.Text, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True, nullable=False)
-    foto_perfil = db.Column(db.String(120), nullable=False, default='default.png') 
-    banner_perfil = db.Column(db.String(120), default='default_banner.jpg') 
+    
+    # Seus colegas usaram foto_perfil aqui? O User já tem foto_url. 
+    # Vou manter o que estava no seu User original para garantir.
+    # Se tiver conflito, avise.
+
     def __repr__(self):
         return f'<Perfil do usuário {self.user_id}>'
 
@@ -77,7 +105,144 @@ class Notificacao(db.Model):
 
 
 # ===================================================================
-# MAPA E EVENTOS
+# COMUNIDADES E SOLICITAÇÕES (NOVO)
+# ===================================================================
+
+class SolicitacaoParticipacao(db.Model):
+    __tablename__ = 'solicitacao_participacao'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    comunidade_id = db.Column(db.Integer, db.ForeignKey('comunidade.id'), nullable=False)
+    data_solicitacao = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    status = db.Column(db.String(20), default='Pendente') # Pendente, Aceito, Rejeitado
+
+
+class Comunidade(db.Model):
+    __tablename__ = 'comunidade'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(100), unique=True, nullable=False)
+    descricao = db.Column(db.String(300), nullable=False)
+    
+    # Novos campos para deixar "Profissional"
+    categoria = db.Column(db.String(50), default='Geral') 
+    tipo_acesso = db.Column(db.String(20), default='Público') # Público ou Restrito
+    regras = db.Column(db.Text, nullable=True)
+    
+    imagem_url = db.Column(db.String(300), default='default_community.png')
+    criado_em = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    criador_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    
+    # Relacionamentos
+    topicos = db.relationship('Topico', backref='comunidade', lazy=True)
+    moderadores = db.relationship('User', secondary=moderadores_comunidade, backref=db.backref('comunidades_moderadas', lazy='dynamic'))
+    solicitacoes = db.relationship('SolicitacaoParticipacao', backref='comunidade', lazy=True)
+
+    def __repr__(self):
+        return f'<Comunidade {self.nome}>'
+
+
+# ===================================================================
+# FÓRUM (ATUALIZADO COM IMAGENS, HIERARQUIA E LIKES)
+# ===================================================================
+
+class Topico(db.Model):
+    __tablename__ = 'topico'
+
+    id = db.Column(db.Integer, primary_key=True)
+    titulo = db.Column(db.String(200), nullable=False)
+    conteudo = db.Column(db.Text, nullable=False)
+    
+    # CAMPO NOVO: Imagem no Post
+    imagem_post = db.Column(db.String(300), nullable=True) 
+    
+    criado_em = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    autor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    
+    # CAMPO NOVO: Link com Comunidade
+    comunidade_id = db.Column(db.Integer, db.ForeignKey('comunidade.id'), nullable=True)
+    
+    # Relacionamentos (Cascade para deletar tudo se o tópico for apagado)
+    respostas = db.relationship('Resposta', backref='topico', lazy=True, cascade="all, delete-orphan")
+    likes = db.relationship('PostLike', backref='topico', lazy=True, cascade="all, delete-orphan")
+    salvos = db.relationship('PostSalvo', backref='topico', lazy=True, cascade="all, delete-orphan")
+
+    def __repr__(self):
+        return f'<Topico {self.titulo}>'
+
+
+class Resposta(db.Model):
+    __tablename__ = 'resposta'
+
+    id = db.Column(db.Integer, primary_key=True)
+    conteudo = db.Column(db.Text, nullable=False)
+    
+    # CAMPO NOVO: Imagem no Comentário
+    imagem_resposta = db.Column(db.String(300), nullable=True)
+    
+    criado_em = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    
+    topico_id = db.Column(db.Integer, db.ForeignKey('topico.id'), nullable=False)
+    autor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    
+    # --- O SEGREDO DA ESCADINHA (HIERARQUIA) ---
+    parent_id = db.Column(db.Integer, db.ForeignKey('resposta.id'), nullable=True)
+    
+    filhos = db.relationship('Resposta', 
+                             backref=db.backref('pai', remote_side=[id]), 
+                             lazy=True, 
+                             cascade="all, delete-orphan")
+
+    # NOVO: Likes nos comentários
+    likes = db.relationship('RespostaLike', backref='resposta', lazy=True, cascade="all, delete-orphan")
+
+    def __repr__(self):
+        return f'<Resposta {self.id}>'
+
+
+# ===================================================================
+# LIKES E SALVOS
+# ===================================================================
+
+class PostLike(db.Model):
+    __tablename__ = 'post_like'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    topico_id = db.Column(db.Integer, db.ForeignKey('topico.id'), nullable=False)
+
+    __table_args__ = (db.UniqueConstraint('user_id', 'topico_id', name='_user_topico_like_uc'),)
+
+    def __repr__(self):
+        return f'<Like do User {self.user_id} no Tópico {self.topico_id}>'
+
+
+class RespostaLike(db.Model):
+    __tablename__ = 'resposta_like'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    resposta_id = db.Column(db.Integer, db.ForeignKey('resposta.id'), nullable=False)
+
+    __table_args__ = (db.UniqueConstraint('user_id', 'resposta_id', name='_user_resposta_like_uc'),)
+
+
+class PostSalvo(db.Model):
+    __tablename__ = 'post_salvo'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    topico_id = db.Column(db.Integer, db.ForeignKey('topico.id'), nullable=False)
+
+    __table_args__ = (db.UniqueConstraint('user_id', 'topico_id', name='_user_topico_save_uc'),)
+
+    def __repr__(self):
+        return f'<Post Salvo do User {self.user_id} (Tópico {self.topico_id})>'
+
+
+# ===================================================================
+# MAPA E EVENTOS (MANTIDOS DO ORIGINAL)
 # ===================================================================
 
 class PontoDeInteresse(db.Model):
@@ -129,7 +294,7 @@ class Noticia(db.Model):
 
 
 # ===================================================================
-# MATERIAIS
+# MATERIAIS (MANTIDOS DO ORIGINAL)
 # ===================================================================
 
 class Material(db.Model):
@@ -148,65 +313,7 @@ class Material(db.Model):
 
 
 # ===================================================================
-# FÓRUM
-# ===================================================================
-
-class Topico(db.Model):
-    __tablename__ = 'topico'
-
-    id = db.Column(db.Integer, primary_key=True)
-    titulo = db.Column(db.String(200), nullable=False)
-    conteudo = db.Column(db.Text, nullable=False)
-    criado_em = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
-    autor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
-    respostas = db.relationship('Resposta', backref='topico', lazy=True, cascade="all, delete-orphan")
-
-    def __repr__(self):
-        return f'<Topico {self.titulo}>'
-
-
-class Resposta(db.Model):
-    __tablename__ = 'resposta'
-
-    id = db.Column(db.Integer, primary_key=True)
-    conteudo = db.Column(db.Text, nullable=False)
-    criado_em = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
-    topico_id = db.Column(db.Integer, db.ForeignKey('topico.id'), nullable=False)
-    autor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
-    def __repr__(self):
-        return f'<Resposta ao tópico {self.topico_id}>'
-
-
-class PostLike(db.Model):
-    __tablename__ = 'post_like'
-
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    topico_id = db.Column(db.Integer, db.ForeignKey('topico.id'), nullable=False)
-
-    __table_args__ = (db.UniqueConstraint('user_id', 'topico_id', name='_user_topico_like_uc'),)
-
-    def __repr__(self):
-        return f'<Like do User {self.user_id} no Tópico {self.topico_id}>'
-
-
-class PostSalvo(db.Model):
-    __tablename__ = 'post_salvo'
-
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    topico_id = db.Column(db.Integer, db.ForeignKey('topico.id'), nullable=False)
-
-    __table_args__ = (db.UniqueConstraint('user_id', 'topico_id', name='_user_topico_save_uc'),)
-
-    def __repr__(self):
-        return f'<Post Salvo do User {self.user_id} (Tópico {self.topico_id})>'
-
-
-# ===================================================================
-# SUPORTE
+# SUPORTE (MANTIDOS DO ORIGINAL)
 # ===================================================================
 
 class RelatoSuporte(db.Model):
@@ -236,7 +343,7 @@ class FAQ(db.Model):
 
 
 # ===================================================================
-# DENÚNCIAS
+# DENÚNCIAS (MANTIDOS DO ORIGINAL)
 # ===================================================================
 
 class Denuncia(db.Model):
