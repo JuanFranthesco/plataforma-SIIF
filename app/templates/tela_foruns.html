@@ -30,11 +30,11 @@
                 <div id="sidebar-wrapper" class="col-lg-3 d-none d-lg-block">
                     <div class="p-3">
                         <div class="d-flex justify-content-end mb-2">
-                            <button id="btn-collapse-sidebar" class="btn btn-outline-success btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-content" aria-expanded="true" aria-controls="sidebar-content">
+                            <button id="btn-collapse-horizontal" class="btn btn-outline-success btn-sm">
                                 <i class="bi bi-chevron-left"></i>
-                            </button>
+                            </button>                            
                         </div>
-                        <div id="sidebar-content" class="collapse show">
+                        <div id="sidebar-content">
                             <div class="forum-left-sidebar card-custom bg-white shadow-sm">
                                 <div class="sidebar-header mb-2">
                                     <h5 class="mb-0 fw-bold text-success">Menu Fórum</h5>
@@ -65,7 +65,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-7 col-md-12">
+                <div class="col-lg-8 col-md-12 posts-wrapper">
                     <div class="d-flex align-items-center mb-3">
                         <div class="d-flex align-items-center mx-auto gap-2">
                             <button id="open-sidebar-btn" class="btn btn-outline-success d-lg-none me-2" title="Abrir menu">
@@ -333,49 +333,33 @@
     <script> new window.VLibras.Widget('https://vlibras.gov.br/app'); </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // ===== SIDEBAR HORIZONTAL (ESTILO REDDIT) =====
         (function () {
-            // Sidebar open/close for mobile
-            const openSidebarBtn = document.getElementById('open-sidebar-btn');
-            const sidebarWrapper = document.getElementById('sidebar-wrapper');
+            const sidebar = document.getElementById("sidebar-wrapper");
+            const btn = document.getElementById("btn-collapse-horizontal");
+            const posts = document.querySelector(".posts-wrapper");
 
-            function showSidebarMobile() {
-                if (!sidebarWrapper) return;
-                sidebarWrapper.classList.remove('collapsed');
-                // add backdrop for mobile
-                let backdrop = document.getElementById('sidebar-backdrop');
-                if (!backdrop) {
-                    backdrop = document.createElement('div');
-                    backdrop.id = 'sidebar-backdrop';
-                    backdrop.style.display = 'block';
-                    backdrop.addEventListener('click', hideSidebarMobile);
-                    document.body.appendChild(backdrop);
+            if (!sidebar || !btn || !posts) return;
+
+            btn.addEventListener("click", () => {
+                const isCollapsed = sidebar.classList.contains("collapsed-horizontal");
+
+                if (isCollapsed) {
+                    // EXPANDIR
+                    posts.classList.add("posts-freeze");
+                    sidebar.classList.remove("collapsed-horizontal");
+
+                    setTimeout(() => {
+                        posts.classList.remove("posts-freeze");
+                    }, 260); // tempo da animação
                 } else {
-                    backdrop.style.display = 'block';
+                    // RECOLHER
+                    sidebar.classList.add("collapsed-horizontal");
                 }
-            }
-            function hideSidebarMobile() {
-                if (!sidebarWrapper) return;
-                sidebarWrapper.classList.add('collapsed');
-                const backdrop = document.getElementById('sidebar-backdrop');
-                if (backdrop) backdrop.style.display = 'none';
-            }
+            });
+        })();
 
-            if (openSidebarBtn) {
-                openSidebarBtn.addEventListener('click', showSidebarMobile);
-            }
-
-            // collapse button toggles chevron icon (desktop)
-            const btnCollapse = document.getElementById('btn-collapse-sidebar');
-            const sidebarContent = document.getElementById('sidebar-content');
-            if (btnCollapse && sidebarContent) {
-                sidebarContent.addEventListener('shown.bs.collapse', function () {
-                    btnCollapse.innerHTML = '<i class="bi bi-chevron-left"></i>';
-                });
-                sidebarContent.addEventListener('hidden.bs.collapse', function () {
-                    btnCollapse.innerHTML = '<i class="bi bi-chevron-right"></i>';
-                });
-            }
-
+        (function () {
             // Modal: Comentário dinamico
             const modalComentar = document.getElementById('modalComentar');
             if (modalComentar) {

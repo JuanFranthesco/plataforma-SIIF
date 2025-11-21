@@ -2828,3 +2828,51 @@ body.high-contrast .profile-banner {
 .replies-container .comment-bubble {
     background-color: #e8f5e9 !important; /* Fundo levemente verde */
 }
+
+/* ====== SIDEBAR HORIZONTAL RETRÁTIL (ESTILO REDDIT) ====== */
+
+#sidebar-wrapper {
+  transition: width 0.25s ease;
+}
+
+#sidebar-wrapper.collapsed-horizontal {
+  width: 0px !important;      /* sidebar recolhida estilo reddit */
+  overflow: hidden;
+}
+
+#sidebar-wrapper .sidebar-menu span,
+#sidebar-wrapper .sidebar-header h5,
+#sidebar-wrapper #btn-collapse-sidebar i.bi-chevron-left {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* esconder textos quando colapsado */
+#sidebar-wrapper.collapsed-horizontal .sidebar-menu span,
+#sidebar-wrapper.collapsed-horizontal .sidebar-header h5 {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* centralizar ícones quando colapsado */
+#sidebar-wrapper.collapsed-horizontal .sidebar-link {
+  justify-content: center !important;
+}
+
+#sidebar-wrapper.collapsed-horizontal .sidebar-link i {
+  font-size: 1.4rem;
+}
+
+/* botão virar para direita */
+#sidebar-wrapper.collapsed-horizontal #btn-collapse-sidebar i {
+  transform: rotate(180deg);
+}
+
+.posts-wrapper {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Bloqueia animações da área de posts */
+.posts-freeze {
+  transition: none !important;
+}
