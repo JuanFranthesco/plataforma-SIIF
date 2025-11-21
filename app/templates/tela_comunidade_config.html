@@ -13,18 +13,7 @@
 
     <div class="page-container">
         
-        <nav class="navbar navbar-expand-lg navbar-custom">
-            <div class="container-fluid">
-              <a class="navbar-brand" href="#"><img src="{{ url_for('static', filename='img/LOGO.png') }}" alt="Logo"></a>
-              <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                  <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('main.tela_inicial') }}">Início</a></li>
-                  <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('main.tela_foruns') }}">Fórum</a></li>
-                  <li class="nav-item"><a class="nav-link active text-white fw-bold" href="{{ url_for('main.tela_comunidades') }}">Comunidades</a></li>
-                </ul>
-              </div>
-            </div>
-        </nav>
+        {% include 'header.html' %}
 
         <div class="content-wrapper-rounded mt-2">
 

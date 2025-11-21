@@ -35,6 +35,11 @@
                        <i class="bi bi-geo-alt-fill"></i> Mapa
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if current == 'main.tela_mapa' %}active{% endif %}" href="{{ url_for('main.tela_comunidades') }}">
+                       <i class="bi bi-people-fill"></i> Comunidades
+                    </a>
+                </li>
             </ul>
             <a href="#" class="nav-link ms-3" data-bs-toggle="modal" data-bs-target="#modalNotificacoes">
                 <i class="bi bi-bell-fill position-relative">
