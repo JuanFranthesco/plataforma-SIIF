@@ -13,20 +13,23 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
     <script>
+        // Variável Flask/Jinja2 para controle de Admin
         const IS_ADMIN = {{ current_user.is_admin | tojson }};
+        const API_URL_NOTICIAS = "/api/noticias";
+        const API_URL_EVENTOS = "/api/eventos";
     </script>
 </head>
 
 <body class="{% if current_user.is_admin %}role-admin{% else %}role-user{% endif %}">
     <div class="page-container">
 
-        {% include 'header.html' %}
+        {% include 'header.html' %} 
 
         <main id="conteudo-principal" role="main" class="divulgacao-dashboard container-fluid py-4">
             <a href="#conteudo-principal" class="visually-hidden-focusable skip-link">Pular para o conteúdo principal</a>
 
             <div class="row g-4">
-
+                
                 <div id="sidebar-wrapper" class="col-lg-3 d-none d-lg-block">
                     <div class="card-custom h-100">
                         <div class="p-4">
@@ -36,7 +39,7 @@
 
                             <form class="mb-4" onsubmit="event.preventDefault(); aplicarFiltros();" role="search">
                                 <div class="input-group shadow-sm rounded-pill overflow-hidden bg-white border">
-                                    <input type="search" id="pesquisar" class="form-control border-0 ps-4 py-2" placeholder="Pesquisar..." aria-label="Pesquisar">
+                                    <input type="search" id="pesquisar" class="form-control border-0 ps-4 py-2" placeholder="Pesquisar..." aria-label="Pesquisar" oninput="aplicarFiltros()">
                                     <button class="btn btn-white text-success px-3" type="submit">
                                         <i class="bi bi-search"></i>
                                     </button>
@@ -48,7 +51,7 @@
                             <form class="divulgacao-filters d-flex flex-column gap-3" onsubmit="event.preventDefault(); aplicarFiltros();">
                                 <div>
                                     <label for="filtrar-campus" class="form-label fw-bold small text-success">CAMPUS</label>
-                                    <select id="filtrar-campus" name="campus" class="form-select bg-light border-0">
+                                    <select id="filtrar-campus" name="campus" class="form-select bg-light border-0" onchange="aplicarFiltros()">
                                         <option value="">Todos os Campus</option>
                                         <option value="mossoro">Mossoró</option>
                                         <option value="paudosferros">Pau dos Ferros</option>
@@ -56,7 +59,7 @@
                                 </div>
                                 <div>
                                     <label for="filtrar-categoria" class="form-label fw-bold small text-success">CATEGORIA</label>
-                                    <select id="filtrar-categoria" name="categoria" class="form-select bg-light border-0">
+                                    <select id="filtrar-categoria" name="categoria" class="form-select bg-light border-0" onchange="aplicarFiltros()">
                                         <option value="">Todas as Categorias</option>
                                         <option value="eventos">Eventos</option>
                                         <option value="pesquisa">Pesquisa</option>
@@ -76,7 +79,7 @@
                              <p class="text-muted mb-0">Fique por dentro das novidades do campus</p>
                         </div>
                         
-                        <button class="btn btn-outline-success d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilters">
+                        <button class="btn btn-outline-success d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilters" aria-controls="offcanvasFilters">
                             <i class="bi bi-filter"></i> Filtros
                         </button>
                     </div>
@@ -96,6 +99,7 @@
                     {% endif %}
 
                     <div class="row g-4">
+                        
                         <div class="col-lg-8">
                             <div id="latest-news-list" class="row g-4">
                                 <div class="col-12 text-center py-5">
@@ -160,20 +164,20 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="formPostarNoticia">
+                    <form id="formPostarNoticia" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="noticiaTitulo" class="form-label fw-bold">Título</label>
-                            <input type="text" class="form-control bg-light" id="noticiaTitulo" placeholder="Ex: Seminário de Inovação">
+                            <input type="text" class="form-control bg-light" id="noticiaTitulo" placeholder="Ex: Seminário de Inovação" required>
                         </div>
                         <div class="mb-3">
                             <label for="noticiaConteudo" class="form-label fw-bold">Conteúdo</label>
-                            <textarea class="form-control bg-light" id="noticiaConteudo" rows="6" placeholder="Escreva o corpo da notícia aqui..."></textarea>
+                            <textarea class="form-control bg-light" id="noticiaConteudo" rows="6" placeholder="Escreva o corpo da notícia aqui..." required></textarea>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-bold">Campus</label>
                                 <select id="noticiaCampus" class="form-select bg-light">
-                                    <option value="">Todos os Campus</option>
+                                    <option value="IFRN">Geral / IFRN</option>
                                     <option value="mossoro">Mossoró</option>
                                     <option value="paudosferros">Pau dos Ferros</option>
                                 </select>
@@ -181,31 +185,32 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-bold">Categoria</label>
                                 <select id="noticiaCategoria" class="form-select bg-light">
-                                    <option value="">Todas as Categorias</option>
-                                    <option value="eventos">Eventos</option>
-                                    <option value="pesquisa">Pesquisa</option>
+                                    <option value="Geral">Geral</option>
+                                    <option value="Eventos">Eventos</option>
+                                    <option value="Pesquisa">Pesquisa</option>
+                                    <option value="Extensao">Extensão</option>
                                 </select>
                             </div>
                         </div>
                         <div class="row g-3 bg-light p-3 rounded mb-3">
                             <div class="col-md-6">
                                 <label class="form-label small fw-bold text-muted">IMAGEM DE CAPA</label>
-                                <input class="form-control" type="file" id="noticiaImagem" accept="image/*">
+                                <input class="form-control" type="file" id="noticiaImagem" name="imagem" accept="image/*">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label small fw-bold text-muted">ANEXO (PDF)</label>
-                                <input class="form-control" type="file" id="noticiaArquivo">
+                                <input class="form-control" type="file" id="noticiaArquivo" name="arquivo" accept=".pdf">
                             </div>
                         </div>
                         <div>
                             <label class="form-label fw-bold">Link Externo</label>
-                            <input type="url" class="form-control bg-light" id="noticiaLink" placeholder="https://exemplo.com">
+                            <input type="url" class="form-control bg-light" id="noticiaLink" name="link_externo" placeholder="https://exemplo.com">
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-success">Publicar</button>
+                    <button type="button" class="btn btn-success" id="btnPostarNoticia">Publicar</button> 
                 </div>
             </div>
         </div>
@@ -223,7 +228,7 @@
                     
                     <h2 id="modalVerNoticiaTitulo" class="fw-bold mb-3 text-dark"></h2>
                     
-                    <div class="text-muted mb-4" style="white-space: pre-wrap; line-height: 1.7;" id="modalVerNoticiaConteudo"></div>
+                    <div class="text-muted mb-4" style="white-space: pre-wrap; line-height: 1.7;" id="modalVerNoticiaConteudo"></div> 
 
                     <div class="d-flex gap-2 pt-3 border-top">
                         <a href="#" id="modalVerNoticiaLinkExterno" class="btn btn-outline-success rounded-pill" target="_blank" style="display: none;">
@@ -249,26 +254,71 @@
                     <form id="formAdicionarEvento">
                         <div class="mb-3">
                             <label for="eventoTitulo" class="form-label fw-bold">Nome do Evento</label>
-                            <input type="text" class="form-control" id="eventoTitulo" placeholder="Ex: Semana de Tecnologia">
+                            <input type="text" class="form-control" id="eventoTitulo" placeholder="Ex: Semana de Tecnologia" required>
                         </div>
                         <div class="mb-3">
-                            <label for="eventoData" class="form-label fw-bold">Data (YYYY-MM-DD)</label>
-                            <input type="date" class="form-control" id="eventoData">
+                            <label for="eventoData" class="form-label fw-bold">Data/Hora de Início</label>
+                            <input type="datetime-local" class="form-control" id="eventoData" required> 
                         </div>
                         <div class="mb-3">
                             <label for="eventoLink" class="form-label fw-bold">Link</label>
-                            <input type="url" class="form-control" id="eventoLink" placeholder="https://...">
+                            <input type="url" class="form-control" id="eventoLink" placeholder="https://..." required>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-success">Salvar</button>
+                    <button type="button" class="btn btn-success" id="btnAdicionarEvento">Salvar</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasFilters" aria-labelledby="offcanvasFiltersLabel">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasFiltersLabel">Filtros de Notícias</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body">
+        <div class="p-2">
+            <h2 class="mb-4 fw-bold text-success fs-5 border-bottom pb-2">
+                <i class="bi bi-filter-circle"></i> Buscar Notícias
+            </h2>
+
+            <form class="mb-4" onsubmit="event.preventDefault(); aplicarFiltros();" role="search">
+                <div class="input-group shadow-sm rounded-pill overflow-hidden bg-white border">
+                    <input type="search" id="pesquisar-mobile" class="form-control border-0 ps-4 py-2" placeholder="Pesquisar..." aria-label="Pesquisar" oninput="aplicarFiltros()">
+                    <button class="btn btn-white text-success px-3" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+
+            <h5 class="fw-bold text-muted fs-6 mb-3">Filtros Avançados</h5>
+
+            <form class="divulgacao-filters d-flex flex-column gap-3" onsubmit="event.preventDefault(); aplicarFiltros();">
+                <div>
+                    <label for="filtrar-campus-mobile" class="form-label fw-bold small text-success">CAMPUS</label>
+                    <select id="filtrar-campus-mobile" name="campus" class="form-select bg-light border-0" onchange="aplicarFiltros()">
+                        <option value="">Todos os Campus</option>
+                        <option value="mossoro">Mossoró</option>
+                        <option value="paudosferros">Pau dos Ferros</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="filtrar-categoria-mobile" class="form-label fw-bold small text-success">CATEGORIA</label>
+                    <select id="filtrar-categoria-mobile" name="categoria" class="form-select bg-light border-0" onchange="aplicarFiltros()">
+                        <option value="">Todas as Categorias</option>
+                        <option value="eventos">Eventos</option>
+                        <option value="pesquisa">Pesquisa</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        
+      </div>
+    </div>
+    
     <a href="{{ url_for('main.suporte') }}" class="help-btn help-btn-user"><i class="bi bi-headset"></i></a>
     <a href="{{ url_for('main.tela_denuncias') }}" class="help-btn help-btn-admin"><i class="bi bi-shield-check"></i></a>
 
@@ -278,9 +328,12 @@
     </div>
     <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
     <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        // --- 1. CONFIGURAÇÃO DO MODAL DE VISUALIZAÇÃO DE NOTÍCIA ---
+        // Seu código já estava correto aqui, apenas adicionado ao JS completo.
         const modalVerNoticia = document.getElementById('modalVerNoticia');
         if (modalVerNoticia) {
             modalVerNoticia.addEventListener('show.bs.modal', event => {
@@ -292,14 +345,12 @@
                 const linkExterno = button.getAttribute('data-noticia-link-externo');
                 const arquivoUrl = button.getAttribute('data-noticia-arquivo-url');
 
-                // Seleciona elementos
                 const elTitulo = modalVerNoticia.querySelector('#modalVerNoticiaTitulo');
                 const elConteudo = modalVerNoticia.querySelector('#modalVerNoticiaConteudo');
                 const elImagem = modalVerNoticia.querySelector('#modalVerNoticiaImagem');
                 const elLink = modalVerNoticia.querySelector('#modalVerNoticiaLinkExterno');
                 const elArquivo = modalVerNoticia.querySelector('#modalVerNoticiaArquivo');
 
-                // Preenche
                 elTitulo.textContent = titulo || "Sem título";
                 elConteudo.textContent = conteudo || "Sem conteúdo.";
 
@@ -310,14 +361,14 @@
                     elImagem.style.display = 'none';
                 }
 
-                if (linkExterno && linkExterno !== 'null') {
+                if (linkExterno && linkExterno !== 'null' && linkExterno !== '#') {
                     elLink.href = linkExterno;
                     elLink.style.display = 'inline-flex';
                 } else {
                     elLink.style.display = 'none';
                 }
 
-                if (arquivoUrl && arquivoUrl !== 'null') {
+                if (arquivoUrl && arquivoUrl !== 'null' && arquivoUrl !== '#') {
                     elArquivo.href = arquivoUrl;
                     elArquivo.style.display = 'inline-flex';
                 } else {
@@ -325,16 +376,20 @@
                 }
             });
         }
-    </script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", async () => {
+        
+        // --- 2. FUNÇÃO DE CARREGAMENTO E RENDERIZAÇÃO PRINCIPAL ---
+        async function carregarDados() {
             const noticiasContainer = document.getElementById("latest-news-list");
             const eventosContainer = document.getElementById("upcoming-events-list");
 
-            // 1. CARREGAR NOTÍCIAS
+            // Indicadores de Carregamento
+            noticiasContainer.innerHTML = `<div class="col-12 text-center py-5"><div class="spinner-border text-success" role="status"><span class="visually-hidden">Carregando...</span></div></div>`;
+            eventosContainer.innerHTML = `<li class='text-muted text-center py-3'>Carregando eventos...</li>`;
+
+
+            // A. CARREGAR NOTÍCIAS
             try {
-                const response = await fetch("/api/noticias");
+                const response = await fetch(API_URL_NOTICIAS);
                 const noticias = await response.json();
 
                 noticiasContainer.innerHTML = "";
@@ -344,7 +399,6 @@
                 }
 
                 noticias.forEach(n => {
-                    // Lógica do Botão Excluir (Admin)
                     let deleteButtonHtml = '';
                     if (IS_ADMIN) {
                         deleteButtonHtml = `
@@ -356,20 +410,17 @@
                         `;
                     }
 
-                    // Placeholder se não tiver imagem
                     const imgDisplay = n.imagem_url 
                         ? `<img src="${n.imagem_url}" class="card-img-top" alt="${n.titulo}" style="height: 200px; object-fit: cover;">`
                         : `<div class="card-img-top bg-secondary d-flex align-items-center justify-content-center text-white" style="height: 200px;">
-                             <i class="bi bi-newspaper fs-1 opacity-50"></i>
-                           </div>`;
+                                <i class="bi bi-newspaper fs-1 opacity-50"></i>
+                              </div>`;
 
                     const cardWrapper = document.createElement("div");
-                    cardWrapper.classList.add("col-md-6", "col-xl-4", "latest-news-card"); // Adicionado classes para grid responsivo
-                    // Dados para filtro
+                    cardWrapper.classList.add("col-md-6", "col-xl-4", "latest-news-card");
                     cardWrapper.setAttribute('data-campus', n.campus || '');
                     cardWrapper.setAttribute('data-categoria', n.categoria || '');
 
-                    // HTML DO NOVO CARD (ESTILO APP)
                     cardWrapper.innerHTML = `
                         <div class="card-custom h-100 position-relative overflow-hidden group-hover">
                             ${deleteButtonHtml}
@@ -412,17 +463,17 @@
                     noticiasContainer.appendChild(cardWrapper);
                 });
                 
-                // Reaplica filtros se necessário
+                // Reaplica filtros
                 if (typeof aplicarFiltros === 'function') aplicarFiltros();
 
             } catch (err) {
-                console.error('Erro:', err);
-                noticiasContainer.innerHTML = "<p class='text-danger'>Erro ao carregar notícias.</p>";
+                console.error('Erro ao carregar notícias:', err);
+                noticiasContainer.innerHTML = "<div class='col-12 text-center text-danger p-5'>Erro ao carregar notícias. Tente novamente.</div>";
             }
 
-            // 2. CARREGAR EVENTOS
+            // B. CARREGAR EVENTOS
             try {
-                const resp = await fetch('/api/eventos');
+                const resp = await fetch(API_URL_EVENTOS);
                 const eventos = await resp.json();
 
                 eventosContainer.innerHTML = "";
@@ -439,15 +490,14 @@
                     let deleteBtn = '';
                     if (IS_ADMIN) {
                         deleteBtn = `
-                            <button class="btn btn-link text-danger p-0 ms-2" onclick="deletarEvento(${e.id}, this)">
+                            <button class="btn btn-link text-danger p-0 ms-2" onclick="deletarEvento(${e.id}, this)" title="Excluir Evento">
                                 <i class="bi bi-x-circle"></i>
                             </button>
                         `;
                     }
 
-                    // HTML DO EVENTO (LISTA LIMPA)
                     const li = `
-                        <li class="d-flex align-items-center py-3 border-bottom">
+                        <li class="d-flex align-items-center py-3 border-bottom" data-event-id="${e.id}">
                             <div class="rounded text-center text-white me-3 d-flex flex-column justify-content-center" 
                                  style="width: 50px; height: 50px; background-color: #386641; flex-shrink: 0;">
                                 <span class="fw-bold fs-5 lh-1">${dia}</span>
@@ -465,55 +515,233 @@
                     eventosContainer.insertAdjacentHTML('beforeend', li);
                 });
             } catch (err) {
-                eventosContainer.innerHTML = "<li>Erro ao carregar eventos.</li>";
+                console.error('Erro ao carregar eventos:', err);
+                eventosContainer.innerHTML = "<li class='text-danger text-center py-3'>Erro ao carregar eventos.</li>";
             }
-        });
+        }
+        
+        // Executa ao carregar a página
+        document.addEventListener("DOMContentLoaded", carregarDados);
 
-        // --- FILTROS (Função Global) ---
+        // --- 3. FUNÇÃO DE FILTROS ---
         function aplicarFiltros() {
-            const selCampus = document.getElementById('filtrar-campus');
-            const selCategoria = document.getElementById('filtrar-categoria');
-            const inputBusca = document.getElementById('pesquisar');
+            // Pega valores dos filtros Desktop e Mobile e sincroniza
+            const campusFiltro = (document.getElementById('filtrar-campus').value || document.getElementById('filtrar-campus-mobile').value || "").trim().toLowerCase();
+            const categoriaFiltro = (document.getElementById('filtrar-categoria').value || document.getElementById('filtrar-categoria-mobile').value || "").trim().toLowerCase();
+            const termoBusca = (document.getElementById('pesquisar').value || document.getElementById('pesquisar-mobile').value || "").trim().toLowerCase();
             
-            const campusFiltro = (selCampus.value || "").trim().toLowerCase();
-            const categoriaFiltro = (selCategoria.value || "").trim().toLowerCase();
-            const termoBusca = (inputBusca.value || "").trim().toLowerCase();
+            // Sincroniza os inputs (útil se o usuário usar o offcanvas e depois o desktop)
+            document.getElementById('filtrar-campus').value = campusFiltro;
+            document.getElementById('filtrar-campus-mobile').value = campusFiltro;
+            document.getElementById('filtrar-categoria').value = categoriaFiltro;
+            document.getElementById('filtrar-categoria-mobile').value = categoriaFiltro;
+            document.getElementById('pesquisar').value = termoBusca;
+            document.getElementById('pesquisar-mobile').value = termoBusca;
+
 
             const cards = document.querySelectorAll('.latest-news-card');
+            let noticiasVisiveis = 0;
 
             cards.forEach(card => {
                 const campusCard = (card.getAttribute('data-campus') || "").trim().toLowerCase();
                 const categoriaCard = (card.getAttribute('data-categoria') || "").trim().toLowerCase();
-                // Busca dentro do título e conteúdo
+                
                 const link = card.querySelector('a');
-                const titulo = link.getAttribute('data-noticia-titulo').toLowerCase();
-                const conteudo = link.getAttribute('data-noticia-conteudo').toLowerCase();
+                const titulo = link ? link.getAttribute('data-noticia-titulo').toLowerCase() : '';
+                const conteudo = link ? link.getAttribute('data-noticia-conteudo').toLowerCase() : '';
 
-                const okCampus = (!campusFiltro) || (campusCard === campusFiltro);
-                const okCategoria = (!categoriaFiltro) || (categoriaCard === categoriaFiltro);
+                const okCampus = (!campusFiltro || campusFiltro === "todos os campus") || (campusCard === campusFiltro);
+                const okCategoria = (!categoriaFiltro || categoriaFiltro === "todas as categorias") || (categoriaCard === categoriaFiltro);
                 const okBusca = (!termoBusca) || (titulo.includes(termoBusca) || conteudo.includes(termoBusca));
+                
+                const isVisible = (okCampus && okCategoria && okBusca);
+                card.style.display = isVisible ? "block" : "none";
+                
+                if (isVisible) noticiasVisiveis++;
+            });
+            
+            // Gerencia a mensagem de "Nenhum Resultado"
+             const noticiasContainer = document.getElementById("latest-news-list");
+             const existingMsg = document.getElementById('no-results-message');
+             
+             if (noticiasVisiveis === 0) {
+                 if (!existingMsg) {
+                     noticiasContainer.insertAdjacentHTML('beforeend', `<div class="col-12 text-center text-muted p-5" id="no-results-message">Nenhuma notícia corresponde aos filtros aplicados.</div>`);
+                 }
+             } else {
+                 if (existingMsg) existingMsg.remove();
+             }
+        }
 
-                card.style.display = (okCampus && okCategoria && okBusca) ? "" : "none";
+        // Torna a função global (necessário para o onchange/onclick no HTML)
+        window.aplicarFiltros = aplicarFiltros;
+
+
+        // --- 4. FUNÇÕES DE ADMINISTRAÇÃO (POST) ---
+
+        // Função Genérica de POST
+        async function enviarFormulario(url, formData, modalId) {
+            try {
+                // Iniciar loading (opcional: desabilitar botão e mostrar spinner)
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: formData, // FormData para Notícias, ou JSON.stringify(data) para Eventos
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(`Erro ao publicar: ${errorData.error || response.statusText}`);
+                    return;
+                }
+
+                alert('Publicado com sucesso!');
+                // Fechar o modal
+                const modalElement = document.getElementById(modalId);
+                const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+                modalInstance.hide();
+                
+                // Limpar o formulário
+                modalElement.querySelector('form').reset();
+                
+                await carregarDados(); 
+            } catch (error) {
+                console.error('Erro de rede:', error);
+                alert('Erro de conexão ao enviar dados.');
+            }
+        }
+
+        // POSTAR NOTÍCIA
+        const formNoticia = document.getElementById('formPostarNoticia');
+        const btnNoticia = document.getElementById('btnPostarNoticia');
+        
+        if (formNoticia && btnNoticia) {
+            btnNoticia.addEventListener('click', () => formNoticia.dispatchEvent(new Event('submit')));
+            formNoticia.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const formData = new FormData();
+                formData.append('titulo', formNoticia.querySelector('#noticiaTitulo').value);
+                formData.append('conteudo', formNoticia.querySelector('#noticiaConteudo').value);
+                formData.append('campus', formNoticia.querySelector('#noticiaCampus').value);
+                formData.append('categoria', formNoticia.querySelector('#noticiaCategoria').value);
+                formData.append('link_externo', formNoticia.querySelector('#noticiaLink').value);
+                
+                const imagemFile = formNoticia.querySelector('#noticiaImagem').files[0];
+                if (imagemFile) formData.append('imagem', imagemFile);
+                
+                const arquivoFile = formNoticia.querySelector('#noticiaArquivo').files[0];
+                if (arquivoFile) formData.append('arquivo', arquivoFile);
+                
+                enviarFormulario(API_URL_NOTICIAS, formData, 'modalPostarNoticia');
+            });
+        }
+        
+        // POSTAR EVENTO
+        const formEvento = document.getElementById('formAdicionarEvento');
+        const btnEvento = document.getElementById('btnAdicionarEvento');
+
+        if (formEvento && btnEvento) {
+             btnEvento.addEventListener('click', () => formEvento.dispatchEvent(new Event('submit')));
+             formEvento.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const dataHoraInput = formEvento.querySelector('#eventoData').value;
+                let dataHoraFormatada = null;
+                
+                if (dataHoraInput) {
+                    // CONVERSÃO CRÍTICA: Converte o valor 'datetime-local' (YYYY-MM-DDTHH:MM)
+                    // para um formato ISO 8601 completo (YYYY-MM-DDTHH:MM:SS.sssZ),
+                    // que é mais facilmente aceito pela maioria das APIs de backend.
+                    const dataLocal = new Date(dataHoraInput);
+                    dataHoraFormatada = dataLocal.toISOString(); 
+                }
+
+                const data = {
+                    titulo: formEvento.querySelector('#eventoTitulo').value,
+                    data_hora_inicio: dataHoraFormatada, // Envia data no formato ISO 8601
+                    link: formEvento.querySelector('#eventoLink').value,
+                    // Adicione campus ou outros campos se necessário para o evento
+                };
+                
+                // Usamos JSON para eventos (mais comum em APIs que não lidam com uploads de arquivos)
+                 try {
+                    const response = await fetch(API_URL_EVENTOS, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(data),
+                    });
+                    
+                    if (!response.ok) {
+                        // Se o erro for 400 (Bad Request), exibe a mensagem de erro da API.
+                        const errorData = await response.json();
+                        alert(`Erro ao adicionar evento: ${errorData.error || response.statusText}`);
+                        return;
+                    }
+
+                    alert('Evento adicionado com sucesso!');
+                    const modalElement = document.getElementById('modalAdicionarEvento');
+                    const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+                    modalInstance.hide();
+                    modalElement.querySelector('form').reset();
+                    await carregarDados(); 
+                 } catch (error) {
+                    console.error('Erro de rede:', error);
+                    alert('Erro de conexão ao enviar dados do evento.');
+                 }
             });
         }
 
-        // --- ENVIAR FORMULÁRIOS (Mantido lógica original) ---
-        // Adicione aqui os event listeners de submit para Noticia e Evento (iguais ao seu código anterior)
-        // Para economizar espaço, assumo que você manterá os scripts de POST do seu código original
-        // Apenas lembre de apontar para os IDs corretos dos botões nos modais novos.
-        const formNoticia = document.getElementById('formPostarNoticia');
-        const btnNoticia = document.querySelector('#modalPostarNoticia .btn-success'); // Seletor atualizado
 
-        if (formNoticia && btnNoticia) {
-             btnNoticia.addEventListener('click', () => formNoticia.dispatchEvent(new Event('submit')));
-             formNoticia.addEventListener('submit', async (e) => {
-                 e.preventDefault();
-                 // ... (Sua lógica de FormData e fetch aqui) ...
-                 // DICA: Copie o conteúdo do seu script anterior de POST aqui
-                 alert('Funcionalidade de postar mantida! (Implemente o fetch aqui)');
-             });
+        // --- 5. FUNÇÕES DE ADMINISTRAÇÃO (DELETE) ---
+
+        // DELETAR NOTÍCIA
+        window.deletarNoticia = async function(id, element) {
+            if (!IS_ADMIN || !confirm(`Tem certeza que deseja excluir a notícia ID ${id}?`)) return;
+
+            try {
+                const response = await fetch(`${API_URL_NOTICIAS}/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(`Erro ao excluir: ${errorData.error || response.statusText}`);
+                    return;
+                }
+
+                alert('Notícia excluída com sucesso!');
+                element.closest('.latest-news-card').remove();
+                await carregarDados(); 
+            } catch (error) {
+                console.error('Erro de exclusão:', error);
+                alert('Erro de conexão ao tentar excluir a notícia.');
+            }
         }
-        // Mesma coisa para Eventos...
+        
+        // DELETAR EVENTO
+        window.deletarEvento = async function(id, element) {
+            if (!IS_ADMIN || !confirm(`Tem certeza que deseja excluir o evento ID ${id}?`)) return;
+
+            try {
+                const response = await fetch(`${API_URL_EVENTOS}/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(`Erro ao excluir: ${errorData.error || response.statusText}`);
+                    return;
+                }
+
+                alert('Evento excluído com sucesso!');
+                element.closest('li').remove();
+                await carregarDados(); 
+            } catch (error) {
+                console.error('Erro de exclusão:', error);
+                alert('Erro de conexão ao tentar excluir o evento.');
+            }
+        }
     </script>
 </body>
 </html>
