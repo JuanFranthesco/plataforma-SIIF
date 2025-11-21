@@ -2833,11 +2833,21 @@ body.high-contrast .profile-banner {
 
 #sidebar-wrapper {
   transition: width 0.25s ease;
+  overflow: hidden;
+}
+
+#sidebar-wrapper .forum-left-sidebar {
+  transition: opacity 1s ease;
+  opacity: 1;
 }
 
 #sidebar-wrapper.collapsed-horizontal {
-  width: 0px !important;      /* sidebar recolhida estilo reddit */
+  width: 30px !important;      /* sidebar recolhida estilo reddit */
   overflow: hidden;
+}
+
+#sidebar-wrapper.collapsed-horizontal .forum-left-sidebar {
+  opacity: 0;
 }
 
 #sidebar-wrapper .sidebar-menu span,
@@ -2860,11 +2870,6 @@ body.high-contrast .profile-banner {
 
 #sidebar-wrapper.collapsed-horizontal .sidebar-link i {
   font-size: 1.4rem;
-}
-
-/* botão virar para direita */
-#sidebar-wrapper.collapsed-horizontal #btn-collapse-sidebar i {
-  transform: rotate(180deg);
 }
 
 .posts-wrapper {
