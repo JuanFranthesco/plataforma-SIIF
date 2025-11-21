@@ -78,10 +78,6 @@ def listar_noticias():
     return jsonify(resultado)
 
 
- 
-
-# ... (suas outras rotas) ...
-
 @api.route("/api/eventos", methods=["GET"])
 def listar_eventos():
     try:
@@ -101,40 +97,48 @@ def listar_eventos():
         return jsonify({"erro": str(e)}), 500
 
 
-        # No topo do api.py, adicione o import de datetime
-
-
-
-
+# Rota POST corrigida para receber JSON e processar data ISO 8601
 @api.route("/api/eventos", methods=["POST"])
 def criar_evento():
     try:
-        titulo = request.form.get("titulo")
-        data_str = request.form.get("data") # O JS vai mandar 'titulo', 'data' e 'link'
-        link = request.form.get("link")
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({"erro": "Nenhum dado JSON fornecido."}), 400
 
-        # ATENÇÃO: Isso é uma conversão simples. 
-        # Numa app real, use um seletor de data (datepicker)
+        titulo = data.get("titulo")
+        # O frontend envia 'data_hora_inicio' e não 'data'
+        data_hora_inicio_str = data.get("data_hora_inicio") 
+        link = data.get("link") 
+        
+        # O campo 'descricao' não é enviado pelo frontend.
+        descricao = titulo # Usamos o título como fallback para evitar que o modelo falhe se 'descricao' for obrigatório.
+
+        if not titulo or not data_hora_inicio_str:
+             return jsonify({"erro": "Título e data são campos obrigatórios."}), 400
+
+        # Converte a string ISO 8601 completa (ex: 2025-11-21T17:15:04.000Z) para objeto datetime
         try:
-            data_obj = datetime.strptime(data_str, "%d/%m")
-            data_obj = data_obj.replace(year=datetime.now().year, tzinfo=timezone.utc)
+            data_obj = datetime.fromisoformat(data_hora_inicio_str)
         except ValueError:
-            data_obj = datetime.now(timezone.utc) # Fallback
+            return jsonify({"erro": "Formato de data/hora inválido. Esperado ISO 8601."}), 400
 
         novo_evento = Evento(
             titulo=titulo,
-            descricao=request.form.get("descricao", titulo), # Modelo exige descrição
+            descricao=descricao, 
             data_hora_inicio=data_obj,
-            organizador_id=1 # Mude para 'current_user.id' quando tiver login
+            organizador_id=1 
         )
         db.session.add(novo_evento)
         db.session.commit()
-        return jsonify({"msg": "Evento criado com sucesso!"}), 201
+        
+        return jsonify({"msg": "Evento criado com sucesso!", "link": link}), 201
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({"erro": str(e)}), 400
-
+        # Retorna erro 400 para erros relacionados ao cliente (dados)
+        print(f"Erro inesperado ao criar evento: {e}")
+        return jsonify({"erro": f"Erro ao processar o evento: {str(e)}"}), 400
 
 
 # ROTA PARA EXCLUIR NOTÍCIA
@@ -188,4 +192,3 @@ def excluir_evento(evento_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"erro": str(e)}), 500
-
