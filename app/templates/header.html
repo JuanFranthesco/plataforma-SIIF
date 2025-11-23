@@ -3,7 +3,7 @@
 <nav class="navbar navbar-expand-lg navbar-custom">
     <div class="container-fluid">
         <a class="navbar-brand" href="{{ url_for('main.tela_materiais') }}">
-            <img src="{{ url_for('static', filename='img/LOGO.png') }}" alt="Logo"> 
+            <img src="{{ url_for('static', filename='img/LOGO.png') }}" alt="Logo">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <i class="bi bi-list text-white fs-1"></i>
@@ -11,33 +11,39 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link {% if current == 'main.tela_inicial' %}active{% endif %}" href="{{ url_for('main.tela_inicial') }}">
-                       <i class="bi bi-house-door-fill"></i> Página Inicial
+                    <a class="nav-link {% if current == 'main.tela_inicial' %}active{% endif %}"
+                        href="{{ url_for('main.tela_inicial') }}">
+                        <i class="bi bi-house-door-fill"></i> Página Inicial
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if current == 'main.tela_foruns' %}active{% endif %}" href="{{ url_for('main.tela_foruns') }}">
-                       <i class="bi bi-chat-left-dots-fill"></i> Fóruns
+                    <a class="nav-link {% if current == 'main.tela_foruns' %}active{% endif %}"
+                        href="{{ url_for('main.tela_foruns') }}">
+                        <i class="bi bi-chat-left-dots-fill"></i> Fóruns
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if current == 'main.tela_divulgacao' %}active{% endif %}" href="{{ url_for('main.tela_divulgacao') }}">
-                       <i class="bi bi-megaphone-fill"></i> Divulgação
+                    <a class="nav-link {% if current == 'main.tela_divulgacao' %}active{% endif %}"
+                        href="{{ url_for('main.tela_divulgacao') }}">
+                        <i class="bi bi-megaphone-fill"></i> Divulgação
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if current == 'main.tela_materiais' %}active{% endif %}" href="{{ url_for('main.tela_materiais') }}">
-                       <i class="bi bi-file-earmark-text-fill"></i> Materiais
+                    <a class="nav-link {% if current == 'main.tela_materiais' %}active{% endif %}"
+                        href="{{ url_for('main.tela_materiais') }}">
+                        <i class="bi bi-file-earmark-text-fill"></i> Materiais
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if current == 'main.tela_mapa' %}active{% endif %}" href="{{ url_for('main.tela_mapa') }}">
-                       <i class="bi bi-geo-alt-fill"></i> Mapa
+                    <a class="nav-link {% if current == 'main.tela_mapa' %}active{% endif %}"
+                        href="{{ url_for('main.tela_mapa') }}">
+                        <i class="bi bi-geo-alt-fill"></i> Mapa
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if current == 'main.tela_mapa' %}active{% endif %}" href="{{ url_for('main.tela_comunidades') }}">
-                       <i class="bi bi-people-fill"></i> Comunidades
+                    <a class="nav-link {% if current == 'main.tela_mapa' %}active{% endif %}"
+                        href="{{ url_for('main.tela_comunidades') }}">
+                        <i class="bi bi-people-fill"></i> Comunidades
                     </a>
                 </li>
             </ul>
@@ -51,14 +57,18 @@
             <a href="{{ url_for('main.tela_perfil') }}" class="profile-link ms-lg-5">
                 <span>Olá, {{ current_user.name }}</span>
                 <div class="profile-pic">
-                    <img src="{{ current_user.foto_url }}" alt="Perfil"> 
+                    <img src="{{ current_user.foto_url }}" alt="Perfil">
                 </div>
+            </a>
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-light ms-3 btn-sm">
+                Sair
             </a>
         </div>
     </div>
 </nav>
 
-<div class="modal fade" id="modalNotificacoes" tabindex="-1" aria-labelledby="modalNotificacoesLabel" aria-hidden="true">
+<div class="modal fade" id="modalNotificacoes" tabindex="-1" aria-labelledby="modalNotificacoesLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">

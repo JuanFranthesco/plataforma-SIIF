@@ -16,6 +16,17 @@ from app.forms import ProfileForm
 
 main_bp = Blueprint('main', __name__)
 
+@main_bp.after_request
+def add_header(response):
+    """
+    Adiciona cabeçalhos para evitar cache em rotas protegidas.
+    """
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, public, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
+
+
 # --- FILTRO DE DATA (Para mostrar '21/11 às 14:30' no HTML) ---
 @main_bp.app_template_filter('format_data_br')
 def format_data_br(dt):

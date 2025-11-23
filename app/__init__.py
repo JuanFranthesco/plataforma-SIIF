@@ -1,5 +1,6 @@
 # app/__init__.py
 import os
+from datetime import timedelta
 from flask import Flask
 
 def create_app():
@@ -14,6 +15,10 @@ def create_app():
     )
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-change-this')
+
+    # Configuração de Sessão
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
+    app.config['SESSION_PERMANENT'] = True
 
     # Uploads
     app.config['UPLOAD_FOLDER'] = os.environ.get(
