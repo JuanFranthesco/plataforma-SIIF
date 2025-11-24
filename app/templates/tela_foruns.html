@@ -48,7 +48,8 @@
                                             <i class="bi bi-bell-fill"></i>
                                             <span class="truncate">Notificações</span>
                                         </div>
-                                        <span class="notification-badge">3</span>
+                                        {% set unread_count = notificacoes|length %}
+                                        <span class="notification-badge" {% if unread_count == 0 %}style="display:none"{% endif %}>{{ unread_count }}</span>
                                     </a>
                                     <a href="{{ url_for('main.tela_foruns', filtro='salvos') }}" class="sidebar-link {% if filtro_selecionado == 'salvos' %}active{% endif %}">
                                         <i class="bi bi-bookmark-fill"></i>
@@ -316,35 +317,41 @@
                 </div>
     </div>
 
-    <div class="modal fade" id="modalNotificacoes" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-custom-verde">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Notificações</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Sem novas notificações.</p>
-                </div>
+<div class="modal fade" id="modalNotificacoes" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-custom-verde modal-lg">
+        <div class="modal-content border-success">
+            <div class="modal-header bg-success text-white d-flex justify-content-between align-items-center">
+                <h5 class="modal-title"><i class="bi bi-bell-fill me-2"></i> Notificações</h5>
+                <form action="{{ url_for('main.marcar_todas_notificacoes_lidas') }}" method="POST" class="mb-0">
+                    <button type="submit" class="btn btn-sm btn-light text-success">Marcar todas como vistas</button>
+                </form>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="modalVerPerfil" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-custom-verde">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Perfil do Usuário</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="modal-body p-3">
+    {% if notificacoes and notificacoes|length > 0 %}
+        <h6 class="text-center fw-bold text-success mb-4">Você tem {{ notificacoes|length }} nova{{ notificacoes|length > 1 and 's' or '' }} notificação{{ notificacoes|length > 1 and 's' or '' }}</h6>
+        <div class="d-flex flex-column gap-3" style="max-height: 400px; overflow-y: auto;">
+            {% for notificacao in notificacoes %}
+                <div class="card border-success shadow-sm">
+                    <div class="card-body d-flex justify-content-between align-items-start p-3">
+                        <div class="d-flex align-items-center gap-3 flex-grow-1">
+                            <div class="icon-circle bg-success text-white d-flex justify-content-center align-items-center rounded-circle" style="width: 36px; height: 36px;">
+                                <i class="bi bi-bell-fill"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold text-truncate" style="max-width: calc(100% - 40px); word-wrap: break-word;">{{ notificacao.mensagem }}</div>
+                                <a href="{{ notificacao.link_url }}" data-bs-dismiss="modal" class="stretched-link"></a>
+                            </div>
+                        </div>
+                        <small class="text-muted ms-3">{{ notificacao.data_criacao.strftime('%d/%m %H:%M') }}</small>
+                    </div>
                 </div>
-                <div class="modal-body text-center">
-                    <img src="https://placehold.co/100x100" class="rounded-circle mb-3" alt="User">
-                    <h4>Nome do Usuário</h4>
-                    <p class="text-muted">Biografia do usuário...</p>
-                </div>
-            </div>
+            {% endfor %}
         </div>
-    </div>
+    {% else %}
+        <p class="text-center text-muted">Sem novas notificações.</p>
+    {% endif %}
+</div>
 
     <div class="modal fade" id="modalDenunciar" tabindex="-1" aria-labelledby="modalDenunciarLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-custom-verde">

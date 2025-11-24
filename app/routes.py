@@ -400,6 +400,9 @@ def tela_foruns():
     likes_usuario = [l.topico_id for l in PostLike.query.filter_by(user_id=current_user.id).all()]
     salvos_usuario = [s.topico_id for s in PostSalvo.query.filter_by(user_id=current_user.id).all()]
 
+    # Fetch notifications for current user
+    notificacoes = Notificacao.query.filter_by(usuario_id=current_user.id, lida=False).order_by(desc(Notificacao.data_criacao)).limit(10).all()
+
     return render_template(
         'tela_foruns.html', 
         topicos=topicos,
@@ -407,8 +410,33 @@ def tela_foruns():
         salvos_usuario=salvos_usuario,
         termo_pesquisado=termo_pesquisa,
         ordenacao_selecionada=ordenar_por,
-        filtro_selecionado=filtro
+        filtro_selecionado=filtro,
+        notificacoes=notificacoes
     )
+    
+@main_bp.route('/forum/notificacoes/mark_all_seen', methods=['POST'])
+@login_required
+def marcar_todas_notificacoes_lidas_forum():
+    try:
+        Notificacao.query.filter_by(usuario_id=current_user.id, lida=False).update({'lida': True})
+        db.session.commit()
+        flash('Todas as notificações foram marcadas como vistas.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Erro ao marcar notificações como vistas: {e}', 'danger')
+    return redirect(request.referrer or url_for('main.tela_foruns'))
+
+@main_bp.route('/forum/notificacoes/mark_all_seen', methods=['POST'])
+@login_required
+def marcar_todas_notificacoes_lidas():
+    try:
+        Notificacao.query.filter_by(usuario_id=current_user.id, lida=False).update({'lida': True})
+        db.session.commit()
+        flash('Todas as notificações foram marcadas como vistas.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Erro ao marcar notificações como vistas: {e}', 'danger')
+    return redirect(url_for('main.tela_foruns'))
 
 
 @main_bp.route('/forum/postar', methods=['POST'])
@@ -461,7 +489,22 @@ def criar_post():
     
     db.session.add(novo_topico)
     db.session.commit()
-    
+
+    # Create notifications for community members about the new post (excluding author)
+    if com_id:
+        comunidade = Comunidade.query.get(com_id)
+        membros_ids = [membro.id for membro in comunidade.membros if membro.id != current_user.id]
+        try:
+            for usuario_id in membros_ids:
+                mensagem = f"Novo post na comunidade {comunidade.nome}: {titulo}"
+                link = url_for('main.ver_comunidade', comunidade_id=com_id)
+                notificacao = Notificacao(mensagem=mensagem, link_url=link, usuario_id=usuario_id)
+                db.session.add(notificacao)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Erro ao criar notificações: {e}', 'danger')
+
     flash('Post criado com sucesso!', 'success')
     if com_id:
         return redirect(url_for('main.ver_comunidade', comunidade_id=com_id))
