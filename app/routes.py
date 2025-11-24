@@ -1,41 +1,44 @@
 from flask import render_template, request, redirect, url_for, flash, current_app, send_from_directory, Blueprint
 from flask_login import login_required, current_user
-from sqlalchemy import or_, desc, func
+from sqlalchemy import or_, desc, func, text
 from werkzeug.utils import secure_filename
 import os
 import datetime
 from thefuzz import fuzz
-# Imports completos dos modelos (Incluindo as novas tabelas)
 from app.models import (
     Material, User, FAQ, Denuncia, Noticia, Evento, Perfil, 
     Topico, Resposta, PostSalvo, PostLike, Notificacao, 
-    Comunidade, SolicitacaoParticipacao, RespostaLike
+    Comunidade, SolicitacaoParticipacao, RespostaLike,
+    ComunidadeTag, AuditLog
 )
 from app.extensions import db
 from app.forms import ProfileForm
 
 main_bp = Blueprint('main', __name__)
 
-@main_bp.after_request
-def add_header(response):
-    """
-    Adiciona cabeçalhos para evitar cache em rotas protegidas.
-    """
-    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, public, max-age=0"
-    response.headers["Pragma"] = "no-cache"
-    response.headers["Expires"] = "0"
-    return response
-
-
-# --- FILTRO DE DATA (Para mostrar '21/11 às 14:30' no HTML) ---
+# --- FILTRO DE DATA ---
 @main_bp.app_template_filter('format_data_br')
 def format_data_br(dt):
-    if dt is None:
-        return ""
-    # Converte UTC para Horário de Brasília (UTC-3)
+    if dt is None: return ""
     dt_brasil = dt - datetime.timedelta(hours=3)
     return dt_brasil.strftime('%d/%m às %H:%M')
 
+# --- FUNÇÕES AUXILIARES ---
+def registrar_log(comunidade_id, acao, detalhes=None):
+    """Salva uma ação no histórico da comunidade."""
+    log = AuditLog(acao=acao, detalhes=detalhes, comunidade_id=comunidade_id, autor_id=current_user.id)
+    db.session.add(log)
+    db.session.commit()
+
+def verificar_automod(texto, comunidade):
+    """Retorna True se o texto contiver palavras proibidas."""
+    if not comunidade.palavras_proibidas: return False
+    proibidas = [p.strip().lower() for p in comunidade.palavras_proibidas.split(',')]
+    texto_lower = texto.lower()
+    for palavra in proibidas:
+        if palavra and palavra in texto_lower:
+            return True
+    return False
 
 # ===================================================================
 # TELA INICIAL E REDIRECIONAMENTOS
@@ -50,16 +53,9 @@ def index():
 @main_bp.route('/tela-inicial')
 @login_required
 def tela_inicial():
-    """
-    Tela inicial com dados reais do banco:
-    - Últimas notícias
-    - Próximos eventos
-    """
-    # Se for admin, redireciona para o painel dele
     if current_user.is_admin:
         return redirect(url_for('main.tela_admin'))
 
-    # Busca notícias e eventos
     noticias = Noticia.query.order_by(Noticia.data_postagem.desc()).limit(4).all()
     agora = datetime.datetime.now(datetime.timezone.utc)
     
@@ -77,34 +73,26 @@ def tela_inicial():
         eventos=eventos
     )
 
-
 # ===================================================================
-# COMUNIDADES (NOVA FUNCIONALIDADE)
+# COMUNIDADES
 # ===================================================================
 
 @main_bp.route('/comunidades')
 @login_required
 def tela_comunidades():
-    """
-    Lista todas as comunidades disponíveis e permite buscar.
-    """
     busca = request.args.get('q')
     categoria_filtro = request.args.get('categoria')
     
     query = Comunidade.query
 
-    # Filtro por Nome
     if busca:
         query = query.filter(Comunidade.nome.ilike(f'%{busca}%'))
     
-    # Filtro por Categoria
     if categoria_filtro and categoria_filtro != 'Todas':
         query = query.filter(Comunidade.categoria == categoria_filtro)
 
-    # Ordenação alfabética
     comunidades = query.order_by(Comunidade.nome).all()
     
-    # Busca categorias para o menu
     categorias_db = db.session.query(Comunidade.categoria).distinct().order_by(Comunidade.categoria).all()
     categorias = [c[0] for c in categorias_db if c[0]]
 
@@ -120,9 +108,6 @@ def tela_comunidades():
 @main_bp.route('/comunidades/criar', methods=['POST'])
 @login_required
 def criar_comunidade():
-    """
-    Cria uma nova comunidade com suporte a imagem, categoria e tipo.
-    """
     try:
         nome = request.form.get('nome')
         descricao = request.form.get('descricao')
@@ -130,17 +115,14 @@ def criar_comunidade():
         tipo = request.form.get('tipo')
         imagem = request.files.get('imagem')
         
-        # Validação básica
         if not nome or not descricao:
-            flash('Nome e descrição são obrigatórios.', 'warning')
+            flash('Preencha todos os campos.', 'warning')
             return redirect(url_for('main.tela_comunidades'))
             
-        # Verifica se já existe
         if Comunidade.query.filter(func.lower(Comunidade.nome) == func.lower(nome)).first():
-            flash(f'A comunidade "{nome}" já existe. Tente outro nome.', 'danger')
+            flash('Nome já existe.', 'danger')
             return redirect(url_for('main.tela_comunidades'))
 
-        # Cria a comunidade
         nova_com = Comunidade(
             nome=nome,
             descricao=descricao,
@@ -149,101 +131,80 @@ def criar_comunidade():
             criador_id=current_user.id
         )
         
-        # Salvar Imagem da Comunidade
         if imagem and imagem.filename:
             filename = secure_filename(imagem.filename)
-            timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-            filename = f"com_{timestamp}_{filename}"
-            
-            upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-            imagem.save(upload_path)
-            nova_com.imagem_url = f"/static/uploads/{filename}"
+            ts = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+            fname = f"com_{ts}_{filename}"
+            path = os.path.join(current_app.config['UPLOAD_FOLDER'], fname)
+            imagem.save(path)
+            nova_com.imagem_url = f"/static/uploads/{fname}"
         
-        # O criador entra automaticamente e vira moderador
         nova_com.membros.append(current_user)
         nova_com.moderadores.append(current_user)
         
         db.session.add(nova_com)
         db.session.commit()
         
-        flash(f'Comunidade "{nome}" criada com sucesso!', 'success')
+        flash('Comunidade criada!', 'success')
         return redirect(url_for('main.ver_comunidade', comunidade_id=nova_com.id))
 
     except Exception as e:
         db.session.rollback()
-        flash(f'Erro ao criar comunidade: {e}', 'danger')
+        flash(f'Erro: {e}', 'danger')
         return redirect(url_for('main.tela_comunidades'))
 
 
 @main_bp.route('/comunidade/<int:comunidade_id>/participar')
 @login_required
 def participar_comunidade(comunidade_id):
-    """
-    Alterna entre Entrar e Sair de uma comunidade.
-    """
     comunidade = Comunidade.query.get_or_404(comunidade_id)
     
-    # SAIR
     if current_user in comunidade.membros:
         comunidade.membros.remove(current_user)
-        
-        # Se for mod (e não dono), perde o cargo ao sair
         if current_user in comunidade.moderadores and comunidade.criador_id != current_user.id:
             comunidade.moderadores.remove(current_user)
         
-        flash(f'Você saiu de {comunidade.nome}.', 'info')
+        flash(f'Saiu de {comunidade.nome}.', 'info')
         db.session.commit()
-        return redirect(request.referrer or url_for('main.tela_comunidades'))
+        return redirect(request.referrer)
 
-    # ENTRAR
     if comunidade.tipo_acesso == 'Restrito':
-        # Verifica se já pediu
         solicitacao = SolicitacaoParticipacao.query.filter_by(user_id=current_user.id, comunidade_id=comunidade.id).first()
         if solicitacao:
-            flash('Solicitação já enviada. Aguarde aprovação.', 'warning')
+            flash('Aguarde aprovação.', 'warning')
         else:
-            nova_sol = SolicitacaoParticipacao(user_id=current_user.id, comunidade_id=comunidade.id)
-            db.session.add(nova_sol)
+            db.session.add(SolicitacaoParticipacao(user_id=current_user.id, comunidade_id=comunidade.id))
             db.session.commit()
-            flash('Solicitação enviada aos moderadores.', 'success')
+            flash('Solicitação enviada.', 'success')
     else:
-        # Público: Entra direto
         comunidade.membros.append(current_user)
         db.session.commit()
-        flash(f'Bem-vindo ao {comunidade.nome}!', 'success')
+        flash(f'Entrou em {comunidade.nome}!', 'success')
         
-    return redirect(request.referrer or url_for('main.tela_comunidades'))
+    return redirect(request.referrer)
 
 
 @main_bp.route('/c/<int:comunidade_id>')
 @login_required
 def ver_comunidade(comunidade_id):
-    """
-    Visualiza o feed de uma comunidade específica.
-    """
     comunidade = Comunidade.query.get_or_404(comunidade_id)
     
-    # Controle de Acesso (Privacidade)
     tem_acesso = True
     if comunidade.tipo_acesso == 'Restrito' and current_user not in comunidade.membros:
         tem_acesso = False
         topicos = []
     else:
-        # Busca posts APENAS desta comunidade
         topicos = Topico.query.filter_by(comunidade_id=comunidade.id).order_by(desc(Topico.criado_em)).all()
     
-    # Dados auxiliares para os botões
     likes_usuario = [l.topico_id for l in PostLike.query.filter_by(user_id=current_user.id).all()]
     salvos_usuario = [s.topico_id for s in PostSalvo.query.filter_by(user_id=current_user.id).all()]
     likes_respostas_usuario = [l.resposta_id for l in RespostaLike.query.filter_by(user_id=current_user.id).all()]
     
-    # Verifica solicitação pendente
     solicitacao_pendente = False
     if not tem_acesso:
         sol = SolicitacaoParticipacao.query.filter_by(user_id=current_user.id, comunidade_id=comunidade.id).first()
         if sol: solicitacao_pendente = True
 
-    # Sugestões Inteligentes (Mesma Categoria)
     sugestoes = Comunidade.query.filter(
         Comunidade.categoria == comunidade.categoria,
         Comunidade.id != comunidade.id
@@ -266,62 +227,102 @@ def ver_comunidade(comunidade_id):
 
 
 # ===================================================================
-# GESTÃO E MODERAÇÃO DE COMUNIDADES
+# GESTÃO E MODERAÇÃO (DASHBOARD)
 # ===================================================================
 
 @main_bp.route('/c/<int:comunidade_id>/configurar', methods=['GET', 'POST'])
 @login_required
 def configurar_comunidade(comunidade_id):
-    """
-    Dashboard da Comunidade (Apenas para Dono e Moderadores).
-    """
     comunidade = Comunidade.query.get_or_404(comunidade_id)
     
-    # Verifica permissão
     eh_dono = (comunidade.criador_id == current_user.id)
     eh_mod = (current_user in comunidade.moderadores)
     
     if not eh_dono and not eh_mod and not current_user.is_admin:
-        flash('Você não tem permissão para configurar esta comunidade.', 'danger')
+        flash('Sem permissão.', 'danger')
         return redirect(url_for('main.ver_comunidade', comunidade_id=comunidade.id))
 
     if request.method == 'POST':
-        # Atualiza informações básicas
+        # Identidade e Segurança
         comunidade.descricao = request.form.get('descricao')
         comunidade.regras = request.form.get('regras')
+        comunidade.cor_tema = request.form.get('cor_tema')
+        comunidade.palavras_proibidas = request.form.get('palavras_proibidas')
+        comunidade.trancada = 'trancada' in request.form
         
-        # Upload de Imagem (Logo/Banner)
+        # Imagens
         imagem = request.files.get('imagem_comunidade')
+        banner = request.files.get('banner_comunidade')
+        
+        ts = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        
         if imagem and imagem.filename:
-            filename = secure_filename(imagem.filename)
-            ts = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-            fname = f"com_{ts}_{filename}"
-            path = os.path.join(current_app.config['UPLOAD_FOLDER'], fname)
+            fname = secure_filename(imagem.filename)
+            path = os.path.join(current_app.config['UPLOAD_FOLDER'], f"logo_{ts}_{fname}")
+            imagem.save(path)
+            comunidade.imagem_url = f"/static/uploads/logo_{ts}_{fname}"
             
-            try:
-                imagem.save(path)
-                comunidade.imagem_url = f"/static/uploads/{fname}"
-            except Exception as e:
-                flash(f'Erro ao salvar imagem: {e}', 'danger')
+        if banner and banner.filename:
+            fname = secure_filename(banner.filename)
+            path = os.path.join(current_app.config['UPLOAD_FOLDER'], f"banner_{ts}_{fname}")
+            banner.save(path)
+            comunidade.banner_url = f"/static/uploads/banner_{ts}_{fname}"
 
+        registrar_log(comunidade.id, "Configurações atualizadas")
         db.session.commit()
-        flash('Configurações da comunidade atualizadas!', 'success')
+        flash('Configurações salvas!', 'success')
         return redirect(url_for('main.configurar_comunidade', comunidade_id=comunidade.id))
     
-    # Busca solicitações pendentes
     solicitacoes = []
     if comunidade.tipo_acesso == 'Restrito':
         solicitacoes = SolicitacaoParticipacao.query.filter_by(comunidade_id=comunidade.id).all()
+        
+    tags = ComunidadeTag.query.filter_by(comunidade_id=comunidade.id).all()
+    logs = AuditLog.query.filter_by(comunidade_id=comunidade.id).order_by(desc(AuditLog.data)).limit(20).all()
+    
+    # Stats
+    stats = {
+        'membros': comunidade.membros.count(),
+        'posts': len(comunidade.topicos)
+    }
 
-    return render_template('tela_comunidade_config.html', comunidade=comunidade, solicitacoes=solicitacoes)
+    return render_template('tela_comunidade_config.html', 
+                           comunidade=comunidade, 
+                           solicitacoes=solicitacoes,
+                           tags=tags, 
+                           logs=logs,
+                           stats=stats,
+                           top_membros=[]) # (Pode adicionar lógica de top membros aqui depois)
+
+
+@main_bp.route('/c/<int:comunidade_id>/tags/criar', methods=['POST'])
+@login_required
+def criar_tag(comunidade_id):
+    comunidade = Comunidade.query.get_or_404(comunidade_id)
+    if current_user not in comunidade.moderadores: return redirect(request.referrer)
+    
+    nome = request.form.get('nome_tag')
+    cor = request.form.get('cor_tag')
+    if nome:
+        db.session.add(ComunidadeTag(nome=nome, cor=cor, comunidade_id=comunidade.id))
+        registrar_log(comunidade.id, f"Criou tag: {nome}")
+        db.session.commit()
+    return redirect(url_for('main.configurar_comunidade', comunidade_id=comunidade.id))
+
+
+@main_bp.route('/c/<int:comunidade_id>/tags/<int:tag_id>/excluir')
+@login_required
+def excluir_tag(comunidade_id, tag_id):
+    tag = ComunidadeTag.query.get_or_404(tag_id)
+    if current_user in tag.comunidade.moderadores:
+        db.session.delete(tag)
+        db.session.commit()
+    return redirect(url_for('main.configurar_comunidade', comunidade_id=comunidade_id))
 
 
 @main_bp.route('/c/<int:comunidade_id>/promover/<int:user_id>')
 @login_required
 def promover_moderador(comunidade_id, user_id):
-    """
-    Promove ou rebaixa um membro a moderador.
-    """
     comunidade = Comunidade.query.get_or_404(comunidade_id)
     alvo = User.query.get_or_404(user_id)
     
@@ -331,9 +332,11 @@ def promover_moderador(comunidade_id, user_id):
         
     if alvo not in comunidade.moderadores:
         comunidade.moderadores.append(alvo)
-        flash(f'{alvo.name} agora é um moderador!', 'success')
+        registrar_log(comunidade.id, f"Promoveu {alvo.name}")
+        flash(f'{alvo.name} agora é moderador!', 'success')
     else:
         comunidade.moderadores.remove(alvo)
+        registrar_log(comunidade.id, f"Rebaixou {alvo.name}")
         flash(f'{alvo.name} não é mais moderador.', 'info')
         
     db.session.commit()
@@ -343,9 +346,6 @@ def promover_moderador(comunidade_id, user_id):
 @main_bp.route('/c/<int:comunidade_id>/solicitacoes/<int:sol_id>/<acao>')
 @login_required
 def gerenciar_solicitacao(comunidade_id, sol_id, acao):
-    """
-    Aceita ou Recusa solicitações de entrada.
-    """
     comunidade = Comunidade.query.get_or_404(comunidade_id)
     
     if current_user not in comunidade.moderadores and not current_user.is_admin:
@@ -356,9 +356,10 @@ def gerenciar_solicitacao(comunidade_id, sol_id, acao):
     if acao == 'aceitar':
         usuario = User.query.get(solicitacao.user_id)
         comunidade.membros.append(usuario)
+        registrar_log(comunidade.id, f"Aceitou {usuario.name}")
         db.session.delete(solicitacao)
         db.session.commit()
-        flash(f'{usuario.name} foi aceito na comunidade!', 'success')
+        flash(f'{usuario.name} aceito!', 'success')
     elif acao == 'recusar':
         db.session.delete(solicitacao)
         db.session.commit()
@@ -368,37 +369,30 @@ def gerenciar_solicitacao(comunidade_id, sol_id, acao):
 
 
 # ===================================================================
-# FÓRUM GERAL E POSTAGEM (ATUALIZADO)
+# FÓRUM GERAL E POSTAGEM
 # ===================================================================
 
 @main_bp.route('/forum')
 @login_required
 def tela_foruns():
-    """
-    Exibe o feed principal com lógica de PESQUISA, FILTRO e ORDENAÇÃO.
-    """
     termo_pesquisa = request.args.get('q')
     ordenar_por = request.args.get('ordenarPor')
     filtro = request.args.get('filtro')
 
     query = Topico.query
 
-    # Filtro de Pesquisa
     if termo_pesquisa:
         query = query.filter(or_(
             Topico.titulo.ilike(f'%{termo_pesquisa}%'),
             Topico.conteudo.ilike(f'%{termo_pesquisa}%')
         ))
 
-    # Filtro de Salvos
     if filtro == 'salvos':
         query = query.join(PostSalvo).filter(PostSalvo.user_id == current_user.id)
 
-    # Ordenação
     if ordenar_por == 'relevancia':
         query = query.outerjoin(PostLike).group_by(Topico.id).order_by(desc(func.count(PostLike.id)))
     else:
-        # Padrão: mais recente
         query = query.order_by(desc(Topico.criado_em))
 
     topicos = query.all()
@@ -420,43 +414,48 @@ def tela_foruns():
 @main_bp.route('/forum/postar', methods=['POST'])
 @login_required
 def criar_post():
-    """
-    Cria um novo post (COM UPLOAD DE IMAGEM).
-    """
     conteudo = request.form.get('conteudo_post')
-    comunidade_id = request.form.get('comunidade_id') # ID da comunidade
-    imagem = request.files.get('midia_post') # Arquivo de imagem
+    comunidade_id = request.form.get('comunidade_id')
+    tag_id = request.form.get('tag_id') # Nova Tag
+    imagem = request.files.get('midia_post')
 
     if not conteudo and not imagem:
         flash('O post não pode ficar vazio.', 'warning')
         return redirect(request.referrer or url_for('main.tela_foruns'))
 
-    # Define um título baseado na primeira linha
+    # AutoMod Check (Segurança)
+    if comunidade_id:
+        com = Comunidade.query.get(comunidade_id)
+        if com.trancada and current_user not in com.moderadores:
+            flash('Esta comunidade está trancada para novos posts.', 'danger')
+            return redirect(request.referrer)
+        if verificar_automod(conteudo or "", com):
+            flash('Seu post contém palavras proibidas e foi bloqueado.', 'danger')
+            return redirect(request.referrer)
+
     linhas = conteudo.split('\n', 1) if conteudo else ["Nova Imagem"]
     titulo = linhas[0].strip()[:150] if conteudo else "Imagem"
-    if not titulo:
-        titulo = "Novo Post"
+    if not titulo: titulo = "Novo Post"
 
-    # Converte comunidade_id para inteiro se existir
     com_id = int(comunidade_id) if comunidade_id else None
+    tid = int(tag_id) if tag_id else None
 
     novo_topico = Topico(
         titulo=titulo,
         conteudo=conteudo if conteudo else "",
         autor_id=current_user.id,
-        comunidade_id=com_id
+        comunidade_id=com_id,
+        tag_id=tid
     )
 
-    # Salvar imagem se houver
     if imagem and imagem.filename:
         filename = secure_filename(imagem.filename)
         ts = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-        filename = f"post_{ts}_{filename}"
-        path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-        
+        fname = f"post_{ts}_{filename}"
+        path = os.path.join(current_app.config['UPLOAD_FOLDER'], fname)
         try:
             imagem.save(path)
-            novo_topico.imagem_post = f"/static/uploads/{filename}"
+            novo_topico.imagem_post = f"/static/uploads/{fname}"
         except Exception as e:
             flash(f'Erro ao salvar imagem: {e}', 'danger')
     
@@ -464,7 +463,6 @@ def criar_post():
     db.session.commit()
     
     flash('Post criado com sucesso!', 'success')
-    
     if com_id:
         return redirect(url_for('main.ver_comunidade', comunidade_id=com_id))
 
@@ -474,17 +472,18 @@ def criar_post():
 @main_bp.route('/forum/<int:topico_id>/comentar', methods=['POST'])
 @login_required
 def comentar_post(topico_id):
-    """
-    Cria um comentário (COM UPLOAD E ANINHAMENTO).
-    """
     conteudo = request.form.get('conteudo_comentario')
     imagem = request.files.get('midia_comentario')
-    parent_id = request.form.get('parent_id') # ID do Pai
-    
+    parent_id = request.form.get('parent_id')
     topico = Topico.query.get_or_404(topico_id)
 
     if not conteudo and not imagem:
         flash('O comentário não pode ficar vazio.', 'warning')
+        return redirect(request.referrer)
+    
+    # AutoMod Check
+    if topico.comunidade_id and verificar_automod(conteudo or "", topico.comunidade):
+        flash('Seu comentário contém palavras proibidas.', 'danger')
         return redirect(request.referrer)
 
     pid = int(parent_id) if parent_id else None
@@ -493,19 +492,17 @@ def comentar_post(topico_id):
         conteudo=conteudo if conteudo else "",
         topico_id=topico.id,
         autor_id=current_user.id,
-        parent_id=pid # Salva o aninhamento
+        parent_id=pid
     )
 
-    # Salvar imagem do comentário
     if imagem and imagem.filename:
         filename = secure_filename(imagem.filename)
         ts = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-        filename = f"resp_{ts}_{filename}"
-        path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-        
+        fname = f"resp_{ts}_{filename}"
+        path = os.path.join(current_app.config['UPLOAD_FOLDER'], fname)
         try:
             imagem.save(path)
-            nova_resposta.imagem_resposta = f"/static/uploads/{filename}"
+            nova_resposta.imagem_resposta = f"/static/uploads/{fname}"
         except Exception as e:
             flash(f'Erro ao salvar imagem: {e}', 'danger')
 
@@ -515,7 +512,6 @@ def comentar_post(topico_id):
     try:
         link_destino = url_for('main.ver_comunidade', comunidade_id=topico.comunidade_id) if topico.comunidade_id else url_for('main.tela_foruns')
         
-        # Se for resposta a um comentário
         if pid:
             comentario_pai = Resposta.query.get(pid)
             if comentario_pai and comentario_pai.autor_id != current_user.id:
@@ -524,7 +520,6 @@ def comentar_post(topico_id):
                     link_url=link_destino, 
                     usuario_id=comentario_pai.autor_id
                 ))
-        # Se for comentário no post
         elif topico.autor_id != current_user.id:
             db.session.add(Notificacao(
                 mensagem=f"{current_user.name} comentou no seu post.", 
@@ -537,7 +532,7 @@ def comentar_post(topico_id):
         
     except Exception as e:
         db.session.rollback()
-        flash(f'Erro ao salvar comentário: {e}', 'danger')
+        flash(f'Erro: {e}', 'danger')
     
     return redirect(request.referrer)
 
@@ -545,9 +540,6 @@ def comentar_post(topico_id):
 @main_bp.route('/comentario/<int:resposta_id>/like', methods=['POST'])
 @login_required
 def like_comentario(resposta_id):
-    """
-    Curte/Descurte um comentário.
-    """
     resposta = Resposta.query.get_or_404(resposta_id)
     like = RespostaLike.query.filter_by(user_id=current_user.id, resposta_id=resposta.id).first()
     
@@ -569,8 +561,7 @@ def like_post(topico_id):
     if like_existente:
         db.session.delete(like_existente)
     else:
-        novo_like = PostLike(user_id=current_user.id, topico_id=topico.id)
-        db.session.add(novo_like)
+        db.session.add(PostLike(user_id=current_user.id, topico_id=topico.id))
     
     db.session.commit()
     return redirect(request.referrer)
@@ -586,9 +577,8 @@ def salvar_post(topico_id):
         db.session.delete(save_existente)
         flash('Removido dos salvos.', 'info')
     else:
-        novo_salvo = PostSalvo(user_id=current_user.id, topico_id=topico.id)
-        db.session.add(novo_salvo)
-        flash('Post salvo com sucesso!', 'success')
+        db.session.add(PostSalvo(user_id=current_user.id, topico_id=topico.id))
+        flash('Salvo!', 'success')
     
     db.session.commit()
     return redirect(request.referrer)
@@ -599,16 +589,17 @@ def salvar_post(topico_id):
 def excluir_post(topico_id):
     topico = Topico.query.get_or_404(topico_id)
     
-    # Permissão: Admin, Dono do Post ou Moderador da Comunidade
     eh_mod = topico.comunidade_id and (current_user in topico.comunidade.moderadores)
     
     if not current_user.is_admin and topico.autor_id != current_user.id and not eh_mod:
         flash('Você não tem permissão para fazer isso.', 'danger')
         return redirect(request.referrer)
         
+    if topico.comunidade_id:
+        registrar_log(topico.comunidade_id, f"Post excluído: {topico.titulo} (Autor: {topico.autor.name})")
+
     db.session.delete(topico)
     db.session.commit()
-    
     flash('Tópico excluído.', 'warning')
     return redirect(request.referrer)
 
@@ -626,7 +617,7 @@ def denunciar_post(topico_id):
     descricao_completa = f"Denúncia Tópico #{topico.id} (Título: {topico.titulo})\nAutor: {topico.autor.name}\nMotivo: {descricao_denuncia}"
 
     nova_denuncia = Denuncia(
-        tipo_denuncia="Denúncia de Post no Fórum",
+        tipo_denuncia="Fórum",
         descricao=descricao_completa,
         denunciante_id=current_user.id
     )
@@ -916,13 +907,10 @@ def suporte():
         termo_busca=termo_busca
     )
 
-# PARTE ADMIN IIIIINNNNNNNN
 @main_bp.route('/tela_admin')
 @login_required
 def tela_admin():
     if current_user.is_admin:
-        # Pega a quantidade exata de usuarios cadastrados
-        users_count = User.query.count()
-
-        return render_template('tela_admin.html', users_count=users_count)
+        return render_template('tela_admin.html')
+    
     return redirect(request.referrer)
