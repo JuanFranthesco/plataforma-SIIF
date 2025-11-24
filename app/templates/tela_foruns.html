@@ -98,6 +98,9 @@
                                 <div class="d-flex flex-column">
                                     <h3 class="post-author text-dark mb-0">{{ topico.autor.name }}</h3>
                                     <small class="text-muted" style="font-size: 0.75rem;">Postado recentemente</small>
+                                    <small class="text-muted" style="font-size: 0.75rem;">
+                                        Comunidade: {{ topico.comunidade.nome if topico.comunidade else "Global" }}
+                                    </small>
                                 </div>
                             </a>
                             <div class="post-options-container">
@@ -128,6 +131,11 @@
                         <div class="post-body">
                             <h4 class="fw-bold text-success mb-2" style="font-size: 1.15rem;">{{ topico.titulo }}</h4>
                             <p class="text-secondary">{{ topico.conteudo | replace('\n', '<br>') | safe }}</p>
+                            {% if topico.imagem_post %}
+                            <div class="post-image mt-3">
+                                <img src="{{ topico.imagem_post }}" alt="Imagem do post" class="img-fluid rounded shadow-sm">
+                            </div>
+                            {% endif %}
                         </div>
                         <div class="post-footer">
                             <form action="{{ url_for('main.like_post', topico_id=topico.id) }}" method="POST" class="d-inline">
@@ -291,21 +299,21 @@
     </div>
 
     <div class="modal fade" id="modalPostar" tabindex="-1" aria-labelledby="modalPostarLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-custom-verde">
-            <form class="modal-content" action="{{ url_for('main.criar_post') }}" method="POST">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalPostarLabel">Criar Novo Post</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-dialog modal-dialog-centered modal-custom-verde">
+                    <form class="modal-content" action="{{ url_for('main.criar_post') }}" method="POST" enctype="multipart/form-data">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="modalPostarLabel">Criar Novo Post</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <textarea class="form-control" rows="5" placeholder="No que está pensando?" aria-label="Campo para escrever sua postagem" name="conteudo_post" required></textarea>
+                            <input type="file" name="midia_post" accept="image/*" class="form-control mt-3">
+                        </div>
+                        <div class="modal-footer d-flex justify-content-between">
+                            <button type="submit" class="btn btn-primary filter-btn">Postar</button>
+                        </div>
+                    </form>
                 </div>
-                <div class="modal-body">
-                    <textarea class="form-control" rows="5" placeholder="No que está pensando?" aria-label="Campo para escrever sua postagem" name="conteudo_post" required></textarea>
-                </div>
-                <div class="modal-footer d-flex justify-content-between">
-                    <button type="button" class="btn btn-link" style="color: #386641; text-decoration: none;"><i class="bi bi-paperclip"></i> Anexar Mídia</button>
-                    <button type="submit" class="btn btn-primary filter-btn">Postar</button>
-                </div>
-            </form>
-        </div>
     </div>
 
     <div class="modal fade" id="modalNotificacoes" tabindex="-1" aria-hidden="true">
