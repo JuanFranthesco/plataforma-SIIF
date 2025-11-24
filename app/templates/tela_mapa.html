@@ -27,37 +27,22 @@
         </span>
         <select class="form-select" id="campus-select">
           <option value="apodi" selected>Apodi</option>
-          <option value="mossoro">Mossoró (em breve)</option>
-          <option value="natal">Natal (em breve)</option>
-          <option value="pau-dos-ferros">Pau dos Ferros (em breve)</option>
+          <option value="mossoro" disabled>Mossoró (em breve)</option>
+          <option value="natal" disabled>Natal (em breve)</option>
+          <option value="pau-dos-ferros" disabled>Pau dos Ferros (em breve)</option>
         </select>
       </div>
 
       <div class="map-container shadow-sm">
-        <!-- Colocamos id no iframe e removemos loading="lazy" para garantir que podemos trocar o src dinamicamente -->
-        <iframe id="map-frame"
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4218.752729359187!2d-37.80725470000001!3d-5.627263199999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7baf7f6172a76a7%3A0x4df8711927cb367!2sIFRN%20-%20Campus%20Apodi!5e1!3m2!1spt-BR!2sbr!4v1763338919324!5m2!1spt-BR!2sbr"
-          width="600" height="450" style="border:0;" allowfullscreen="" referrerpolicy="no-referrer-when-downgrade">
+        <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4218.752729359187!2d-37.80725470000001!3d-5.627263199999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7baf7f6172a76a7%3A0x4df8711927cb367!2sIFRN%20-%20Campus%20Apodi!5e1!3m2!1spt-BR!2sbr!4v1763338919324!5m2!1spt-BR!2sbr" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
         </iframe>
 
         <small>
-          <a id="external-map-link" href="https://maps.app.goo.gl/DiiQkahmqEM1dGsw9" target="_blank">
+          <a href="https://maps.app.goo.gl/DiiQkahmqEM1dGsw9" target="_blank">
             Ver mapa ampliado
           </a>
         </small>
-      </div>
-
-      <div id="campus-info" class="campus-info mt-4 p-4 shadow-sm rounded" style="background: #fff;">
-        <h3 id="campus-title" class="mb-3">Campus Apodi</h3>
-
-        <p><strong>Endereço:</strong> <span id="campus-endereco">Chapada do Apodi - RN-233, Km 02 - nº 1000</span></p>
-        <p><strong>Cidade:</strong> <span id="campus-cidade">Apodi — RN</span></p>
-        <p><strong>Telefone:</strong> <span id="campus-telefone">(84) xxxx-xxxx</span></p>
-
-        <h5 class="mt-4">Descrição:</h5>
-        <p id="campus-descricao" class="text-muted">
-          O Campus IFRN-Apodi destaca-se pela sua grande fazenda e gama de projetos colaborativos entre os cursos de agropecuária e informática.
-        </p>
       </div>
 
     </main>
@@ -73,45 +58,65 @@
   <a href="{{ url_for('main.tela_denuncias') }}" class="help-btn help-btn-admin">
     <i class="bi bi-shield-check"></i>
   </a>
-
   <div vw class="enabled">
     <div vw-access-button class="active"></div>
     <div vw-plugin-wrapper>
       <div class="vw-plugin-top-wrapper"></div>
     </div>
   </div>
-
   <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-  <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
   <script>
-    // --- Acessibilidade e utilitários ---
-    function toggleAccessMenu() {
-      const menu = document.getElementById('access-menu');
-      menu && menu.classList.toggle('show');
+    new window.VLibras.Widget('https://vlibras.gov.br/app');
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+  // --- Lógica de Acessibilidade ---
+
+  // 1. Abrir/Fechar Menu
+  function toggleAccessMenu() {
+    const menu = document.getElementById('access-menu');
+    menu.classList.toggle('show');
+  }
+
+  // 2. Alto Contraste
+  function toggleContrast() {
+    document.body.classList.toggle('high-contrast');
+    if (document.body.classList.contains('high-contrast')) {
+      localStorage.setItem('contrast', 'true');
+    } else {
+      localStorage.removeItem('contrast');
     }
+  }
 
-    function toggleContrast() {
-      document.body.classList.toggle('high-contrast');
-      if (document.body.classList.contains('high-contrast')) {
-        localStorage.setItem('contrast', 'true');
-      } else {
-        localStorage.removeItem('contrast');
-      }
+  // Verifica preferência salva
+  if (localStorage.getItem('contrast') === 'true') {
+    document.body.classList.add('high-contrast');
+  }
+
+  // 3. Controle de Fonte
+  let currentFontSize = 100; 
+
+  function increaseFont() {
+    if (currentFontSize < 150) {
+      currentFontSize += 10;
+      document.body.style.fontSize = currentFontSize + '%';
     }
+  }
 
-    if (localStorage.getItem('contrast') === 'true') {
-      document.body.classList.add('high-contrast');
+  function decreaseFont() {
+    if (currentFontSize > 80) {
+      currentFontSize -= 10;
+      document.body.style.fontSize = currentFontSize + '%';
     }
+  }
 
-    let currentFontSize = 100;
-    function increaseFont() { if (currentFontSize < 150) { currentFontSize += 10; document.body.style.fontSize = currentFontSize + '%'; } }
-    function decreaseFont() { if (currentFontSize > 80) { currentFontSize -= 10; document.body.style.fontSize = currentFontSize + '%'; } }
-    function resetAccess() { currentFontSize = 100; document.body.style.fontSize = '100%'; document.body.classList.remove('high-contrast'); localStorage.removeItem('contrast'); }
-  </script>
-
+  function resetAccess() {
+    currentFontSize = 100;
+    document.body.style.fontSize = '100%';
+    document.body.classList.remove('high-contrast');
+    localStorage.removeItem('contrast');
+  }
+</script>
   <div id="access-menu" class="access-menu-container">
     <h6 class="mb-3 border-bottom pb-2">Acessibilidade</h6>
     <div class="d-grid gap-2">
@@ -120,97 +125,21 @@
         <i class="bi bi-circle-half"></i>
       </button>
       <div class="btn-group" role="group">
-        <button class="btn btn-sm btn-outline-dark" onclick="increaseFont()"> <i class="bi bi-zoom-in"></i> Aumentar </button>
-        <button class="btn btn-sm btn-outline-dark" onclick="decreaseFont()"> <i class="bi bi-zoom-out"></i> Diminuir </button>
+        <button class="btn btn-sm btn-outline-dark" onclick="increaseFont()">
+          <i class="bi bi-zoom-in"></i> Aumentar
+        </button>
+        <button class="btn btn-sm btn-outline-dark" onclick="decreaseFont()">
+          <i class="bi bi-zoom-out"></i> Diminuir
+        </button>
       </div>
-      <button class="btn btn-sm btn-outline-danger" onclick="resetAccess()"> <i class="bi bi-arrow-counterclockwise"></i> Resetar </button>
+      <button class="btn btn-sm btn-outline-danger" onclick="resetAccess()">
+        <i class="bi bi-arrow-counterclockwise"></i> Resetar
+      </button>
     </div>
   </div>
 
   <button class="btn-access-float" onclick="toggleAccessMenu()" title="Opções de Acessibilidade">
     <i class="bi bi-universal-access"></i>
   </button>
-
-  <script>
-    // Dados dos campi
-    const campusData = {
-      "apodi": {
-        titulo: "Campus Apodi",
-        endereco: "Chapada do Apodi - RN-233, Km 02 - nº 1000",
-        cidade: "Apodi — RN",
-        telefone: "(84) xxxx-xxxx",
-        descricao: "O Campus IFRN-Apodi destaca-se pela sua grande fazenda e gama de projetos colaborativos entre os cursos de agropecuária e informática.",
-        mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4218.752729359187!2d-37.80725470000001!3d-5.627263199999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7baf7f6172a76a7%3A0x4df8711927cb367!2sIFRN%20-%20Campus%20Apodi!5e1!3m2!1spt-BR!2sbr!4v1763338919324!5m2!1spt-BR!2sbr"
-      },
-
-      "mossoro": {
-        titulo: "Campus Mossoró",
-        endereco: "R. Raimundo Firmino de Oliveira, 400 - Conjunto Ulrick Graff",
-        cidade: "Mossoró — RN",
-        telefone: "(84) xxxx-xxxx",
-        descricao: "Descrição do campus Mossoró (em breve)…",
-        mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1017169.9529053535!2d-37.320777913770144!3d-5.2122952848686825!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7ba07a2510fc0d1%3A0x3a84b79a6922ff79!2sInstituto%20Federal%20do%20Rio%20Grande%20do%20Norte!5e0!3m2!1spt-BR!2sbr!4v1763579814736!5m2!1spt-BR!2sbr"
-      },
-
-      "natal": {
-        titulo: "Campus Natal Central",
-        endereco: "Av. Sen. Salgado Filho, 1559 - Tirol",
-        cidade: "Natal — RN",
-        telefone: "(84) xxxx-xxxx",
-        descricao: "Descrição do campus Natal (em breve)…",
-        mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3969.3093972544384!2d-35.20709832520018!3d-5.8119076941710555!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7b2ffe4d7b15191%3A0x5c55d75db98a785e!2sInstituto%20Federal%20de%20Educa%C3%A7%C3%A3o%2C%20Ci%C3%AAncia%20e%20Tecnologia%20do%20Rio%20Grande%20do%20Norte!5e0!3m2!1spt-BR!2sbr!4v1763579881188!5m2!1spt-BR!2sbr"
-      },
-
-      "pau-dos-ferros": {
-        titulo: "Campus Pau dos Ferros",
-        endereco: "BR-405, S/N",
-        cidade: "Pau dos Ferros — RN",
-        telefone: "(84) xxxx-xxxx",
-        descricao: "Descrição do campus Pau dos Ferros (em breve)…",
-        mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3811.9277447880536!2d-38.207153225197324!3d-6.146257793840726!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7a4ccc390b80df9%3A0x6f19062e132788ca!2sInstituto%20Federal%20de%20Educa%C3%A7%C3%A3o%2C%20Ci%C3%AAncia%20e%20Tecnologia%20do%20Rio%20Grande%20do%20Norte%20%7C%20Campus%20Pau%20dos%20Ferros!5e1!3m2!1spt-BR!2sbr!4v1763579707114!5m2!1spt-BR!2sbr"
-      }
-    };
-
-    // Função que atualiza os elementos da página a partir dos dados do campus
-    function updateCampusInfo(campusKey) {
-      const data = campusData[campusKey] || campusData['apodi'];
-
-      document.getElementById('campus-title').textContent = data.titulo;
-      document.getElementById('campus-endereco').textContent = data.endereco;
-      document.getElementById('campus-cidade').textContent = data.cidade;
-      document.getElementById('campus-telefone').textContent = data.telefone;
-      document.getElementById('campus-descricao').textContent = data.descricao;
-
-      const iframe = document.getElementById('map-frame');
-      const externalLink = document.getElementById('external-map-link');
-
-      // Se não houver mapa válido, colocamos um placeholder e desativamos o link externo
-      if (!data.mapa || data.mapa.trim() === '') {
-        iframe.src = 'about:blank';
-        externalLink.href = '#';
-        externalLink.setAttribute('aria-disabled', 'true');
-      } else {
-        // Para forçar reload em alguns navegadores, resetamos antes
-        iframe.src = '';
-        setTimeout(() => {
-          iframe.src = data.mapa;
-        }, 50);
-        externalLink.href = data.mapa;
-        externalLink.removeAttribute('aria-disabled');
-      }
-    }
-
-    // Garante que o código só rode após o DOM estar carregado
-    document.addEventListener('DOMContentLoaded', () => {
-      const select = document.getElementById('campus-select');
-
-      // Inicializa com o campus selecionado por padrão
-      updateCampusInfo(select.value);
-
-      select.addEventListener('change', function () {
-        updateCampusInfo(this.value);
-      });
-    });
-  </script>
 </body>
 </html>
