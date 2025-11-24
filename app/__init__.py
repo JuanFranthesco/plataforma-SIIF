@@ -1,4 +1,3 @@
-# app/__init__.py
 import os
 from datetime import timedelta
 from flask import Flask
@@ -9,18 +8,27 @@ def create_app():
     # --------------------------
     # Configurações principais
     # --------------------------
+    # Banco de Dados
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
         'DATABASE_URL',
         'sqlite:///' + os.path.join(app.root_path, 'site.db')
     )
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    
+    # Chave Secreta (Importante para sessões e segurança)
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-change-this')
 
     # Configuração de Sessão
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
     app.config['SESSION_PERMANENT'] = True
 
-    # Uploads
+    # --- [SEGURANÇA DE UPLOAD - NOVO] ---
+    # Limita o tamanho máximo do upload. 
+    # 16 * 1024 * 1024 = 16 Megabytes.
+    # Se o arquivo for maior que isso, o Flask rejeitará com erro 413 (Request Entity Too Large).
+    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 
+    
+    # Pasta de Uploads
     app.config['UPLOAD_FOLDER'] = os.environ.get(
         'UPLOAD_FOLDER',
         os.path.join(app.root_path, 'static', 'uploads')
@@ -38,21 +46,23 @@ def create_app():
     from .extensions import db, migrate, login_manager
     db.init_app(app)
     migrate.init_app(app, db)
+    
+    # Configuração do Flask-Login
     login_manager.init_app(app)
-    login_manager.login_view = 'auth.login'
+    login_manager.login_view = 'auth.login' # Redireciona para cá se não estiver logado
     login_manager.login_message_category = 'info'
 
-    # --- [CORREÇÃO IMPORTANTE AQUI] ---
-    # O Flask-Login precisa saber como buscar o usuário pelo ID
+    # Carregador de usuário para o Flask-Login
     from app.models import User
 
     @login_manager.user_loader
     def load_user(user_id):
         # Retorna o usuário do banco ou None se não achar
         return User.query.get(int(user_id))
-    # ----------------------------------
 
-    # Registrar blueprints
+    # --------------------------
+    # Registrar Blueprints
+    # --------------------------
     from app.routes import main_bp
     app.register_blueprint(main_bp)
 
@@ -69,11 +79,12 @@ def create_app():
         pass
 
     # --------------------------
-    # Criar tabelas no DB
+    # Configuração do Banco de Dados (Criação de Tabelas e Admin)
     # --------------------------
     with app.app_context():
-        # O import já foi feito acima, mas não tem problema repetir ou usar o já importado
         db.create_all()
+        
+        # Verifica e cria usuário admin padrão se não existir
         admin_exists = User.query.filter_by(matricula="1234").first()
         if not admin_exists:
             print("Criando usuário administrador padrão...")
@@ -82,10 +93,12 @@ def create_app():
                 is_admin=True,
                 email="admin@siif.com", 
                 name="Administrador",
-                password_hash="admin" 
+                password_hash="admin" # Nota: Em produção, use hash real!
             )
-            # Nota: Idealmente use set_password aqui também se o modelo exigir hash
-            admin_user.set_password("admin") 
+            # Se o seu modelo User tiver método set_password, use-o aqui:
+            if hasattr(admin_user, 'set_password'):
+                admin_user.set_password("admin")
+                
             db.session.add(admin_user)
             db.session.commit()
             print("Usuário administrador '1234' criado com sucesso.")

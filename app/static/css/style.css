@@ -11,41 +11,46 @@ ARQUIVO CSS CENTRAL - style.css
 }
 
 body {
-  background-color: #d1d1d1; /* CINZA DE FUNDO */
+  background-color: #d1d1d1;
+  /* CINZA DE FUNDO */
 }
 
 .page-container {
   overflow: hidden;
-  background-color: #386641; /* VERDE PADRÃO */
+  background-color: #386641;
+  /* VERDE PADRÃO */
 }
 
 main {
-  background-color: #fff; /* FUNDO BRANCO PRINCIPAL */
+  background-color: #fff;
+  /* FUNDO BRANCO PRINCIPAL */
   border-radius: 25px 25px 0 0;
   padding: 40px 50px;
 }
 
 @media (max-width: 768px) {
-    main {
-        padding: 30px 25px;
-    }
+  main {
+    padding: 30px 25px;
+  }
 }
+
 @media (max-width: 576px) {
-    main {
-        padding: 20px 15px;
-    }
+  main {
+    padding: 20px 15px;
+  }
 }
 
 
 /* --- NAVBAR (PADRÃO BOOTSTRAP) --- */
 .navbar-custom {
-  background-color: #386641;
+  background: transparent;
   padding: 1rem 2.5rem;
 }
 
 .navbar-custom .nav-link,
 .navbar-custom .navbar-brand {
-  color: #fff !important; /* TEXTO BRANCO */
+  color: #fff !important;
+  /* TEXTO BRANCO */
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -54,14 +59,15 @@ main {
 }
 
 .navbar-custom .navbar-brand img {
-   width: 45px;
-   height: 45px;
-   border-radius: 50%;
-   /*background-color: #fff; /* FUNDO BRANCO */
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  /*background-color: #fff; /* FUNDO BRANCO */
 }
 
 .navbar-custom .nav-link.active {
-  border-bottom: 2px solid white; /* BRANCO */
+  border-bottom: 2px solid white;
+  /* BRANCO */
   padding-bottom: 3px;
 }
 
@@ -72,8 +78,10 @@ main {
 .profile-link {
   display: flex;
   align-items: center;
-  background-color: #fff; /* FUNDO BRANCO */
-  color: #386641; /* VERDE PADRÃO */
+  background-color: #fff;
+  /* FUNDO BRANCO */
+  color: #386641;
+  /* VERDE PADRÃO */
   border-radius: 30px;
   padding: 5px 15px 5px 10px;
   text-decoration: none;
@@ -82,7 +90,8 @@ main {
 }
 
 .profile-link:hover {
-    background-color: #E7E7E4; /* CINZA CLARO PADRÃO */
+  background-color: #E7E7E4;
+  /* CINZA CLARO PADRÃO */
 }
 
 .profile-pic {
@@ -91,22 +100,25 @@ main {
   border-radius: 50%;
   overflow: hidden;
   margin-left: 10px;
-  background-color: #ccc; /* CINZA PLACEHOLDER */
+  background-color: #ccc;
+  /* CINZA PLACEHOLDER */
 }
 
 .profile-pic img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 @media (max-width: 991px) {
   .navbar-custom {
     padding: 1rem 1.5rem;
   }
+
   .navbar-collapse {
     margin-top: 15px;
   }
+
   .profile-link {
     margin-top: 10px;
     display: inline-flex;
@@ -120,8 +132,10 @@ main {
   position: fixed;
   bottom: 30px;
   right: 30px;
-  background-color: #386641; /* VERDE PADRÃO */
-  color: white; /* TEXTO BRANCO */
+  background-color: #386641;
+  /* VERDE PADRÃO */
+  color: white;
+  /* TEXTO BRANCO */
   border-radius: 50%;
   width: 60px;
   height: 60px;
@@ -129,15 +143,17 @@ main {
   align-items: center;
   justify-content: center;
   font-size: 1.8rem;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   z-index: 100;
   text-decoration: none;
 }
 
 .help-btn:hover {
-  background-color: #2a4b30; /* VERDE MAIS ESCURO */
-  color: white; /* TEXTO BRANCO */
+  background-color: #2a4b30;
+  /* VERDE MAIS ESCURO */
+  color: white;
+  /* TEXTO BRANCO */
 }
 
 @media (max-width: 768px) {
@@ -155,40 +171,55 @@ main {
 ESTILOS DA CENTRAL DE AJUDA (central_de_ajuda.html)
 --- */
 main h1 {
-  color: #386641; /* VERDE PADRÃO */
+  color: #386641;
+  /* VERDE PADRÃO */
   font-weight: 600;
   margin-bottom: 30px;
 }
+
 .search-container {
   position: relative;
   max-width: 700px;
   margin: 0 auto 50px auto;
 }
+
 .search-container input {
   border-radius: 30px;
   padding: 15px 160px 15px 25px;
-  border: 1px solid #ccc; /* BORDA CINZA */
+  border: 1px solid #ccc;
+  /* BORDA CINZA */
   font-size: 1rem;
-  background-color: #f2f2f2; /* CINZA INPUT */
+  background-color: #f2f2f2;
+  /* CINZA INPUT */
 }
+
 .search-container button {
   position: absolute;
   right: 7px;
   top: 7px;
   bottom: 7px;
   border-radius: 25px;
-  background-color: #386641; /* VERDE PADRÃO */
-  color: #fff; /* TEXTO BRANCO */
+  background-color: #386641;
+  /* VERDE PADRÃO */
+  color: #fff;
+  /* TEXTO BRANCO */
   border: none;
   padding: 0 30px;
   transition: background-color 0.3s;
 }
-.search-container button:hover { background-color: #2a4b30; /* VERDE MAIS ESCURO */ }
+
+.search-container button:hover {
+  background-color: #2a4b30;
+  /* VERDE MAIS ESCURO */
+}
+
 .faq-section h5 {
-  color: #386641; /* VERDE PADRÃO */
+  color: #386641;
+  /* VERDE PADRÃO */
   font-weight: 600;
   margin-bottom: 30px;
 }
+
 .faq-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -197,9 +228,12 @@ main h1 {
   margin-bottom: 70px;
   justify-items: center;
 }
+
 .faq-card {
-  background-color: #E7E7E4; /* CINZA CLARO PADRÃO */
-  border-left: 6px solid #386641; /* VERDE PADRÃO */
+  background-color: #E7E7E4;
+  /* CINZA CLARO PADRÃO */
+  border-left: 6px solid #386641;
+  /* VERDE PADRÃO */
   border-radius: 15px;
   padding: 25px 25px;
   width: 90%;
@@ -210,21 +244,27 @@ main h1 {
   align-items: center;
   cursor: pointer;
 }
+
 .faq-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
+
 .faq-card p {
   margin: 0;
   font-weight: 500;
-  color: #000; /* TEXTO PRETO */
+  color: #000;
+  /* TEXTO PRETO */
   text-align: left;
   font-size: 1.05rem;
 }
+
 .faq-card i {
   font-size: 1.8rem;
-  color: #386641; /* VERDE PADRÃO */
+  color: #386641;
+  /* VERDE PADRÃO */
 }
+
 .contact-section {
   display: flex;
   justify-content: center;
@@ -232,32 +272,41 @@ main h1 {
   gap: 40px;
   margin-bottom: 60px;
 }
+
 .contact-card {
-  background-color: #386641; /* VERDE PADRÃO */
-  color: #fff; /* TEXTO BRANCO */
+  background-color: #386641;
+  /* VERDE PADRÃO */
+  color: #fff;
+  /* TEXTO BRANCO */
   border-radius: 20px;
   padding: 35px;
   text-align: center;
   width: 300px;
   transition: all 0.2s;
 }
+
 .contact-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
+
 .contact-card i {
   font-size: 3rem;
   margin-bottom: 15px;
 }
+
 .contact-card h3 {
   font-weight: 600;
   margin: 10px 0;
-  color: #fff; /* TEXTO BRANCO */
+  color: #fff;
+  /* TEXTO BRANCO */
 }
+
 .contact-card p {
   margin: 4px 0;
   font-size: 1rem;
-  color: #E7E7E4; /* CINZA CLARO PADRÃO */
+  color: #E7E7E4;
+  /* CINZA CLARO PADRÃO */
 }
 
 /* ---
@@ -273,7 +322,8 @@ NOVA PÁGINA INICIAL (HOME DASHBOARD) - ESTILO APP
 
 /* Ajuste do Main apenas na Home */
 main.home-dashboard {
-  background-color: #f8f9fa; /* Cinza bem clarinho para destacar os cards brancos */
+  background-color: #f8f9fa;
+  /* Cinza bem clarinho para destacar os cards brancos */
   min-height: 80vh;
 }
 
@@ -287,12 +337,14 @@ main.home-dashboard {
 
 /* --- ESTILO GERAL DOS CARDS (BRANCOS) --- */
 .home-dashboard .card-custom {
-  background-color: #FFFFFF; 
-  border-radius: 20px; /* Cantos bem arredondados estilo Android 14 */
-  border: 1px solid rgba(0,0,0,0.05);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* Sombra suave */
+  background-color: #FFFFFF;
+  border-radius: 20px;
+  /* Cantos bem arredondados estilo Android 14 */
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  /* Sombra suave */
   transition: all 0.3s ease;
-  overflow: hidden; 
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -309,7 +361,8 @@ main.home-dashboard {
 /* Efeito Hover: O cartão sobe */
 .home-dashboard .card-custom:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 25px rgba(56, 102, 65, 0.15); /* Sombra levemente verde */
+  box-shadow: 0 12px 25px rgba(56, 102, 65, 0.15);
+  /* Sombra levemente verde */
   border-color: rgba(56, 102, 65, 0.3);
 }
 
@@ -319,7 +372,8 @@ main.home-dashboard {
 }
 
 .home-dashboard .card-header-custom h3 {
-  color: #386641; /* Verde Padrão */
+  color: #386641;
+  /* Verde Padrão */
   font-weight: 700;
   font-size: 1.2rem;
   display: flex;
@@ -384,7 +438,8 @@ main.home-dashboard {
 }
 
 .home-dashboard .card-custom:hover .card-img-wrapper img {
-  transform: scale(1.08); /* Zoom na imagem */
+  transform: scale(1.08);
+  /* Zoom na imagem */
 }
 
 .home-dashboard .card-content {
@@ -444,7 +499,7 @@ main.home-dashboard {
 .home-dashboard .card-custom:hover .evento-badge {
   background-color: #fff;
   border-color: #eee;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
 }
 
 .home-dashboard .date-box {
@@ -481,7 +536,8 @@ main.home-dashboard {
 
 /* --- MAPA RESPONSIVO (Correção para Android) --- */
 .home-dashboard .card-map {
-  padding: 0; /* Mapa ocupa borda a borda no fundo */
+  padding: 0;
+  /* Mapa ocupa borda a borda no fundo */
 }
 
 .home-dashboard .map-responsive-wrapper {
@@ -490,7 +546,7 @@ main.home-dashboard {
   width: 100%;
   /* Esta % define a altura. 56.25% = 16:9. 
      Aumentei para 65% para ficar melhor no celular */
-  padding-top: 65%; 
+  padding-top: 65%;
   background-color: #eee;
   border-radius: 0 0 20px 20px;
 }
@@ -512,6 +568,7 @@ main.home-dashboard {
   color: #999;
   padding: 30px 0;
 }
+
 .home-dashboard .empty-state i {
   font-size: 2.5rem;
   opacity: 0.5;
@@ -521,11 +578,12 @@ main.home-dashboard {
 
 /* --- AJUSTES ESPECÍFICOS PARA MOBILE (ANDROID) --- */
 @media (max-width: 768px) {
-  
+
   /* Remove o padding arredondado do main global e usa full width */
   main.home-dashboard {
     border-radius: 0;
-    padding: 20px 15px !important; /* Menos padding lateral */
+    padding: 20px 15px !important;
+    /* Menos padding lateral */
   }
 
   .home-dashboard .page-title {
@@ -535,7 +593,8 @@ main.home-dashboard {
 
   .home-dashboard .card-custom {
     border-radius: 15px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* Sombra mais leve no mobile */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    /* Sombra mais leve no mobile */
   }
 
   .home-dashboard .card-header-custom {
@@ -545,12 +604,12 @@ main.home-dashboard {
   .home-dashboard .card-body-custom {
     padding: 0 20px 20px 20px;
   }
-  
+
   /* Mapa mais alto no celular para facilitar o toque */
   .home-dashboard .map-responsive-wrapper {
-    padding-top: 80%; 
+    padding-top: 80%;
   }
-  
+
   /* Botões maiores para toque (Touch targets) */
   .home-dashboard .btn-action {
     padding: 12px 20px;
@@ -566,7 +625,8 @@ NOVO FÓRUM (FORUM DASHBOARD) - CLEAN & CARD STYLE
 
 /* Escopo Principal */
 main.forum-dashboard {
-  background-color: #f8f9fa; /* Fundo cinza claro */
+  background-color: #f8f9fa;
+  /* Fundo cinza claro */
   min-height: 85vh;
   padding-top: 20px;
 }
@@ -575,8 +635,8 @@ main.forum-dashboard {
 .forum-dashboard .forum-left-sidebar.card-custom {
   background-color: #fff;
   border-radius: 20px;
-  border: 1px solid rgba(0,0,0,0.05);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
   overflow: hidden;
   padding-bottom: 10px;
 }
@@ -593,15 +653,18 @@ main.forum-dashboard {
   gap: 12px;
   padding: 12px 20px;
   text-decoration: none;
-  color: #555; /* Cinza escuro */
+  color: #555;
+  /* Cinza escuro */
   font-weight: 500;
   transition: all 0.2s;
   border-left: 4px solid transparent;
 }
 
 .forum-dashboard .sidebar-link:hover {
-  background-color: #f8fdf9; /* Verde muito claro */
-  color: #386641; /* Verde Principal */
+  background-color: #f8fdf9;
+  /* Verde muito claro */
+  color: #386641;
+  /* Verde Principal */
 }
 
 .forum-dashboard .sidebar-link.active {
@@ -616,7 +679,8 @@ main.forum-dashboard {
 }
 
 .forum-dashboard .notification-badge {
-  background-color: #dc3545; /* Vermelho Bootstrap */
+  background-color: #dc3545;
+  /* Vermelho Bootstrap */
   color: white;
   font-size: 0.75rem;
   padding: 2px 8px;
@@ -627,14 +691,16 @@ main.forum-dashboard {
 .forum-dashboard .forum-post-card {
   background-color: #fff;
   border-radius: 20px;
-  border: 1px solid rgba(0,0,0,0.05);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-  overflow: hidden; /* Garante que nada saia do card */
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+  /* Garante que nada saia do card */
 }
 
 /* Header do Post (User info) */
 .forum-dashboard .post-header {
-  background-color: #fff; /* AGORA BRANCO */
+  background-color: #fff;
+  /* AGORA BRANCO */
   padding: 15px 20px;
   display: flex;
   justify-content: space-between;
@@ -660,12 +726,15 @@ main.forum-dashboard {
   border-radius: 50%;
   transition: background 0.2s;
 }
+
 .forum-dashboard .post-options-btn:hover {
   background-color: #f0f0f0;
   color: #333;
 }
 
-.forum-dashboard .comment-options-toggle { display: none; }
+.forum-dashboard .comment-options-toggle {
+  display: none;
+}
 
 .forum-dashboard .comment-options-menu {
   display: none;
@@ -679,7 +748,10 @@ main.forum-dashboard {
   min-width: 150px;
   z-index: 100;
 }
-.forum-dashboard .comment-options-toggle:checked ~ .comment-options-menu { display: block; }
+
+.forum-dashboard .comment-options-toggle:checked~.comment-options-menu {
+  display: block;
+}
 
 .forum-dashboard .btn-reset {
   background: none;
@@ -691,7 +763,10 @@ main.forum-dashboard {
   color: #555;
   transition: bg 0.2s;
 }
-.forum-dashboard .btn-reset:hover { background-color: #f5f5f5; }
+
+.forum-dashboard .btn-reset:hover {
+  background-color: #f5f5f5;
+}
 
 /* Corpo do Post */
 .forum-dashboard .post-body {
@@ -765,10 +840,12 @@ main.forum-dashboard {
 /* --- RESPONSIVIDADE --- */
 @media (max-width: 991px) {
   .forum-dashboard .forum-left-sidebar {
-      display: none; /* Sidebar já é escondida pelo bootstrap, mas garante estilo */
+    display: none;
+    /* Sidebar já é escondida pelo bootstrap, mas garante estilo */
   }
+
   main.forum-dashboard {
-     padding: 15px;
+    padding: 15px;
   }
 }
 
@@ -778,126 +855,176 @@ ESTILOS DA PÁGINA DE MATERIAIS (materiais.html) - ATUALIZADO
 
 /* Título Geral da Seção */
 .section-title {
-    color: #386641; /* VERDE PADRÃO */
-    font-weight: 600;
-    margin-bottom: 25px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #eee; /* BORDA CINZA CLARO */
+  color: #386641;
+  /* VERDE PADRÃO */
+  font-weight: 600;
+  margin-bottom: 25px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #eee;
+  /* BORDA CINZA CLARO */
 }
 
 /* Painel de Filtro */
 .filter-panel {
-    border-radius: 15px;
-    background-color: #f8f9fa; /* CINZA CLARO BOOTSTRAP */
-    border: 1px solid #dee2e6; /* BORDA CINZA BOOTSTRAP */
+  border-radius: 15px;
+  background-color: #f8f9fa;
+  /* CINZA CLARO BOOTSTRAP */
+  border: 1px solid #dee2e6;
+  /* BORDA CINZA BOOTSTRAP */
 }
+
 .filter-title {
-    color: #386641; /* VERDE PADRÃO */
-    font-weight: 600;
-    font-size: 1.2rem;
-    margin-bottom: 15px;
+  color: #386641;
+  /* VERDE PADRÃO */
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin-bottom: 15px;
 }
+
 .filter-panel .form-label {
-    font-weight: 500;
-    color: #555; /* CINZA ESCURO */
-    font-size: 0.9rem;
+  font-weight: 500;
+  color: #555;
+  /* CINZA ESCURO */
+  font-size: 0.9rem;
 }
+
 .filter-btn {
-    background-color: #386641 !important; /* VERDE PADRÃO */
-    border-color: #386641 !important; /* VERDE PADRÃO */
-    font-weight: 500;
+  background-color: #386641 !important;
+  /* VERDE PADRÃO */
+  border-color: #386641 !important;
+  /* VERDE PADRÃO */
+  font-weight: 500;
 }
+
 .filter-btn:hover {
-    background-color: #2a4b30 !important; /* VERDE MAIS ESCURO */
-    border-color: #2a4b30 !important; /* VERDE MAIS ESCURO */
+  background-color: #2a4b30 !important;
+  /* VERDE MAIS ESCURO */
+  border-color: #2a4b30 !important;
+  /* VERDE MAIS ESCURO */
 }
 
 /* Painel de Pesquisa */
 .search-panel-material {
-    border-radius: 15px;
-    background-color: #f8f9fa; /* CINZA CLARO BOOTSTRAP */
-    border: 1px solid #dee2e6; /* BORDA CINZA BOOTSTRAP */
+  border-radius: 15px;
+  background-color: #f8f9fa;
+  /* CINZA CLARO BOOTSTRAP */
+  border: 1px solid #dee2e6;
+  /* BORDA CINZA BOOTSTRAP */
 }
+
 .search-title {
-     color: #386641; /* VERDE PADRÃO */
-    font-weight: 600;
-    font-size: 1.2rem;
-    margin-bottom: 15px;
+  color: #386641;
+  /* VERDE PADRÃO */
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin-bottom: 15px;
 }
-.search-form-material { position: relative; }
+
+.search-form-material {
+  position: relative;
+}
+
 .search-input-material {
-    border-radius: 30px;
-    padding-right: 60px;
-    background-color: #fff; /* FUNDO BRANCO */
-    border: 1px solid #ccc; /* BORDA CINZA */
+  border-radius: 30px;
+  padding-right: 60px;
+  background-color: #fff;
+  /* FUNDO BRANCO */
+  border: 1px solid #ccc;
+  /* BORDA CINZA */
 }
+
 .btn-search-material {
-    position: absolute;
-    right: 5px;
-    top: 5px;
-    bottom: 5px;
-    border-radius: 25px;
-    background-color: #386641; /* VERDE PADRÃO */
-    color: #fff; /* TEXTO BRANCO */
-    border: none;
-    padding: 0 20px;
-    transition: background-color 0.3s;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  bottom: 5px;
+  border-radius: 25px;
+  background-color: #386641;
+  /* VERDE PADRÃO */
+  color: #fff;
+  /* TEXTO BRANCO */
+  border: none;
+  padding: 0 20px;
+  transition: background-color 0.3s;
 }
-.btn-search-material:hover { background-color: #2a4b30; /* VERDE MAIS ESCURO */ }
+
+.btn-search-material:hover {
+  background-color: #2a4b30;
+  /* VERDE MAIS ESCURO */
+}
 
 /* Seção e Grupos de Materiais */
 .material-group .card-header {
-    background-color: #386641; /* VERDE PADRÃO */
-    color: white; /* TEXTO BRANCO */
-    font-weight: 600;
+  background-color: #386641;
+  /* VERDE PADRÃO */
+  color: white;
+  /* TEXTO BRANCO */
+  font-weight: 600;
 }
+
 .material-group .card-header h3 {
-    margin-bottom: 0;
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  margin-bottom: 0;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
+
 .material-item h5 {
-    color: #386641; /* VERDE PADRÃO */
-    font-weight: 600;
-    font-size: 1rem;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  color: #386641;
+  /* VERDE PADRÃO */
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
+
 .material-subitem {
-    padding: 10px 0 10px 25px;
-    border-top: 1px solid #eee; /* BORDA CINZA CLARO */
-    font-size: 0.95rem;
+  padding: 10px 0 10px 25px;
+  border-top: 1px solid #eee;
+  /* BORDA CINZA CLARO */
+  font-size: 0.95rem;
 }
-.material-subitem:first-of-type { border-top: none; padding-top: 5px; }
+
+.material-subitem:first-of-type {
+  border-top: none;
+  padding-top: 5px;
+}
 
 /* Botão Acessar */
 .access-button {
-    background-color: #e7e7e4; /* CINZA CLARO PADRÃO */
-    color: #386641; /* VERDE PADRÃO */
-    border: 1px solid #dcdcd8; /* BORDA CINZA MAIS ESCURO */
-    font-weight: 500;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    text-decoration: none;
-    transition: background-color 0.2s;
+  background-color: #e7e7e4;
+  /* CINZA CLARO PADRÃO */
+  color: #386641;
+  /* VERDE PADRÃO */
+  border: 1px solid #dcdcd8;
+  /* BORDA CINZA MAIS ESCURO */
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+  transition: background-color 0.2s;
 }
+
 .access-button:hover {
-    background-color: #dcdcd8; /* CINZA MAIS ESCURO */
-    color: #386641; /* VERDE PADRÃO */
+  background-color: #dcdcd8;
+  /* CINZA MAIS ESCURO */
+  color: #386641;
+  /* VERDE PADRÃO */
 }
 
 /* Customização para checkboxes */
 .form-check-input.custom-checkbox:checked {
-  background-color: #386641; /* VERDE PADRÃO */
-  border-color: #386641; /* VERDE PADRÃO */
+  background-color: #386641;
+  /* VERDE PADRÃO */
+  border-color: #386641;
+  /* VERDE PADRÃO */
 }
 
 /* Esconder elementos apenas para leitores de tela */
@@ -926,7 +1053,7 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE PERFIL (tela_perfil.html)
   border-radius: 15px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   background-color: #FFFFFF;
-  margin-bottom: 25px; 
+  margin-bottom: 25px;
   /* As margens negativas (margin-top, margin-left, margin-right) 
     foram REMOVIDAS daqui para parar de cobrir a navbar.
   */
@@ -943,6 +1070,7 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE PERFIL (tela_perfil.html)
     margin-right: -25px;
   }
 }
+
 @media (max-width: 576px) {
   .profile-header-container {
     margin-top: -20px;
@@ -956,13 +1084,15 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE PERFIL (tela_perfil.html)
 .profile-tabs .nav-link:focus,
 .profile-tabs .nav-link.active:focus {
   outline: none;
-  box-shadow: none; /* Bootstrap 5 usa box-shadow para o foco */
+  box-shadow: none;
+  /* Bootstrap 5 usa box-shadow para o foco */
 }
 
 /* Banner Verde (no topo) */
 .profile-banner {
-  height: 250px; 
-  background-color: #386641; /* Cor da Paleta */
+  height: 250px;
+  background-color: #386641;
+  /* Cor da Paleta */
   background-size: cover;
   background-position: center;
   border-radius: 15px 15px 0 0;
@@ -974,7 +1104,7 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE PERFIL (tela_perfil.html)
   padding: 20px 30px;
   border-radius: 0 0 15px 15px;
   position: relative;
-  min-height: 160px; 
+  min-height: 160px;
 }
 
 /* Foto de Perfil (Sobreposta) */
@@ -982,11 +1112,12 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE PERFIL (tela_perfil.html)
   width: 150px;
   height: 150px;
   border-radius: 50%;
-  border: 5px solid #FFFFFF; 
+  border: 5px solid #FFFFFF;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  background-color: #00000000; /* Cor da Paleta */
+  background-color: #00000000;
+  /* Cor da Paleta */
   position: absolute;
-  top: -75px;  
+  top: -75px;
   left: 30px;
   object-fit: cover;
 }
@@ -1002,18 +1133,19 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE PERFIL (tela_perfil.html)
 
 /* Botão "EDITAR PERFIL" customizado (Fiel ao design) */
 .btn-edit-profile {
-  border: 2px solid #386641; 
-  color: #386641; 
-  background-color: #FFFFFF; 
+  border: 2px solid #386641;
+  color: #386641;
+  background-color: #FFFFFF;
   font-weight: 600;
   border-radius: 30px;
   padding: 6px 16px;
   font-size: 0.9rem;
   transition: all 0.2s ease;
 }
+
 .btn-edit-profile:hover {
-  background-color: #386641; 
-  color: #FFFFFF; 
+  background-color: #386641;
+  color: #FFFFFF;
 }
 
 /* Botão "..." customizado */
@@ -1021,14 +1153,20 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE PERFIL (tela_perfil.html)
   border-radius: 50%;
   width: 40px;
   height: 40px;
-  background-color: #E7E7E4; /* Cor da Paleta */
-  color: #000000; /* Cor da Paleta */
-  border: 1px solid #D1D1D1; /* Cor da Paleta */
+  background-color: #E7E7E4;
+  /* Cor da Paleta */
+  color: #000000;
+  /* Cor da Paleta */
+  border: 1px solid #D1D1D1;
+  /* Cor da Paleta */
 }
+
 .btn-icon:hover {
   background-color: #d1d1d1;
 }
-.btn-icon-sm { /* Versão menor para cards */
+
+.btn-icon-sm {
+  /* Versão menor para cards */
   border-radius: 50%;
   width: 32px;
   height: 32px;
@@ -1036,8 +1174,8 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE PERFIL (tela_perfil.html)
 
 /* Detalhes do Usuário (Nome, Bio, Curso) */
 .profile-user-details {
-  padding-left: 170px; 
-  padding-top: 15px; 
+  padding-left: 170px;
+  padding-top: 15px;
 }
 
 /* Responsivo para detalhes do usuário */
@@ -1048,14 +1186,17 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE PERFIL (tela_perfil.html)
     margin-left: -25px;
     margin-right: -25px;
   }
+
   .profile-info-bar {
     min-height: auto;
   }
+
   .profile-user-details {
     padding-left: 0;
-    margin-top: 85px; 
+    margin-top: 85px;
   }
 }
+
 @media (max-width: 576px) {
   .profile-header-container {
     margin-top: -20px;
@@ -1067,19 +1208,21 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE PERFIL (tela_perfil.html)
 
 /* Conteúdo Principal (Abas) */
 .profile-content {
-  background-color: #E7E7E4; /* Cor da Paleta */
+  background-color: #E7E7E4;
+  /* Cor da Paleta */
   border-radius: 15px;
-  padding: 1px 20px 20px 20px; 
+  padding: 1px 20px 20px 20px;
 }
 
 /* Estilo das Abas de Navegação (Fiel ao Design) */
 .profile-tabs {
-  border-bottom: 1px solid #D1D1D1; /* Cor da Paleta */
+  border-bottom: 1px solid #D1D1D1;
+  /* Cor da Paleta */
   margin: 20px 0;
 }
 
 .profile-tabs .nav-link {
-  color: #6c757d; 
+  color: #6c757d;
   font-weight: 600;
   border: none;
   border-bottom: 4px solid transparent;
@@ -1087,22 +1230,24 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE PERFIL (tela_perfil.html)
 }
 
 .profile-tabs .nav-link.active {
-  color: #000000; /* Cor da Paleta */
-  border-bottom: 4px solid #386641; 
+  color: #000000;
+  /* Cor da Paleta */
+  border-bottom: 4px solid #386641;
   background-color: transparent;
 }
 
 .profile-tabs .nav-link:hover {
-  color: #000000; 
+  color: #000000;
 }
 
 /* Card de Postagem (dentro da aba) */
 .post-card-profile {
-  background-color: #FFFFFF; /* Cor da Paleta */
-  border: 1px solid #D1D1D1; 
+  background-color: #FFFFFF;
+  /* Cor da Paleta */
+  border: 1px solid #D1D1D1;
   border-radius: 10px;
   margin-bottom: 20px;
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 .post-card-header {
@@ -1129,21 +1274,21 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE PERFIL (tela_perfil.html)
 
 .post-card-title {
   font-weight: 600;
-  color: #386641; 
+  color: #386641;
   font-size: 1.15rem;
   margin-bottom: 10px;
 }
 
 .post-card-footer {
-  background-color: #FFFFFF; 
-  border-top: 1px solid #E7E7E4; 
+  background-color: #FFFFFF;
+  border-top: 1px solid #E7E7E4;
   padding: 10px 20px;
   display: flex;
   gap: 25px;
 }
 
 .post-interaction-btn {
-  color: #386641; 
+  color: #386641;
   font-weight: 600;
   font-size: 0.9rem;
   text-decoration: none;
@@ -1151,8 +1296,9 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE PERFIL (tela_perfil.html)
   align-items: center;
   gap: 5px;
 }
+
 .post-interaction-btn:hover {
-  color: #2a4b30; 
+  color: #2a4b30;
 }
 
 /* ---
@@ -1171,12 +1317,15 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE DENÚNCIAS (tela_denuncias.html)
   justify-content: space-between;
   margin-bottom: 20px;
 }
+
 .denuncia-page .title {
-  color: #386641; /* VERDE PADRÃO */
+  color: #386641;
+  /* VERDE PADRÃO */
   font-weight: 700;
   font-size: 2rem;
   margin: 0;
 }
+
 .denuncia-page .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1189,8 +1338,10 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE DENÚNCIAS (tela_denuncias.html)
   gap: 18px;
   flex-wrap: wrap;
 }
+
 .denuncia-page .stat-card {
-  background-color: #386641; /* VERDE PADRÃO */
+  background-color: #386641;
+  /* VERDE PADRÃO */
   color: #fff;
   padding: 32px;
   border-radius: 22px;
@@ -1202,6 +1353,7 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE DENÚNCIAS (tela_denuncias.html)
   flex: 1;
   min-width: 200px;
 }
+
 .denuncia-page .stat-number {
   background-color: #fff;
   width: 96px;
@@ -1210,13 +1362,17 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE DENÚNCIAS (tela_denuncias.html)
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #386641; /* VERDE PADRÃO */
+  color: #386641;
+  /* VERDE PADRÃO */
   font-size: 34px;
-  font-weight: 800; /* Mais forte */
+  font-weight: 800;
+  /* Mais forte */
   margin-bottom: 12px;
 }
+
 .denuncia-page .stat-sub {
-  font-weight: 600; /* Um pouco mais leve */
+  font-weight: 600;
+  /* Um pouco mais leve */
   text-align: center;
 }
 
@@ -1224,35 +1380,43 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE DENÚNCIAS (tela_denuncias.html)
 .denuncia-page .form-section {
   margin-top: 25px;
 }
+
 .denuncia-page .form-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #386641; /* VERDE PADRÃO */
+  color: #386641;
+  /* VERDE PADRÃO */
   margin-bottom: 15px;
 }
+
 .denuncia-page .form-fields-wrapper {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
+
 .denuncia-page .form-label {
   font-weight: 600;
   color: #333;
   margin-bottom: -5px;
 }
+
 .denuncia-page .form-field {
   width: 100%;
   padding: 12px 16px;
   border-radius: 10px;
   border: 1px solid #ccc;
-  background-color: #f2f2f2; /* CINZA INPUT PADRÃO */
+  background-color: #f2f2f2;
+  /* CINZA INPUT PADRÃO */
   font-size: 1rem;
 }
+
 .denuncia-page .form-field:focus {
   outline: none;
   border-color: #386641;
   box-shadow: 0 0 0 3px rgba(56, 102, 65, 0.2);
 }
+
 .denuncia-page #formHelp {
   font-style: italic;
   color: #555;
@@ -1262,7 +1426,8 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE DENÚNCIAS (tela_denuncias.html)
 
 /* Botão de Enviar (Adaptado) */
 .denuncia-page .btn-primary {
-  background-color: #386641; /* VERDE PADRÃO */
+  background-color: #386641;
+  /* VERDE PADRÃO */
   color: #fff;
   border: none;
   padding: 10px 18px;
@@ -1272,60 +1437,74 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE DENÚNCIAS (tela_denuncias.html)
   font-size: 1rem;
   transition: background-color 0.2s ease;
 }
+
 .denuncia-page .btn-primary:hover {
-  background-color: #2a4b30; /* VERDE MAIS ESCURO */
+  background-color: #2a4b30;
+  /* VERDE MAIS ESCURO */
 }
 
 /* Coluna da Direita (Lista) */
 .denuncia-page .right-col {
   position: relative;
 }
+
 .denuncia-page .section-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #386641; /* VERDE PADRÃO */
+  color: #386641;
+  /* VERDE PADRÃO */
   margin-bottom: 0;
 }
+
 .denuncia-page .list {
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin-top: 15px;
 }
+
 .denuncia-page .item {
-  background-color: #386641; /* VERDE PADRÃO */
+  background-color: #386641;
+  /* VERDE PADRÃO */
   color: #fff;
   padding: 14px 18px;
-  border-radius: 20px; /* Borda padrão */
+  border-radius: 20px;
+  /* Borda padrão */
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   font-size: 0.95rem;
 }
+
 .denuncia-page .item .label {
   font-weight: 500;
 }
+
 .denuncia-page .item .controls {
   display: flex;
   gap: 8px;
   flex-shrink: 0;
 }
+
 /* Ícones ✓ e ✕ (Adaptados) */
 .denuncia-page .icon {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #E7E7E4; /* CINZA CLARO PADRÃO */
+  background: #E7E7E4;
+  /* CINZA CLARO PADRÃO */
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  color: #386641; /* VERDE PADRÃO */
+  color: #386641;
+  /* VERDE PADRÃO */
   border: none;
   cursor: pointer;
   transition: all 0.15s ease;
 }
+
 .denuncia-page .icon:hover {
   transform: scale(1.1);
   background: #fff;
@@ -1337,12 +1516,15 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE DENÚNCIAS (tela_denuncias.html)
   margin-top: 16px;
   padding: 8px 18px;
   border-radius: 20px;
-  background: #E7E7E4; /* CINZA CLARO PADRÃO */
-  color: #386641; /* VERDE PADRÃO */
+  background: #E7E7E4;
+  /* CINZA CLARO PADRÃO */
+  color: #386641;
+  /* VERDE PADRÃO */
   text-decoration: none;
   font-weight: 600;
   transition: background-color 0.2s;
 }
+
 .denuncia-page .view-all:hover {
   background-color: #dcdcd8;
 }
@@ -1352,12 +1534,14 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE DENÚNCIAS (tela_denuncias.html)
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #E7E7E4; /* CINZA CLARO PADRÃO */
-  color: #386641; /* VERDE PADRÃO */
+  background: #E7E7E4;
+  /* CINZA CLARO PADRÃO */
+  color: #386641;
+  /* VERDE PADRÃO */
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   border: none;
   font-size: 1.2rem;
   cursor: pointer;
@@ -1380,7 +1564,7 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE DENÚNCIAS (tela_denuncias.html)
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0,0,0,0);
+  clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
 }
@@ -1391,12 +1575,14 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE DENÚNCIAS (tela_denuncias.html)
     grid-template-columns: 1fr;
   }
 }
+
 @media (max-width: 600px) {
   .denuncia-page .stat-number {
     width: 76px;
     height: 76px;
     font-size: 26px;
   }
+
   .denuncia-page .item {
     padding: 12px 14px;
     font-size: 0.9rem;
@@ -1404,9 +1590,11 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE DENÚNCIAS (tela_denuncias.html)
     align-items: start;
     gap: 10px;
   }
+
   .denuncia-page .item .controls {
     align-self: flex-end;
   }
+
   .denuncia-page .icon {
     width: 35px;
     height: 35px;
@@ -1423,7 +1611,8 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE DIVULGAÇÃO (tela_divulgação.html)
 .divulgacao-filters {
   display: flex;
   gap: 10px;
-  background-color: #f8f9fa; /* Cinza claro */
+  background-color: #f8f9fa;
+  /* Cinza claro */
   padding: 15px;
   border-radius: 15px;
   border: 1px solid #dee2e6;
@@ -1437,50 +1626,63 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE DIVULGAÇÃO (tela_divulgação.html)
   border-radius: 15px;
   border: 1px solid #dee2e6;
 }
+
 .divulgacao-search .form-control {
   border-radius: 20px 0 0 20px;
   border-right: none;
 }
+
 .divulgacao-search .form-control:focus {
   z-index: 1;
   box-shadow: none;
   border-color: #ccc;
 }
+
 .divulgacao-search .btn-search-icon {
-  background-color: #386641; /* VERDE PADRÃO */
+  background-color: #386641;
+  /* VERDE PADRÃO */
   color: #fff;
   border: none;
   padding: 8px 15px;
   border-radius: 0 20px 20px 0;
   transition: background-color 0.2s;
 }
+
 .divulgacao-search .btn-search-icon:hover {
-  background-color: #2a4b30; /* VERDE MAIS ESCURO */
+  background-color: #2a4b30;
+  /* VERDE MAIS ESCURO */
 }
 
 /* Cards de Destaque */
 .divulgacao-card {
   border: none;
-  border-left: 5px solid #386641; /* VERDE PADRÃO */
+  border-left: 5px solid #386641;
+  /* VERDE PADRÃO */
   transition: transform 0.2s, box-shadow 0.2s;
 }
+
 .divulgacao-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
 }
+
 .divulgacao-card .card-title {
-  color: #386641; /* VERDE PADRÃO */
+  color: #386641;
+  /* VERDE PADRÃO */
   font-weight: 600;
   font-size: 1.2rem;
   margin-bottom: 10px;
 }
+
 .divulgacao-card .card-text {
   font-size: 0.95rem;
   color: #555;
   margin-bottom: 15px;
 }
+
 .btn-divulgacao {
-  background-color: #386641; /* VERDE PADRÃO */
+  background-color: #386641;
+  /* VERDE PADRÃO */
   color: #fff;
   padding: 8px 15px;
   border-radius: 20px;
@@ -1489,8 +1691,10 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE DIVULGAÇÃO (tela_divulgação.html)
   align-self: flex-start;
   transition: background-color 0.2s;
 }
+
 .btn-divulgacao:hover {
-  background-color: #2a4b30; /* VERDE MAIS ESCURO */
+  background-color: #2a4b30;
+  /* VERDE MAIS ESCURO */
   color: #fff;
 }
 
@@ -1499,20 +1703,27 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE DIVULGAÇÃO (tela_divulgação.html)
   border-radius: 15px;
   border: 1px solid #dee2e6;
 }
+
 .post-news-title {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #386641; /* VERDE PADRÃO */
+  color: #386641;
+  /* VERDE PADRÃO */
   margin-bottom: 15px;
 }
+
 .post-buttons {
   display: flex;
   gap: 15px;
   flex-wrap: wrap;
 }
-.btn-attach, .btn-attach-primary {
-  background-color: #E7E7E4; /* CINZA CLARO PADRÃO */
-  color: #386641; /* VERDE PADRÃO */
+
+.btn-attach,
+.btn-attach-primary {
+  background-color: #E7E7E4;
+  /* CINZA CLARO PADRÃO */
+  color: #386641;
+  /* VERDE PADRÃO */
   border: 1px solid #dcdcd8;
   padding: 10px 20px;
   border-radius: 20px;
@@ -1520,14 +1731,18 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE DIVULGAÇÃO (tela_divulgação.html)
   font-weight: 500;
   transition: background-color 0.2s;
 }
+
 .btn-attach-primary {
-  background-color: #386641; /* VERDE PADRÃO */
+  background-color: #386641;
+  /* VERDE PADRÃO */
   color: #fff;
   border-color: #386641;
 }
+
 .btn-attach:hover {
   background-color: #dcdcd8;
 }
+
 .btn-attach-primary:hover {
   background-color: #2a4b30;
   border-color: #2a4b30;
@@ -1539,36 +1754,44 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE DIVULGAÇÃO (tela_divulgação.html)
   border-left: 5px solid transparent;
   transition: border-left-color 0.3s, transform 0.2s;
 }
+
 .latest-news-card:hover {
-  border-left-color: #386641; /* VERDE PADRÃO */
+  border-left-color: #386641;
+  /* VERDE PADRÃO */
   transform: translateX(3px);
   color: #333;
 }
+
 .latest-news-card .card-title {
   font-size: 1.1rem;
-  color: #386641; /* VERDE PADRÃO */
+  color: #386641;
+  /* VERDE PADRÃO */
   font-weight: 500;
   margin-bottom: 5px;
 }
 
 /* Widgets da Sidebar (Eventos e Calendário) */
 .sidebar-widget-green {
-  background-color: #386641; /* VERDE PADRÃO */
-  color: #fff; 
+  background-color: #386641;
+  /* VERDE PADRÃO */
+  color: #fff;
   padding: 25px;
   border-radius: 15px;
 }
+
 .sidebar-widget-green h2 {
   font-size: 1.5rem;
   margin-bottom: 20px;
   color: #fff;
   font-weight: 600;
 }
+
 .sidebar-widget-green ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
+
 .sidebar-widget-green li {
   display: flex;
   justify-content: space-between;
@@ -1577,18 +1800,22 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE DIVULGAÇÃO (tela_divulgação.html)
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   font-weight: 500;
 }
+
 .sidebar-widget-green li:last-child {
   border-bottom: none;
 }
+
 .sidebar-widget-green li a {
-  color: #fff; 
+  color: #fff;
   text-decoration: none;
   font-weight: 500;
   transition: opacity 0.2s;
 }
+
 .sidebar-widget-green li a:hover {
-  opacity: 0.8; 
+  opacity: 0.8;
 }
+
 .sidebar-widget-green li span {
   font-size: 0.9rem;
   opacity: 0.8;
@@ -1602,9 +1829,11 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE DIVULGAÇÃO (tela_divulgação.html)
   position: relative;
   overflow: hidden;
   width: 100%;
-  padding-top: 100%; /* Proporção 1:1, pode ajustar se necessário */
+  padding-top: 100%;
+  /* Proporção 1:1, pode ajustar se necessário */
   border-radius: 10px;
 }
+
 .calendar-embed-container iframe {
   position: absolute;
   top: 0;
@@ -1626,25 +1855,30 @@ ESTILOS ADICIONAIS PARA O FORMULÁRIO EM (tela_suporte.html)
 .suporte-page .denuncia-form-section {
   /* Removemos max-width e margin-top, pois a grade .row cuida disso */
   text-align: left;
-  border-top: 1px solid #eee; 
+  border-top: 1px solid #eee;
   padding-top: 20px;
 }
+
 .suporte-page .denuncia-form-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #386641; /* VERDE PADRÃO */
+  color: #386641;
+  /* VERDE PADRÃO */
   margin-bottom: 20px;
 }
+
 .suporte-page .denuncia-form-wrapper {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
+
 .suporte-page .form-label {
   font-weight: 600;
   color: #333;
   margin-bottom: -5px;
 }
+
 .suporte-page .form-field {
   width: 100%;
   padding: 12px 16px;
@@ -1654,13 +1888,16 @@ ESTILOS ADICIONAIS PARA O FORMULÁRIO EM (tela_suporte.html)
   font-size: 1rem;
   resize: none;
 }
+
 .suporte-page .form-field:focus {
   outline: none;
   border-color: #386641;
   box-shadow: 0 0 0 3px rgba(56, 102, 65, 0.2);
 }
+
 .suporte-page .btn-primary {
-  background-color: #386641; /* VERDE PADRÃO */
+  background-color: #386641;
+  /* VERDE PADRÃO */
   color: #fff;
   border: none;
   padding: 10px 18px;
@@ -1670,9 +1907,12 @@ ESTILOS ADICIONAIS PARA O FORMULÁRIO EM (tela_suporte.html)
   font-size: 1rem;
   transition: background-color 0.2s ease;
 }
+
 .suporte-page .btn-primary:hover {
-  background-color: #2a4b30; /* VERDE MAIS ESCURO */
+  background-color: #2a4b30;
+  /* VERDE MAIS ESCURO */
 }
+
 .suporte-page #formHelp {
   font-style: italic;
   color: #555;
@@ -1683,19 +1923,24 @@ ESTILOS ADICIONAIS PARA O FORMULÁRIO EM (tela_suporte.html)
 /* Ajustes no FAQ para o novo layout em grid */
 .suporte-page .faq-section {
   /* Remove a margem automática para se alinhar na grade */
-  margin-bottom: 0; 
+  margin-bottom: 0;
 }
+
 .suporte-page .faq-section h5 {
-   margin-top: 5px; /* Alinha o título com o do formulário */
+  margin-top: 5px;
+  /* Alinha o título com o do formulário */
 }
+
 .suporte-page .faq-grid {
   /* Garante que os cards preencham a coluna */
-  grid-template-columns: 1fr; 
+  grid-template-columns: 1fr;
   margin-top: 20px;
   margin-bottom: 0;
 }
+
 .suporte-page .faq-card {
-  width: 100%; /* Ocupa 100% da coluna */
+  width: 100%;
+  /* Ocupa 100% da coluna */
   max-width: 100%;
 }
 
@@ -1717,30 +1962,35 @@ body.page-background-white {
   background-color: #386641;
   /* Adiciona padding para os links e para a área de overlap */
   padding-top: 30px;
-  padding-bottom: 100px; /* Espaço para o <main> sobrepor */
+  padding-bottom: 100px;
+  /* Espaço para o <main> sobrepor */
   width: 100%;
 }
 
 /* 3. O contêiner BRANCO de conteúdo (separado, abaixo do header) */
 main.content-wrapper-v5 {
-  background-color: #FFFFFF; 
-  max-width: 1239px; /* Largura máxima centralizada */
-  
+  background-color: #FFFFFF;
+  max-width: 1239px;
+  /* Largura máxima centralizada */
+
   /* A MÁGICA ESTÁ AQUI: */
-  margin-top: -80px; /* Puxa para CIMA, sobrepondo o header */
+  margin-top: -80px;
+  /* Puxa para CIMA, sobrepondo o header */
   margin-left: auto;
   margin-right: auto;
-  position: relative; /* Para garantir que fique por cima */
+  position: relative;
+  /* Para garantir que fique por cima */
   z-index: 10;
-  
+
   /* AS CURVAS! */
-  border-top-left-radius: 47px; 
-  border-top-right-radius: 47px; 
+  border-top-left-radius: 47px;
+  border-top-right-radius: 47px;
   border-bottom-left-radius: 47px;
   border-bottom-right-radius: 47px;
 
   padding: 30px 40px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Sombra para flutuar */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  /* Sombra para flutuar */
 }
 
 /* ---
@@ -1763,19 +2013,23 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE MAPAS (tela_mapa.html)
   overflow: hidden;
   border: 1px solid #dee2e6;
 }
+
 .mapa-page .mapa-selector .input-group-text {
-  background-color: #386641; /* VERDE PADRÃO */
+  background-color: #386641;
+  /* VERDE PADRÃO */
   color: white;
   border: none;
   font-weight: 500;
   font-size: 0.9rem;
 }
+
 .mapa-page .mapa-selector .form-select {
   padding: 12px 15px;
   font-size: 1rem;
   font-weight: 500;
   border: none;
 }
+
 .mapa-page .mapa-selector .form-select:focus {
   box-shadow: 0 0 0 3px rgba(56, 102, 65, 0.2);
 }
@@ -1783,16 +2037,21 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE MAPAS (tela_mapa.html)
 /* Container do Iframe do Mapa */
 .mapa-page .map-container {
   border-radius: 20px;
-  overflow: hidden; /* Força o iframe a ter bordas arredondadas */
-  border: 5px solid #E7E7E4; /* CINZA CLARO PADRÃO */
+  overflow: hidden;
+  /* Força o iframe a ter bordas arredondadas */
+  border: 5px solid #E7E7E4;
+  /* CINZA CLARO PADRÃO */
   background-color: #E7E7E4;
 }
+
 .mapa-page .map-container iframe {
   width: 100%;
   height: 550px;
   border: none;
-  display: block; /* Remove espaço em branco inferior */
+  display: block;
+  /* Remove espaço em branco inferior */
 }
+
 .mapa-page .map-container small {
   display: block;
   padding: 12px;
@@ -1800,11 +2059,14 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE MAPAS (tela_mapa.html)
   font-size: 0.9rem;
   background-color: #E7E7E4;
 }
+
 .mapa-page .map-container small a {
-  color: #386641; /* VERDE PADRÃO */
+  color: #386641;
+  /* VERDE PADRÃO */
   text-decoration: none;
   font-weight: 500;
 }
+
 .mapa-page .map-container small a:hover {
   text-decoration: underline;
 }
@@ -1818,12 +2080,14 @@ ESTILOS PARA MODAIS "BONITOS" (Pop-ups Customizados)
 /* Adicione esta classe .modal-custom-verde ao .modal-dialog */
 .modal-custom-verde .modal-content {
   border: none;
-  border-radius: 15px; /* Arredondamento padrão */
-  box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+  border-radius: 15px;
+  /* Arredondamento padrão */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
 }
 
 .modal-custom-verde .modal-header {
-  background-color: #386641; /* VERDE PADRÃO */
+  background-color: #386641;
+  /* VERDE PADRÃO */
   color: #FFFFFF;
   border-bottom: none;
   /* Arredonda só os cantos de cima */
@@ -1839,24 +2103,27 @@ ESTILOS PARA MODAIS "BONITOS" (Pop-ups Customizados)
   filter: brightness(0) invert(1);
   opacity: 0.8;
 }
+
 .modal-custom-verde .modal-header .btn-close:hover {
   opacity: 1;
 }
 
 .modal-custom-verde .modal-footer {
-  background-color: #f8f9fa; /* Cinza claro padrão */
+  background-color: #f8f9fa;
+  /* Cinza claro padrão */
 }
 
 /* Estilo para listas dentro de modais, como Notificações */
 .modal-custom-verde .list-group-item-action:hover {
-   background-color: #f0f0f0 !important;
+  background-color: #f0f0f0 !important;
 }
 
 .modal-custom-verde .list-group-item {
-   border-bottom: 1px solid #dee2e6 !important;
+  border-bottom: 1px solid #dee2e6 !important;
 }
+
 .modal-custom-verde .list-group-item:last-child {
-   border-bottom: 0 !important;
+  border-bottom: 0 !important;
 }
 
 /* ---
@@ -1870,22 +2137,28 @@ ESTILOS ADICIONAIS PARA TELA INICIAL (tela_inicial.html)
 */
 .card-home-btn {
   margin-top: 10px;
-  background-color: #e7e7e4; /* CINZA CLARO PADRÃO */
-  color: #386641; /* VERDE PADRÃO */
+  background-color: #e7e7e4;
+  /* CINZA CLARO PADRÃO */
+  color: #386641;
+  /* VERDE PADRÃO */
   border: none;
   padding: 8px 16px;
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
   align-self: center;
-  display: inline-flex; /* Usar inline-flex para o <a> */
+  display: inline-flex;
+  /* Usar inline-flex para o <a> */
   align-items: center;
   gap: 6px;
-  text-decoration: none; /* Remove sublinhado do link */
+  text-decoration: none;
+  /* Remove sublinhado do link */
   transition: background-color 0.2s;
 }
-.card-home-btn:hover { 
-  background-color: #dcdcd8; /* CINZA MAIS ESCURO */
+
+.card-home-btn:hover {
+  background-color: #dcdcd8;
+  /* CINZA MAIS ESCURO */
   color: #386641;
 }
 
@@ -1893,19 +2166,23 @@ ESTILOS ADICIONAIS PARA TELA INICIAL (tela_inicial.html)
      sem estragar o visual.
 */
 .card-link-wrapper {
-  text-decoration: none; /* Remove sublinhado */
-  color: inherit; /* Faz o texto herdar a cor (branco) */
+  text-decoration: none;
+  /* Remove sublinhado */
+  color: inherit;
+  /* Faz o texto herdar a cor (branco) */
   display: block;
   height: 100%;
 }
+
 .card-link-wrapper:hover .noticias,
 .card-link-wrapper:hover .eventos,
 .card-link-wrapper:hover .mapa {
   /* Efeito sutil de hover no card verde */
   opacity: 0.95;
   transform: scale(1.01);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
+
 .card-link-wrapper .noticias,
 .card-link-wrapper .eventos,
 .card-link-wrapper .mapa {
@@ -1927,14 +2204,15 @@ ESTILOS DO FOOTER PADRÃO (VERSÃO ATUALIZADA - FUNDO CLARO)
 
 .site-footer {
   /* ATUALIZADO: Fundo cinza claro da sua paleta */
-  background-color: #E7E7E4; 
+  background-color: #E7E7E4;
   /* O padding é igual ao do <main> para alinhar */
-  padding: 40px 50px; 
+  padding: 40px 50px;
   /* ATUALIZADO: Cor de texto escura */
-  color: #555; 
-  border-top: 1px solid #D1D1D1; /* Borda cinza mais escura */
+  color: #555;
+  border-top: 1px solid #D1D1D1;
+  /* Borda cinza mais escura */
   /* Remove o arredondamento de baixo do .page-container */
-  margin-bottom: -25px; 
+  margin-bottom: -25px;
   margin-left: -1px;
   margin-right: -1px;
 }
@@ -1945,6 +2223,7 @@ ESTILOS DO FOOTER PADRÃO (VERSÃO ATUALIZADA - FUNDO CLARO)
     padding: 30px 25px;
   }
 }
+
 @media (max-width: 576px) {
   .site-footer {
     padding: 20px 15px;
@@ -1953,7 +2232,8 @@ ESTILOS DO FOOTER PADRÃO (VERSÃO ATUALIZADA - FUNDO CLARO)
 
 .site-footer h5 {
   font-weight: 600;
-  color: #386641; /* ATUALIZADO: Verde Padrão */
+  color: #386641;
+  /* ATUALIZADO: Verde Padrão */
   margin-bottom: 15px;
 }
 
@@ -1962,7 +2242,8 @@ ESTILOS DO FOOTER PADRÃO (VERSÃO ATUALIZADA - FUNDO CLARO)
   align-items: center;
   gap: 10px;
   text-decoration: none;
-  color: #386641; /* ATUALIZADO: Verde Padrão */
+  color: #386641;
+  /* ATUALIZADO: Verde Padrão */
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 15px;
@@ -1971,13 +2252,14 @@ ESTILOS DO FOOTER PADRÃO (VERSÃO ATUALIZADA - FUNDO CLARO)
 .footer-logo img {
   height: 40px;
   /* ATUALIZADO: Remove o filtro de inversão */
-  filter: none; 
+  filter: none;
 }
 
 .footer-copyright {
   font-size: 0.9rem;
   line-height: 1.4rem;
-  color: #555; /* ATUALIZADO: Cinza escuro */
+  color: #555;
+  /* ATUALIZADO: Cinza escuro */
 }
 
 .footer-links li {
@@ -1986,18 +2268,21 @@ ESTILOS DO FOOTER PADRÃO (VERSÃO ATUALIZADA - FUNDO CLARO)
 
 .footer-links a {
   text-decoration: none;
-  color: #386641; /* ATUALIZADO: Verde Padrão */
+  color: #386641;
+  /* ATUALIZADO: Verde Padrão */
   opacity: 0.9;
   transition: all 0.2s ease-in-out;
-  display: flex; 
+  display: flex;
   align-items: center;
   gap: 8px;
 }
 
 .footer-links a:hover {
-  color: #2a4b30; /* ATUALIZADO: Verde mais escuro */
+  color: #2a4b30;
+  /* ATUALIZADO: Verde mais escuro */
   opacity: 1;
-  transform: translateX(3px); /* Efeito de hover */
+  transform: translateX(3px);
+  /* Efeito de hover */
 }
 
 /* ---
@@ -2008,13 +2293,13 @@ ESTILOS PARA NÍVEL DE ACESSO (Admin vs User)
 
 /* 1. Por padrão, ESCONDE todos os elementos de admin */
 .admin-only {
-  display: none !important; 
+  display: none !important;
 }
 
 /* 2. QUANDO o <body> tiver a classe 'role-admin', MOSTRA os elementos */
 body.role-admin .admin-only {
   /* 'block' é o display correto para links de dropdown do Bootstrap */
-  display: block !important; 
+  display: block !important;
 }
 
 /* --- Botão Flutuante --- */
@@ -2023,17 +2308,19 @@ body.role-admin .admin-only {
 .help-btn-admin {
   display: none;
 }
+
 /* Mostra o botão de usuário por padrão */
 .help-btn-user {
-  display: flex; 
+  display: flex;
 }
 
 /* Quando for admin, inverte a visibilidade */
 body.role-admin .help-btn-admin {
-  display: flex; 
+  display: flex;
 }
+
 body.role-admin .help-btn-user {
-  display: none; 
+  display: none;
 }
 
 /* ---
@@ -2051,7 +2338,8 @@ body.login-page {
   min-height: 100vh;
   align-items: center;
   justify-content: center;
-  padding: 20px; /* Mantém o padding do seu body original */
+  padding: 20px;
+  /* Mantém o padding do seu body original */
 }
 
 /* Garante que o reset * não afete outros resets */
@@ -2241,14 +2529,16 @@ body.login-page {
 /* --- Responsividade --- */
 @media (max-width: 850px) {
   .login-page .login-container {
-      flex-direction: column;
-      height: auto;
+    flex-direction: column;
+    height: auto;
   }
+
   .login-page .info-panel {
-      display: none;
+    display: none;
   }
+
   .login-page .login-panel {
-      border-radius: 30px;
+    border-radius: 30px;
   }
 }
 
@@ -2260,14 +2550,17 @@ ESTILOS PARA BOTÃO "RELEVANTE" (CURTIR)
 
 /* Estilo para o botão "Relevante" quando está ativo (clicado) */
 .post-action-btn.active {
-  background-color: #386641; /* Cor verde padrão */
-  color: #FFFFFF !important; /* Texto branco */
+  background-color: #386641;
+  /* Cor verde padrão */
+  color: #FFFFFF !important;
+  /* Texto branco */
   font-weight: 700;
 }
 
 /* Adiciona um ícone de "up" quando está ativo */
 .post-action-btn.active::before {
-  content: "\f148"; /* Código do ícone 'arrow-up-circle-fill' do Bootstrap */
+  content: "\f148";
+  /* Código do ícone 'arrow-up-circle-fill' do Bootstrap */
   font-family: "bootstrap-icons";
   margin-right: 6px;
 }
@@ -2287,21 +2580,24 @@ ESTILOS DO WIDGET DE ACESSIBILIDADE (FLUTUANTE)
 /* Botão Flutuante Azul/Ciano (Diferente do verde para destacar, ou use verde se preferir) */
 .btn-access-float {
   position: fixed;
-  bottom: 100px; /* Fica acima do botão de suporte */
+  bottom: 100px;
+  /* Fica acima do botão de suporte */
   right: 30px;
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background-color: #0d6efd; /* Azul Bootstrap ou use #386641 para verde */
+  background-color: #0d6efd;
+  /* Azul Bootstrap ou use #386641 para verde */
   color: white;
   border: none;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   font-size: 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 1060; /* Acima de tudo */
+  z-index: 1060;
+  /* Acima de tudo */
   transition: transform 0.2s;
 }
 
@@ -2312,15 +2608,17 @@ ESTILOS DO WIDGET DE ACESSIBILIDADE (FLUTUANTE)
 
 /* O Menu (Card) */
 .access-menu-container {
-  display: none; /* Escondido por padrão */
+  display: none;
+  /* Escondido por padrão */
   position: fixed;
-  bottom: 160px; /* Acima do botão flutuante */
+  bottom: 160px;
+  /* Acima do botão flutuante */
   right: 30px;
   width: 250px;
   background-color: #ffffff;
   border-radius: 15px;
   padding: 20px;
-  box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
   z-index: 1060;
   animation: fadeInUp 0.3s ease-in-out;
 }
@@ -2331,8 +2629,15 @@ ESTILOS DO WIDGET DE ACESSIBILIDADE (FLUTUANTE)
 
 /* Animação de entrada */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* --- MODO ALTO CONTRASTE (Refinado) --- */
@@ -2355,9 +2660,13 @@ body.high-contrast .access-menu-container {
   border: 1px solid #ffff00 !important;
 }
 
-body.high-contrast a, 
-body.high-contrast h1, body.high-contrast h2, body.high-contrast h3, 
-body.high-contrast p, body.high-contrast span, body.high-contrast i,
+body.high-contrast a,
+body.high-contrast h1,
+body.high-contrast h2,
+body.high-contrast h3,
+body.high-contrast p,
+body.high-contrast span,
+body.high-contrast i,
 body.high-contrast button {
   color: #ffff00 !important;
 }
@@ -2383,6 +2692,7 @@ body.high-contrast .profile-banner {
     height: 45px;
     font-size: 1.3rem;
   }
+
   .access-menu-container {
     bottom: 145px;
     right: 20px;
@@ -2393,440 +2703,472 @@ body.high-contrast .profile-banner {
 
 /* Fundo geral da área de conteúdo para dar o efeito de "folha branca" */
 .content-wrapper-rounded {
-    background-color: #fff;
-    border-radius: 40px 40px 0 0; /* Arredonda só em cima */
-    padding: 40px;
-    min-height: 80vh;
-    margin-top: -30px; /* Puxa um pouco para cima se quiser sobrepor o header, ajuste conforme sua navbar */
-    position: relative;
-    z-index: 10;
+  background-color: #fff;
+  border-radius: 40px 40px 0 0;
+  /* Arredonda só em cima */
+  padding: 40px;
+  min-height: 80vh;
+  margin-top: -30px;
+  /* Puxa um pouco para cima se quiser sobrepor o header, ajuste conforme sua navbar */
+  position: relative;
+  z-index: 10;
 }
 
 /* Barra de Ferramentas (Pesquisa, Abas, Botão +) */
 .community-toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 40px;
 }
 
 /* Barra de Pesquisa Cinza */
 .search-bar-gray {
-    background-color: #EAEAEA;
-    border-radius: 30px;
-    padding: 10px 20px;
-    border: none;
-    min-width: 300px;
-    display: flex;
-    align-items: center;
+  background-color: #EAEAEA;
+  border-radius: 30px;
+  padding: 10px 20px;
+  border: none;
+  min-width: 300px;
+  display: flex;
+  align-items: center;
 }
+
 .search-bar-gray input {
-    background: transparent;
-    border: none;
-    outline: none;
-    width: 100%;
-    color: #555;
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+  color: #555;
 }
+
 .search-bar-gray i {
-    color: #999;
-    margin-right: 10px;
+  color: #999;
+  margin-right: 10px;
 }
 
 /* Botões de Aba (Explorar / Minhas Comunidades) */
 .nav-pills-custom {
-    display: flex;
-    gap: 10px;
-    background: transparent;
+  display: flex;
+  gap: 10px;
+  background: transparent;
 }
 
 .btn-tab {
-    border: 2px solid #386641;
-    color: #386641;
-    background: transparent;
-    border-radius: 30px;
-    padding: 8px 25px;
-    font-weight: 600;
-    transition: all 0.3s;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
+  border: 2px solid #386641;
+  color: #386641;
+  background: transparent;
+  border-radius: 30px;
+  padding: 8px 25px;
+  font-weight: 600;
+  transition: all 0.3s;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
 }
 
 .btn-tab.active {
-    background-color: #386641;
-    color: white;
+  background-color: #386641;
+  color: white;
 }
 
 .btn-tab:hover {
-    background-color: #2a4b30;
-    color: white;
-    border-color: #2a4b30;
+  background-color: #2a4b30;
+  color: white;
+  border-color: #2a4b30;
 }
 
 /* Botão de Adicionar (+) */
 .btn-add-circle {
-    width: 45px;
-    height: 45px;
-    background-color: #386641;
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    border: none;
-    transition: transform 0.2s;
+  width: 45px;
+  height: 45px;
+  background-color: #386641;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  border: none;
+  transition: transform 0.2s;
 }
+
 .btn-add-circle:hover {
-    transform: scale(1.1);
-    background-color: #2a4b30;
-    color: white;
+  transform: scale(1.1);
+  background-color: #2a4b30;
+  color: white;
 }
 
 /* --- CARD ESTILO REFERÊNCIA (VERDE SÓLIDO + FOTO ESQUERDA) --- */
 
 .card-ref-green {
-    background-color: #386641; /* Verde IFRN Sólido */
-    border-radius: 20px;
-    padding: 20px;
-    display: flex;       /* Alinha itens lado a lado */
-    align-items: center; /* Centraliza verticalmente */
-    gap: 20px;           /* Espaço entre foto e texto */
-    color: white;
-    transition: transform 0.2s, box-shadow 0.2s;
-    border: none;
-    height: 100%;        /* Garante altura igual na grid */
-    min-height: 150px;
-    position: relative;
-    overflow: hidden;
+  background-color: #386641;
+  /* Verde IFRN Sólido */
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  /* Alinha itens lado a lado */
+  align-items: center;
+  /* Centraliza verticalmente */
+  gap: 20px;
+  /* Espaço entre foto e texto */
+  color: white;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: none;
+  height: 100%;
+  /* Garante altura igual na grid */
+  min-height: 150px;
+  position: relative;
+  overflow: hidden;
 }
 
 .card-ref-green:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(56, 102, 65, 0.3);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(56, 102, 65, 0.3);
 }
 
 /* Foto da Comunidade (Grande e Redonda na Esquerda) */
 .card-ref-img {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    object-fit: cover;
-    background-color: #fff; /* Fundo branco se a img for transparente */
-    border: 3px solid rgba(255, 255, 255, 0.2);
-    flex-shrink: 0; /* Impede a imagem de esmagar */
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #fff;
+  /* Fundo branco se a img for transparente */
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+  /* Impede a imagem de esmagar */
 }
 
 /* Corpo de Texto (Direita) */
 .card-ref-body {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .card-ref-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin-bottom: 5px;
-    line-height: 1.2;
-    color: #fff;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+  line-height: 1.2;
+  color: #fff;
 }
 
 .card-ref-desc {
-    font-size: 0.85rem;
-    opacity: 0.9;
-    margin-bottom: 12px;
-    color: #e0e0e0;
-    display: -webkit-box;
+  font-size: 0.85rem;
+  opacity: 0.9;
+  margin-bottom: 12px;
+  color: #e0e0e0;
+  display: -webkit-box;
 
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* Botão "Visitar" (Pílula Cinza/Branca) */
 .btn-visit-pill {
-    background-color: #E0E0E0;
-    color: #222;
-    border-radius: 30px;
-    padding: 6px 24px;
-    font-weight: 700;
-    font-size: 0.85rem;
-    text-decoration: none;
-    display: inline-block;
-    width: fit-content;
-    transition: all 0.2s;
-    border: none;
+  background-color: #E0E0E0;
+  color: #222;
+  border-radius: 30px;
+  padding: 6px 24px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-decoration: none;
+  display: inline-block;
+  width: fit-content;
+  transition: all 0.2s;
+  border: none;
 }
 
 .btn-visit-pill:hover {
-    background-color: #fff;
-    transform: scale(1.05);
-    color: #000;
+  background-color: #fff;
+  transform: scale(1.05);
+  color: #000;
 }
 
 /* Ícone de Seta/Canto Superior Direito */
 .icon-corner {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: rgba(255,255,255,0.15);
-    color: white;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
 }
+
 /* Texto do Card */
 .comm-info h5 {
-    font-weight: 700;
-    margin-bottom: 5px;
-    font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+  font-size: 1.1rem;
 }
+
 .comm-info p {
-    font-size: 0.85rem;
-    opacity: 0.9;
-    line-height: 1.3;
-    margin-bottom: 15px;
+  font-size: 0.85rem;
+  opacity: 0.9;
+  line-height: 1.3;
+  margin-bottom: 15px;
 }
 
 /* Botão Visitar (Pílula Branca) */
 .btn-visit {
-    background-color: #D9D9D9; /* Cinza claro/Branco gelo */
-    color: #333;
-    border-radius: 20px;
-    padding: 5px 25px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    text-decoration: none;
-    display: inline-block;
-    border: none;
+  background-color: #D9D9D9;
+  /* Cinza claro/Branco gelo */
+  color: #333;
+  border-radius: 20px;
+  padding: 5px 25px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  display: inline-block;
+  border: none;
 }
+
 .btn-visit:hover {
-    background-color: #fff;
-    color: #000;
+  background-color: #fff;
+  color: #000;
 }
 
 /* Ícone de alfinete/fixado no canto */
 .icon-top-right {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: rgba(255,255,255,0.2);
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.9rem;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(255, 255, 255, 0.2);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
 }
 
 /* Layout de Scroll Horizontal (Minhas Comunidades) */
 .horizontal-scroll-wrapper {
-    display: flex;
-    overflow-x: auto;
-    gap: 20px;
-    padding-bottom: 20px; /* Espaço para scrollbar */
+  display: flex;
+  overflow-x: auto;
+  gap: 20px;
+  padding-bottom: 20px;
+  /* Espaço para scrollbar */
 }
+
 /* Esconder scrollbar padrão mas manter funcionalidade */
 .horizontal-scroll-wrapper::-webkit-scrollbar {
-    height: 8px;
+  height: 8px;
 }
+
 .horizontal-scroll-wrapper::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 4px;
+  background: #ccc;
+  border-radius: 4px;
 }
 
 /* --- ESTILOS DA TELA DE DETALHE DA COMUNIDADE --- */
 
 /* Avatar Grande no Topo */
 .comm-header-avatar {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background-color: #386641;
-    color: white;
-    font-size: 2.5rem;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 5px solid #f8f9fa; /* Borda para separar */
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: #386641;
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 5px solid #f8f9fa;
+  /* Borda para separar */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 /* Cards da Sidebar (Sobre, Regras) */
 .sidebar-card {
-    background-color: #f8f9fa; /* Cinza bem claro */
-    border-radius: 20px;
-    padding: 25px;
-    margin-bottom: 20px;
-    border: 1px solid #eee;
+  background-color: #f8f9fa;
+  /* Cinza bem claro */
+  border-radius: 20px;
+  padding: 25px;
+  margin-bottom: 20px;
+  border: 1px solid #eee;
 }
 
 .sidebar-title {
-    font-size: 0.9rem;
-    font-weight: 800;
-    color: #386641;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 15px;
-    border-bottom: 2px solid #e0e0e0;
-    padding-bottom: 10px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #386641;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 10px;
 }
 
 /* Lista de Moderadores */
 .mod-list-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-    font-size: 0.9rem;
-    font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 /* --- FILTROS DE CATEGORIA (TAGS) --- */
 
 .category-scroll-wrapper {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    padding-bottom: 10px;
-    margin-bottom: 30px;
-    /* Esconde a barra de rolagem feia mas mantém a função */
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none;  /* IE 10+ */
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  margin-bottom: 30px;
+  /* Esconde a barra de rolagem feia mas mantém a função */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE 10+ */
 }
-.category-scroll-wrapper::-webkit-scrollbar { 
-    display: none; /* Chrome/Safari */
+
+.category-scroll-wrapper::-webkit-scrollbar {
+  display: none;
+  /* Chrome/Safari */
 }
 
 .btn-tag {
-    white-space: nowrap; /* Impede quebra de linha */
-    padding: 8px 20px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    border: 1px solid #ddd;
-    background-color: white;
-    color: #555;
-    transition: all 0.2s;
-    text-decoration: none;
-    display: inline-block;
+  white-space: nowrap;
+  /* Impede quebra de linha */
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid #ddd;
+  background-color: white;
+  color: #555;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .btn-tag:hover {
-    background-color: #f0f0f0;
-    color: #333;
-    border-color: #ccc;
-    transform: translateY(-2px);
+  background-color: #f0f0f0;
+  color: #333;
+  border-color: #ccc;
+  transform: translateY(-2px);
 }
 
 /* Tag Ativa (Selecionada) */
 .btn-tag.active {
-    background-color: #386641;
-    color: white;
-    border-color: #386641;
-    box-shadow: 0 4px 10px rgba(56, 102, 65, 0.3);
+  background-color: #386641;
+  color: white;
+  border-color: #386641;
+  box-shadow: 0 4px 10px rgba(56, 102, 65, 0.3);
 }
 
 /* --- ESTILO DE COMENTÁRIOS (ATUALIZADO) --- */
 
 /* Container do Comentário */
 .comment-wrapper {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-    animation: fadeIn 0.3s ease;
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  animation: fadeIn 0.3s ease;
 }
 
 /* O Balão do Comentário */
 .comment-bubble {
-    background-color: #f0f2f5; /* Cinza estilo Facebook */
-    border-radius: 18px;
-    padding: 12px 18px;
-    position: relative;
-    display: inline-block;
-    min-width: 200px;
+  background-color: #f0f2f5;
+  /* Cinza estilo Facebook */
+  border-radius: 18px;
+  padding: 12px 18px;
+  position: relative;
+  display: inline-block;
+  min-width: 200px;
 }
 
 /* Nome do Autor */
 .comment-author-name {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #1a1a1a;
-    display: block;
-    margin-bottom: 4px;
-    text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  display: block;
+  margin-bottom: 4px;
+  text-decoration: none;
 }
 
 /* Texto do Comentário */
 .comment-content-text {
-    font-size: 1rem; /* Fonte MAIOR */
-    color: #333;
-    line-height: 1.5;
-    white-space: pre-line; /* Mantém parágrafos */
-    margin-bottom: 0;
+  font-size: 1rem;
+  /* Fonte MAIOR */
+  color: #333;
+  line-height: 1.5;
+  white-space: pre-line;
+  /* Mantém parágrafos */
+  margin-bottom: 0;
 }
 
 /* Data e Botão Responder (Ficam fora do balão) */
 .comment-actions {
-    display: flex;
-    gap: 15px;
-    margin-left: 15px;
-    margin-top: 5px;
-    font-size: 0.8rem;
+  display: flex;
+  gap: 15px;
+  margin-left: 15px;
+  margin-top: 5px;
+  font-size: 0.8rem;
 }
 
 .comment-date {
-    color: #888;
+  color: #888;
 }
 
 .btn-reply-action {
-    color: #555;
-    font-weight: 700;
-    cursor: pointer;
-    text-decoration: none;
-    transition: color 0.2s;
+  color: #555;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s;
 }
 
 .btn-reply-action:hover {
-    color: #386641;
-    text-decoration: underline;
+  color: #386641;
+  text-decoration: underline;
 }
 
 /* Imagem dentro do comentário */
 .comment-image-preview {
-    max-width: 100%;
-    border-radius: 12px;
-    margin-top: 10px;
-    border: 1px solid rgba(0,0,0,0.1);
-    max-height: 300px;
-    object-fit: cover;
+  max-width: 100%;
+  border-radius: 12px;
+  margin-top: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  max-height: 300px;
+  object-fit: cover;
 }
 
 /* --- ESTILO "INSTAGRAM" (SEM ESCADINHA INFINITA) --- */
 
 .replies-container {
-    display: block !important;
-    margin-left: 50px !important; /* Empurra 50px para a direita */
-    padding-left: 15px !important;
-    border-left: 4px solid #386641 !important; /* Linha verde grossa para ver se funcionou */
-    margin-top: 10px !important;
-    margin-bottom: 10px !important;
+  display: block !important;
+  margin-left: 50px !important;
+  /* Empurra 50px para a direita */
+  padding-left: 15px !important;
+  border-left: 4px solid #386641 !important;
+  /* Linha verde grossa para ver se funcionou */
+  margin-top: 10px !important;
+  margin-bottom: 10px !important;
 }
 
 /* Diferenciar a cor do filho */
 .replies-container .comment-bubble {
-    background-color: #e8f5e9 !important; /* Fundo levemente verde */
+  background-color: #e8f5e9 !important;
+  /* Fundo levemente verde */
 }
 
 /* ====== SIDEBAR HORIZONTAL RETRÁTIL (ESTILO REDDIT) ====== */
@@ -2842,7 +3184,8 @@ body.high-contrast .profile-banner {
 }
 
 #sidebar-wrapper.collapsed-horizontal {
-  width: 30px !important;      /* sidebar recolhida estilo reddit */
+  width: 30px !important;
+  /* sidebar recolhida estilo reddit */
   overflow: hidden;
 }
 
@@ -2880,4 +3223,25 @@ body.high-contrast .profile-banner {
 /* Bloqueia animações da área de posts */
 .posts-freeze {
   transition: none !important;
+}
+
+.card-material-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+.card-material-hover:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(56, 102, 65, 0.15) !important;
+  /* Sombra verde suave */
+  border-color: #386641 !important;
+  /* Borda verde */
+}
+
+.card-material-hover .bi {
+  transition: transform 0.3s ease;
+}
+
+.card-material-hover:hover .bi {
+  transform: scale(1.1);
 }
