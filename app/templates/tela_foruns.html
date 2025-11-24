@@ -145,25 +145,69 @@
                             </button>
                         </div>
                         <div class="collapse comments-section" id="comments-post-{{ topico.id }}">
-                            <div class="d-flex justify-content-between align-items-center mb-3 pt-3 border-top">
-                                <h6 class="mb-0 fw-bold text-muted">Comentários</h6>
-                                <button type="button" class="btn btn-sm btn-outline-success rounded-pill" data-bs-toggle="modal" data-bs-target="#modalComentar" data-bs-topico-id="{{ topico.id }}">
-                                    Escrever
-                                </button>
-                            </div>
-                            <div class="vstack gap-3">
-                                {% for resposta in topico.respostas %}
-                                <div class="single-comment d-flex gap-2 align-items-start">
-                                    <img class="contact-avatar-sm" src="https://placehold.co/32x32/eee/999?text={{ resposta.autor.name[0] }}" alt="Avatar">
-                                    <div class="comment-bubble bg-light p-2 rounded">
-                                        <a href="#" class="comment-author fw-bold text-dark text-decoration-none">{{ resposta.autor.name }}</a>
-                                        <p class="mb-0 small">{{ resposta.conteudo }}</p>
+                            {% macro render_comment(resposta, topico_id, comunidade_moderadores, likes_respostas_usuario) %}
+                            <div class="comment-item" id="comment-{{ resposta.id }}">
+                                <div class="comment-wrapper">
+                                    <img src="{{ url_for('static', filename='img/image.png') }}" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
+                                    <div class="flex-grow-1">
+                                        <div class="comment-bubble">
+                                            <a href="#" class="comment-author-name">
+                                                {{ resposta.autor.name }}
+                                                {% if resposta.autor.is_admin %}<i class="bi bi-patch-check-fill text-primary ms-1" title="Admin"></i>
+                                                {# Usando a nova variável comunidade_moderadores #}
+                                                {% elif resposta.autor in comunidade_moderadores %}<i class="bi bi-shield-check text-success ms-1" title="Moderador"></i>{% endif %}
+                                            </a>
+                                            <p class="comment-content-text">{{ resposta.conteudo }}</p>
+                                            {% if resposta.imagem_resposta %}<a href="{{ resposta.imagem_resposta }}" target="_blank"><img src="{{ resposta.imagem_resposta }}" class="comment-image"></a>{% endif %}
+                                        </div>
+                                        <div class="comment-actions">
+                                            <span>{{ resposta.criado_em | format_data_br }}</span>
+                                            <form action="{{ url_for('main.like_comentario', resposta_id=resposta.id) }}" method="POST" class="d-inline">
+                                                <button class="btn-like-comment {% if resposta.id in likes_respostas_usuario %}text-danger{% endif %}" style="border:none; background:none; font-size:0.75rem; font-weight:700; color:#666;">
+                                                    <i class="bi {% if resposta.id in likes_respostas_usuario %}bi-heart-fill{% else %}bi-heart{% endif %}"></i> {{ resposta.likes|length }}
+                                                </button>
+                                            </form>
+                                            {# Chama a função JS de responder, passando o ID do Tópico, Nome do Autor, e ID da Resposta #}
+                                            <span class="btn-reply-action" onclick="responderComentario('{{ topico_id }}', '{{ resposta.autor.name }}', '{{ resposta.id }}')">Responder</span>
+                                        </div>
                                     </div>
                                 </div>
-                                {% endfor %}
-                                {% if not topico.respostas %}
-                                <p class="text-center text-muted small py-2">Nenhum comentário ainda.</p>
+                                {% if resposta.filhos %}
+                                    <div class="replies-container">
+                                        {# Chama o macro recursivamente, passando todas as variáveis de contexto #}
+                                        {% for filho in resposta.filhos %}
+                                            {{ render_comment(filho, topico_id, comunidade_moderadores, likes_respostas_usuario) }}
+                                        {% endfor %}
+                                    </div>
                                 {% endif %}
+                            </div>
+                            {% endmacro %}
+
+                            <div id="comments-{{ topico.id }}">
+                                <form action="{{ url_for('main.comentar_post', topico_id=topico.id) }}" method="POST" enctype="multipart/form-data" class="mb-4" id="form-comentario-{{ topico.id }}">
+                                    <div class="d-flex gap-2 align-items-start flex-column">
+                                        {# BADGE DE RESPOSTA (Controlado pelo JavaScript) #}
+                                        <div id="badge-resposta-{{ topico.id }}" class="replying-badge d-none"><i class="bi bi-arrow-return-right"></i><span id="nome-resposta-{{ topico.id }}">Respondendo...</span><i class="bi bi-x-circle-fill ms-2" style="cursor: pointer;" onclick="cancelarResposta('{{ topico.id }}')"></i></div>
+                                        <div class="d-flex gap-2 w-100 align-items-center">
+                                            <div class="flex-grow-1">
+                                                {# CAMPO ESCONDIDO PARA O ID DO COMENTÁRIO PAI (Aninhamento) #}
+                                                <input type="hidden" name="parent_id" id="parent-id-{{ topico.id }}">
+                                                <input type="text" name="conteudo_comentario" id="input-comentario-{{ topico.id }}" class="form-control rounded-pill border-0" placeholder="Escreva um comentário..." required>
+                                                <input type="file" name="midia_comentario" id="file-comment-{{ topico.id }}" class="d-none" accept="image/*">
+                                            </div>
+                                            <label for="file-comment-{{ topico.id }}" class="btn btn-light rounded-circle text-secondary"><i class="bi bi-image"></i></label>
+                                            <button class="btn btn-theme rounded-circle" type="submit"><i class="bi bi-send-fill"></i></button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                {# LISTAGEM DOS COMENTÁRIOS DE NÍVEL SUPERIOR (parent_id = null) #}
+                                {% set moderadores = comunidade_moderadores if comunidade_moderadores is defined else [] %}
+                                {% for resposta in topico.respostas %}
+                                    {% if not resposta.parent_id %}
+                                        {{ render_comment(resposta, topico.id, moderadores, likes_respostas_usuario) }}
+                                    {% endif %}
+                                {% endfor %}
                             </div>
                         </div>
                     </article>
@@ -322,7 +366,34 @@
 
 {% endblock %}
 {% block scripts %}
-
+    <script>
+        function responderComentario(topicoId, nomeUsuario, comentarioId) {
+            // 1. Pega os elementos específicos deste tópico
+            const input = document.getElementById('input-comentario-' + topicoId);
+            const hiddenInput = document.getElementById('parent-id-' + topicoId);
+            const badge = document.getElementById('badge-resposta-' + topicoId);
+            const nomeSpan = document.getElementById('nome-resposta-' + topicoId);
+            
+            if (input && hiddenInput) {
+                // 2. Define o ID do comentário pai (aninhamento)
+                hiddenInput.value = comentarioId;
+                // 3. Atualiza o badge de visualização
+                nomeSpan.innerHTML = 'Respondendo a <b>' + nomeUsuario + '</b>';
+                badge.classList.remove('d-none');
+                // 4. Foca no campo de input e move a tela
+                input.focus();
+                input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+        
+        function cancelarResposta(topicoId) {
+            // Limpa o campo parent_id e esconde o badge
+            const hiddenInput = document.getElementById('parent-id-' + topicoId);
+            const badge = document.getElementById('badge-resposta-' + topicoId);
+            hiddenInput.value = '';
+            badge.classList.add('d-none');
+        }
+    </script>
     <script>
         // ===== SIDEBAR HORIZONTAL (ESTILO REDDIT) =====
         (function () {
