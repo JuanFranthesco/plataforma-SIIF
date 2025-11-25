@@ -1,35 +1,57 @@
 <footer class="site-footer">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-4 mb-4 mb-md-0">
-                <a href="{{ url_for('main.tela_materiais') }}" class="footer-logo">
-                    <img src="{{ url_for('static', filename='img/LOGO.png') }}" alt="Logo SIIF">
-                    <span>SIIF</span>
+    <div class="container py-5"> <div class="row g-4">
+            
+            <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                <a href="{{ url_for('main.tela_inicial') }}" class="footer-brand d-flex align-items-center mb-3 text-decoration-none">
+                    <img src="{{ url_for('static', filename='img/LOGO.png') }}" alt="Logo SIIF" height="50">
+                    <span class="ms-2 fs-4 fw-bold" style="color: #386641;">SIIF</span>
                 </a>
-                <p class="footer-copyright">
-                    © 2025 SIIF - Sistema de Interação do Instituto Federal.<br>
-                    Projeto acadêmico desenvolvido por alunos do IFRN.
+                <p class="text-muted pe-lg-4">
+                    O Sistema de Interação do Instituto Federal é a ponte digital para conectar alunos, professores e a comunidade acadêmica do IFRN Campus Apodi.
                 </p>
+                <div class="social-icons mt-3">
+                    <a href="#" class="me-2"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="me-2"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="me-2"><i class="bi bi-twitter-x"></i></a>
+                </div>
             </div>
-            <div class="col-md-4 mb-4 mb-md-0">
-                <h5>Navegação</h5>
+
+            <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+                <h6 class="text-uppercase fw-bold mb-3" style="color: #386641;">Navegação</h6>
                 <ul class="list-unstyled footer-links">
-                    <li><a href="{{ url_for('main.tela_inicial') }}"><i class="bi bi-house-door-fill"></i> Página Inicial</a></li>
-                    <li><a href="{{ url_for('main.tela_foruns') }}"><i class="bi bi-chat-left-dots-fill"></i> Fóruns</a></li>
-                    <li><a href="{{ url_for('main.tela_divulgacao') }}"><i class="bi bi-megaphone-fill"></i> Divulgação</a></li>
-                    <li><a href="{{ url_for('main.tela_materiais') }}"><i class="bi bi-file-earmark-text-fill"></i> Materiais</a></li>
-                    <li><a href="{{ url_for('main.tela_mapa') }}"><i class="bi bi-geo-alt-fill"></i> Mapa</a></li>
+                    <li><a href="{{ url_for('main.tela_inicial') }}">Página Inicial</a></li>
+                    <li><a href="{{ url_for('main.tela_foruns') }}">Fóruns</a></li>
+                    <li><a href="{{ url_for('main.tela_divulgacao') }}">Divulgação</a></li>
+                    <li><a href="{{ url_for('main.tela_materiais') }}">Materiais</a></li>
+                    <li><a href="{{ url_for('main.tela_mapa') }}">Mapa</a></li>
                 </ul>
             </div>
-            <div class="col-md-4">
-                <h5>Links Úteis</h5>
+
+            <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+                <h6 class="text-uppercase fw-bold mb-3" style="color: #386641;">Institucional</h6>
                 <ul class="list-unstyled footer-links">
-                    <li><a href="https://portal.ifrn.edu.br" target="_blank">Site Oficial IFRN</a></li>
-                    <li><a href="https://suap.ifrn.edu.br/" target="_blank">Acessar SUAP</a></li>
-                    <li><a href="{{ url_for('main.suporte') }}">Suporte & Denúncias</a></li>
-                    <li><a href="{{ url_for('main.tela_perfil') }}">Meu Perfil</a></li>
+                    <li><a href="https://portal.ifrn.edu.br" target="_blank">Portal IFRN <i class="bi bi-box-arrow-up-right small"></i></a></li>
+                    <li><a href="https://suap.ifrn.edu.br/" target="_blank">Acessar SUAP <i class="bi bi-box-arrow-up-right small"></i></a></li>
+                    <li><a href="{{ url_for('main.suporte') }}">Central de Ajuda</a></li>
+                    <li><a href="{{ url_for('main.tela_denuncias') }}">Canal de Denúncias</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <h6 class="text-uppercase fw-bold mb-3" style="color: #386641;">Contato</h6>
+                <ul class="list-unstyled text-muted">
+                    <li class="mb-2"><i class="bi bi-geo-alt-fill me-2" style="color: #386641;"></i> Apodi — RN</li>
+                    <li class="mb-2"><i class="bi bi-envelope-fill me-2" style="color: #386641;"></i> contato@siif.com</li>
                 </ul>
             </div>
         </div>
     </div>
-    </footer>
+
+    <div class="footer-bottom py-3">
+        <div class="container text-center">
+            <small class="text-muted">
+                &copy; 2025 <strong>SIIF</strong>. Desenvolvido com <i class="bi bi-heart-fill text-danger" style="font-size: 0.7rem;"></i> por alunos do IFRN.
+            </small>
+        </div>
+    </div>
+</footer>
