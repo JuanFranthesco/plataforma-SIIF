@@ -1,334 +1,145 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Mapas dos Campi - SIIF</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mapas dos Campi - SIIF</title>
 
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
-
 <body class="role-user">
-<div class="page-container">
+  <div class="page-container">
 
+    {% include 'header.html' %}
 
-{% include 'header.html' %}
+    <main class="mapa-page">
 
+      <h1>Mapas dos Campi</h1>
 
-<main class="mapa-page">
+      <div class="input-group mb-4 shadow-sm mapa-selector">
+        <span class="input-group-text">
+          <i class="bi bi-geo-alt-fill"></i> Selecione o Campus:
+        </span>
+        <select class="form-select" id="campus-select">
+          <option value="apodi" selected>Apodi</option>
+          <option value="mossoro" disabled>Mossoró (em breve)</option>
+          <option value="natal" disabled>Natal (em breve)</option>
+          <option value="pau-dos-ferros" disabled>Pau dos Ferros (em breve)</option>
+        </select>
+      </div>
 
+      <div class="map-container shadow-sm">
+        <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4218.752729359187!2d-37.80725470000001!3d-5.627263199999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7baf7f6172a76a7%3A0x4df8711927cb367!2sIFRN%20-%20Campus%20Apodi!5e1!3m2!1spt-BR!2sbr!4v1763338919324!5m2!1spt-BR!2sbr" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
 
-<h1>Mapas dos Campi</h1>
+        <small>
+          <a href="https://maps.app.goo.gl/DiiQkahmqEM1dGsw9" target="_blank">
+            Ver mapa ampliado
+          </a>
+        </small>
+      </div>
 
+    </main>
 
-<!-- Campo de pesquisa substituindo o select -->
-<div class="input-group mb-4 shadow-sm mapa-selector">
-<span class="input-group-text">
-<i class="bi bi-search"></i> Buscar Campus:
-</span>
-<input type="text" id="campus-search" class="form-control" placeholder="Digite o nome do campus...">
-</div>
+    {% include 'footer.html' %}
 
+  </div>
 
-<div class="map-container shadow-sm">
-<iframe id="map-frame"
-src=""
-width="600" height="450" style="border:0;" allowfullscreen="" referrerpolicy="no-referrer-when-downgrade"></iframe>
+  <a href="{{ url_for('main.suporte') }}" class="help-btn help-btn-user">
+    <i class="bi bi-headset"></i>
+  </a>
 
+  <a href="{{ url_for('main.tela_denuncias') }}" class="help-btn help-btn-admin">
+    <i class="bi bi-shield-check"></i>
+  </a>
+  <div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+      <div class="vw-plugin-top-wrapper"></div>
+    </div>
+  </div>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+  <script>
+    new window.VLibras.Widget('https://vlibras.gov.br/app');
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+  // --- Lógica de Acessibilidade ---
 
-<small>
-<a id="external-map-link" href="#" target="_blank">
-Ver mapa ampliado
-</a>
-</small>
-</div>
-
-
-<div id="campus-info" class="campus-info mt-4 p-4 shadow-sm rounded" style="background: #fff;">
-<h3 id="campus-title" class="mb-3">Selecione um campus</h3>
-
-
-<p><strong>Endereço:</strong> <span id="campus-endereco">---</span></p>
-<p><strong>Cidade:</strong> <span id="campus-cidade">---</span></p>
-<p><strong>Telefone:</strong> <span id="campus-telefone">---</span></p>
-
-
-<h5 class="mt-4">Descrição:</h5>
-<p id="campus-descricao" class="text-muted">---</p>
-</div>
-
-
-</main>
-
-
-{% include 'footer.html' %}
-
-
-</div>
-
-
-<a href="{{ url_for('main.suporte') }}" class="help-btn help-btn-user">
-<i class="bi bi-headset"></i>
-</a>
-
-
-<a href="{{ url_for('main.tela_denuncias') }}" class="help-btn help-btn-admin">
-<i class="bi bi-shield-check"></i>
-</a>
-
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-
-<script>
-// Dados dos campi
-const campusData = {
-  "apodi": {
-    titulo: "Campus Apodi",
-    endereco: "Chapada do Apodi - RN-233, Km 02 - nº 1000",
-    cidade: "Apodi — RN",
-    telefone: "(84) 4005-4101",
-    descricao: "O Campus IFRN-Apodi destaca-se pela sua grande fazenda e gama de projetos colaborativos entre os cursos de agropecuária e informática.",
-    mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4218.752729359187!2d-37.80725470000001!3d-5.627263199999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7baf7f6172a76a7%3A0x4df8711927cb367!2sIFRN%20-%20Campus%20Apodi!5e1!3m2!1spt-BR!2sbr!4v1763338919324!5m2!1spt-BR!2sbr"
-  },
-
-  "caico": {
-    titulo: "Campus Caicó",
-    endereco: "RN-288, s/n - Nova, Caicó - RN",
-    cidade: "Caicó — RN",
-    telefone: "(84) 4005-4102",
-    descricao: "O Campus Caicó do IFRN, criado em 2009, atende dezenas de municípios do Seridó e oferece cursos técnicos, superiores e FIC, com destaque para as áreas têxtil, informática e eletrotécnica.",
-    mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.592640189498!2d-37.068989599999995!3d-6.4463161!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7afec3b2216fb6d%3A0xfd0a7ee7ca8257a9!2sIFRN%20Campus%20Caic%C3%B3!5e0!3m2!1spt-BR!2sbr!4v1764090280925!5m2!1spt-BR!2sbr"
-  },
-
-  "canguaretama": {
-    titulo: "Campus Canguaretama",
-    endereco: "160 BR-101, S/N - Areia Branca, Canguaretama ",
-    cidade: "Canguaretama — RN",
-    telefone: "(84) 4005-4114",
-    descricao: "O Campus Canguaretama do IFRN, inaugurado em 2013, atua nas áreas de Eletromecânica, Informática e Turismo. Oferece cursos técnicos, superiores e especializações, integrando ensino, pesquisa e extensão para atender às demandas da região.",
-    mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3965.2800454405487!2d-35.162934799999995!3d-6.3577862!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7b281b76d43b843%3A0x9e8e30a410d04552!2sIFRN%20Campus%20Canguaretama!5e0!3m2!1spt-BR!2sbr!4v1764090522970!5m2!1spt-BR!2sbr"
-  },
-
-  "ceara-mirim": {
-    titulo: "Campus Ceará-Mirim",
-    endereco: "406 Avenida Planalto",
-    cidade: "Ceará-Mirim — RN",
-    telefone: "(84) 4005-4113",
-    descricao: "O Campus Ceará-Mirim do IFRN, inaugurado em 2013, atua nos eixos de Informação e Comunicação e Ambiente e Saúde. Possui ampla estrutura com salas, laboratórios, biblioteca e parque esportivo, oferecendo cursos técnicos e ações de pesquisa e extensão para atender à demanda regional por qualificação profissional.",
-    mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3970.4258958225128!2d-35.4291725!3d-5.651362799999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7b3b078d58c55e3%3A0xf09f16a351cb3c61!2sIFRN%20-%20Campus%20Cear%C3%A1-Mirim!5e0!3m2!1spt-BR!2sbr!4v1764090606200!5m2!1spt-BR!2sbr"
-  },
-
-  "currais-novos": {
-    titulo: "Campus Currais Novos",
-    endereco: "Rua Manoel Lopes Filho, 773, Currais Novos",
-    cidade: "Currais Novos — RN",
-    telefone: "(84) 4005-4103",
-    descricao: "O Campus Currais Novos do IFRN atende a 13 municípios do Seridó e atua nas áreas de Alimentos, Informática, Química e Meio Ambiente. Oferece cursos técnicos e superiores e conta com o CT-Queijo, centro de referência para ensino, pesquisa e apoio ao setor leiteiro regional.",
-    mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.0799083928528!2d-36.5342237!3d-6.253202099999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7b1d5e8709765b9%3A0x302b8055cbe5d361!2sIFRN%20Campus%20-%20Currais%20Novos%2FRN!5e0!3m2!1spt-BR!2sbr!4v1764090788587!5m2!1spt-BR!2sbr"
-  },
-
-  "Parelhas": {
-    titulo: "Campus Parelhas",
-    endereco: "R. Dr. Mauro Duarte, s/n - José Clóvis, Parelhas",
-    cidade: "Parelhas — RN",
-    telefone: "(84) 4005-4115",
-    descricao: "O Campus Parelhas do IFRN teve sua construção autorizada em 2013, em um terreno de 45 mil m² doado por moradores locais, e iniciou suas atividades em 2014, inicialmente vinculado ao Campus Currais Novos. Localizado na microrregião do Seridó Oriental, o campus passou oficialmente à categoria de campus pleno em 2024. Com foco nos eixos de Informação e Comunicação e Recursos Naturais, atua alinhado às demandas regionais, especialmente do polo ceramista e do setor minerador, contribuindo para o desenvolvimento social e econômico da região.",
-    mapa: "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3962.573601690733!2d-36.6676962!3d-6.6996124!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7afad964796e617%3A0xed73fcb56f0ca5e8!2sInstituto%20Federal%20de%20Educa%C3%A7%C3%A3o%2C%20Ci%C3%AAncia%20e%20Tecnologia%20do%20Rio%20Grande%20do%20Norte%2C%20Campus%20Avan%C3%A7ado%20Parelhas!5e0!3m2!1spt-BR!2sbr!4v1764092334305!5m2!1spt-BR!2sbr"
-  },
-
-  "ipanguacu": {
-    titulo: "Campus Ipanguaçu",
-    endereco: "RN-118, s/n - Zona Rural, Ipanguaçu ",
-    cidade: "Ipanguaçu — RN",
-    telefone: "(84) 4005-4104",
-    descricao: "O Campus Ipanguaçu do IFRN atende à região do Vale do Açu, com foco em Agroecologia e Meio Ambiente. Oferece cursos técnicos e superiores ligados ao setor agrícola e mantém projetos de extensão e uma ampla Unidade Agrícola Escola com 133 hectares.",
-    mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3971.2130345233463!2d-36.8711532!3d-5.535389100000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7b0ede3aaeeffb3%3A0x85849113b1dac12f!2sInstituto%20Federal%20de%20Educa%C3%A7%C3%A3o%2C%20Ci%C3%AAncia%20e%20Tecnologia%20Rio%20Grande%20do%20Norte%2C%20Campus%20Ipangua%C3%A7u!5e0!3m2!1spt-BR!2sbr!4v1764090887186!5m2!1spt-BR!2sbr"
-  },
-
-  "joao-camara": {
-    titulo: "Campus João Câmara",
-    endereco: " IFRN Campus João Câmara - BR-406, KM 73 3500 - Perímetro Rural, João Câmara",
-    cidade: "João Câmara — RN",
-    telefone: "(84) 4005-4105",
-    descricao: "O Campus João Câmara do IFRN integra a segunda fase de expansão da Rede Federal e atende à região do Mato Grande, oferecendo cursos técnicos, superiores e de pós-graduação nas áreas de Administração, Informática, Eletrotécnica, Energias Renováveis e licenciaturas. Com foco em Controle de Processos Industriais e Gestão, atua de forma integrada entre ensino, pesquisa e extensão, promovendo formação crítica e contribuindo para o desenvolvimento socioeconômico regional por meio de ações participativas com a comunidade.",
-    mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3971.155960266828!2d-35.7984542!3d-5.543879500000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7b3dc71d7d45f05%3A0x67f3cb9a4fb3499d!2sIFRN%20-%20Campus%20Jo%C3%A3o%20C%C3%A2mara!5e0!3m2!1spt-BR!2sbr!4v1764090962761!5m2!1spt-BR!2sbr"
-  },
-
-  "lajes": {
-    titulo: "Campus Lajes",
-    endereco: "BR-304, Km 120, s/n - Centro, Lajes",
-    cidade: "Lajes — RN",
-    telefone: "(84) 4005-4116",
-    descricao: "O Campus Avançado Lajes do IFRN, autorizado em 2013 e oficialmente instituído em 2014, integra a expansão da Rede Federal no RN. Construído em terreno cedido pela União, possui mais de 15 mil m² de área edificada e está ligado administrativamente ao Campus João Câmara. Localiza-se em Lajes, na Região Central Potiguar, atendendo municípios do entorno e contribuindo para a interiorização da educação profissional e tecnológica.",
-    mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3970.059586948937!2d-36.2354056!3d-5.704531900000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7b175174cf18b71%3A0x2e00ef899e8fca69!2sInstituto%20Federal%20do%20RN%20Campus%20Lajes!5e0!3m2!1spt-BR!2sbr!4v1764091164034!5m2!1spt-BR!2sbr"
-  },
-
-  "macau": {
-    titulo: "Campus Macau",
-    endereco: "RN-221, Macau",
-    cidade: "Macau — RN",
-    telefone: "(84) 4005-4106",
-    descricao: "O Campus Macau do IFRN está localizado na Costa Branca Potiguar, região líder na produção de sal marinho no Brasil e também importante polo de petróleo e pesca. Integrante da II fase de expansão da Rede Federal, o campus oferta cursos técnicos em Recursos Pesqueiros, Química e Informática, além de graduação em Biologia e pós-graduação em Ciências Naturais, todos alinhados às demandas locais. Sua missão é formar profissionais capazes de atuar como agentes de transformação no desenvolvimento regional.",
-    mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3973.6996726834595!2d-36.5749401!3d-5.1519506!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7b6d52d1aaf6cc1%3A0x236b55c0207db87e!2sInstituto%20Federal%20de%20Educa%C3%A7%C3%A3o%2C%20Ci%C3%AAncia%20e%20Tecnologia%20Rio%20Grande%20do%20Norte%2C%20Campus%20Macau!5e0!3m2!1spt-BR!2sbr!4v1764091293552!5m2!1spt-BR!2sbr"
-  },
-
-  "mossoro": {
-    titulo: "Campus Mossoró",
-    endereco: "R. Raimundo Firmino de Oliveira, 400 - Conjunto Ulrick Graff",
-    cidade: "Mossoró — RN",
-    telefone: "(84) xxxx-xxxx",
-    descricao: "Descrição do campus Mossoró.",
-    mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1017169.9529053535!2d-37.320777913770144!3d-5.2122952848686825!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7ba07a2510fc0d1%3A0x3a84b79a6922ff79!2sInstituto%20Federal%20do%20Rio%20Grande%20do%20Norte!5e0!3m2!1spt-BR!2sbr!4v1763579814736!5m2!1spt-BR!2sbr"
-  },
-
-  "natal-central": {
-    titulo: "Campus Natal Central",
-    endereco: "Av. Sen. Salgado Filho, 1559 - Tirol",
-    cidade: "Natal — RN",
-    telefone: "(84) xxxx-xxxx",
-    descricao: "Descrição do campus Natal Central.",
-    mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3969.3093972544384!2d-35.20709832520018!3d-5.8119076941710555!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7b2ffe4d7b15191%3A0x5c55d75db98a785e!2sInstituto%20Federal%20de%20Educa%C3%A7%C3%A3o%2C%20Ci%C3%AAncia%20e%20Tecnologia%20do%20Rio%20Grande%20do%20Norte!5e0!3m2!1spt-BR!2sbr!4v1763579881188!5m2!1spt-BR!2sbr"
-  },
-
-  "natal-zona-norte": {
-    titulo: "Campus Natal Zona Norte",
-    endereco: "R. Brusque, 2926 - Potengi, Natal ",
-    cidade: "Natal — RN",
-    telefone: "(84) 4006-9500",
-    descricao: "Inaugurado em 2006, o Campus Natal Zona Norte do IFRN integra a primeira fase de expansão da Rede Federal e está localizado no bairro Potengi, atendendo uma região populosa formada por sete bairros. Com capacidade para 1.200 alunos, o campus atua nos eixos de Gestão e Negócios, Eletrônica e Informática, oferecendo cursos técnicos, graduação em Informática e Marketing, além de pós-graduação em Ensino. Suas ofertas atendem às demandas produtivas locais dos setores de indústria, comércio e serviços, voltadas especialmente ao público jovem da região.",
-    mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3969.749901468116!2d-35.260410300000004!3d-5.749099900000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7b3abb5048b2fcb%3A0xef4f6c5edaa6d542!2sIFRN%20Campus%20Natal-Zona%20Norte!5e0!3m2!1spt-BR!2sbr!4v1764091490619!5m2!1spt-BR!2sbr"
-  },
-
-  "reitoria": {
-    titulo: "Campus Reitoria",
-    endereco: "Rua Dr. Nilo Bezerra Ramalho, nº 1692, Tirol, Natal",
-    cidade: "Natal — RN",
-    telefone: "(84) 4005-0890",
-    descricao: "A Reitoria do IFRN, sediada em Natal, é a unidade administrativa central responsável por coordenar e integrar as ações dos campi do Instituto. Por meio de suas pró-reitorias e órgãos superiores, define diretrizes nas áreas de Ensino, Pesquisa, Extensão, Gestão de Pessoas e Administração. Atua como núcleo estratégico, garantindo o alinhamento institucional, o planejamento e o apoio às unidades, contribuindo para a oferta de educação pública e de qualidade em todo o Rio Grande do Norte.",
-    mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4065278.7807329493!2d-39.14590455034336!3d-5.713305967051299!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7b30010d69dd23b%3A0x14e838de64663ae9!2sReitoria%20do%20Instituto%20Federal%20de%20Educa%C3%A7%C3%A3o%2C%20Ci%C3%AAncia%20e%20Tecnologia%20do%20Rio%20Grande%20do%20Norte%20(IFRN)!5e0!3m2!1spt-BR!2sbr!4v1764093112714!5m2!1spt-BR!2sbr"
-  },
-
-  "natal-CH": {
-    titulo: "Campus Natal Centro Histórico",
-    endereco: "Rua das Donzelas, nº 135, Rocas",
-    cidade: "Natal — RN",
-    telefone: "(84) 4005-4118",
-    descricao: "O Campus Natal–Centro Histórico do IFRN funciona na antiga rotunda ferroviária do bairro das Rocas e oferece cursos técnicos integrados em Multimídia e Lazer, subsequentes em Eventos e Guia de Turismo, além de formações superiores em Produção Cultural e Gestão Desportiva e de Lazer, incluindo especialização na área. Com capacidade para 1.200 alunos, atende diversos bairros centrais de Natal e atua nos eixos de Design e Produção Cultural, Esporte e Lazer. O campus desenvolve projetos de pesquisa e extensão que integram estudantes e comunidade, contribuindo para o desenvolvimento social, cultural e econômico da região.",
-    mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7939.042491407286!2d-35.210068908747346!3d-5.781786876803383!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7b300647a92b60f%3A0xb2c5bcdbb1ee8fd6!2sIFRN%20-%20Campus%20Natal%20-%20Centro%20Hist%C3%B3rico!5e0!3m2!1spt-BR!2sbr!4v1764091667949!5m2!1spt-BR!2sbr"
-  },
-
-  "nova-cruz": {
-    titulo: "Campus Nova Cruz",
-    endereco: "Av. José Rodrigues de Aquino Filho, 640 - Alto de Santa Luzia, Nova Cruz",
-    cidade: "Nova Cruz — RN",
-    telefone: "(84) 4005-4107",
-    descricao: "O Campus Nova Cruz do IFRN, localizado na Região Agreste Potiguar, iniciou suas atividades em 2009 e foi inaugurado oficialmente em 2010. Atende estudantes do RN e da Paraíba, oferecendo cursos técnicos integrados e subsequentes em Administração, Informática e Química, além de cursos superiores em ADS e Processos Químicos. Com estrutura adaptada e intérpretes de Libras nos três turnos, o campus busca contribuir para o desenvolvimento regional por meio da formação profissional e inclusiva.",
-    mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.3983792136833!2d-35.4453623!3d-6.471116099999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7ad8e45582610c5%3A0x93c23ac1dcf801d7!2sIFRN%20-%20Campus%20Nova%20Cruz!5e0!3m2!1spt-BR!2sbr!4v1764092051698!5m2!1spt-BR!2sbr"
-  },
-
-  "parnamirim": {
-    titulo: "Campus Parnamirim",
-    endereco: "R. Antônia de Lima Paiva, 155 - Nova Esperança, Parnamirim",
-    cidade: "Parnamirim — RN",
-    telefone: "(84) 4005-4108",
-    descricao: "O Campus Parnamirim do IFRN, localizado na região metropolitana de Natal, atende mais de 1.200 estudantes e oferta cursos técnicos integrados e subsequentes, além de graduações e pós-graduações nas áreas de Informática, Mecatrônica e Ensino. Sua origem remonta a 2008, quando funcionava como núcleo de ensino; foi inaugurado oficialmente em 2010 e instalado em terreno de 64 mil m² cedido pela prefeitura. Com forte atuação nos eixos de Informação e Comunicação e de Controle e Processos Industriais, o campus acompanha o crescimento do município, influenciado pelo setor de comércio e serviços e por sua relevância histórica como o “Trampolim da Vitória”.",
-    mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3968.4097036806616!2d-35.2656597!3d-5.938130799999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7b2577c0c020119%3A0x860676460df8a5eb!2sIFRN%20Parnamirim%20-%20(Ens.%20T%C3%A9cnico%2C%20Grad.%20e%20Espec.)!5e0!3m2!1spt-BR!2sbr!4v1764092452745!5m2!1spt-BR!2sbr"
-  },
-
-  "paudosferros": {
-    titulo: "Campus Pau dos Ferros",
-    endereco: "BR-405, S/N",
-    cidade: "Pau dos Ferros — RN",
-    telefone: "(84) 4005-4109",
-    descricao: "O Campus Pau dos Ferros do IFRN, criado em 2009 e localizado no Bairro Chico Cajá, atende até 1.200 estudantes e integra a II fase de expansão da Rede Federal. Oferece cursos técnicos em Alimentos, Apicultura e Informática, além das graduações em Química, ADS e Agroindústria, e uma especialização em Ensino de Ciências Naturais e Matemática. Em uma região marcada pela agricultura de subsistência e forte comércio varejista, o campus impulsiona o desenvolvimento local. Destaca-se pela alta produção científica, pela produção própria de alimentação e pela Incubadora Tecnológica do Alto Oeste (Itao), criada em 2021 para fomentar inovação e empreendedorismo.",
-    mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3811.9277447880536!2d-38.207153225197324!3d-6.146257793840726!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7a4ccc390b80df9%3A0x6f19062e132788ca!2sInstituto%20Federal%20de%20Educa%C3%A7%C3%A3o%2C%20Ci%C3%AAncia%20e%20Tecnologia%20do%20Rio%20Grande%20do%20Norte%20%7C%20Campus%20Pau%20dos%20Ferros!5e1!3m2!1spt-BR!2sbr!4v1763579707114!5m2!1spt-BR!2sbr"
-  },
-
-  "santa-cruz": {
-    titulo: "Campus Santa Cruz",
-    endereco: "R. São Braz, 304, Santa Cruz ",
-    cidade: "Santa Cruz — RN",
-    telefone: "(84) 4005-4110",
-    descricao: "No Campus Santa Cruz do IFRN, o Ensino — juntamente com a Extensão e a Pesquisa e Inovação — compõe um dos pilares fundamentais da instituição. A área é organizada pela Pró-Reitoria de Ensino e estruturada localmente pela Diretoria Acadêmica, que coordena setores como o Napne, voltado ao atendimento inclusivo, e o Neabi, dedicado às questões afro-brasileiras e indígenas.",
-    mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.2664281594743!2d-36.0278651!3d-6.2285627!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7b1fb9253030885%3A0x3277ef10d08080a8!2sIFRN%20-%20Campus%20-%20Santa%20Cruz%2FRN!5e0!3m2!1spt-BR!2sbr!4v1764092732784!5m2!1spt-BR!2sbr"
-  },
-
-  "sao-goncalo": {
-    titulo: "Campus São Gonçalo do Amarante",
-    endereco: "Estr. Guanduba, s/n, São Gonçalo do Amarante",
-    cidade: "São Gonçalo do Amarante — RN",
-    telefone: "(84) 4005-4111",
-    descricao: "O Campus São Gonçalo do Amarante do IFRN surgiu na política de expansão da Rede Federal, sendo o mais recente da fase concluída em 2011. Construído em uma área de 8 hectares onde funcionava a antiga Fazenda Rockfeller, o campus oferta cursos alinhados aos eixos de Infraestrutura e Gestão & Negócios. Com 4.440 m² de área construída e capacidade para até 1.200 estudantes, disponibiliza cursos técnicos, graduações, pós-graduações e formações continuadas, integrando-se ao desenvolvimento socioeconômico da região.",
-    mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3969.4625361444137!2d-35.338415000000005!3d-5.7901499!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7b3acd1b4f53b77%3A0x501433866569cf11!2sIFRN%20Campus%20-%20S%C3%A3o%20Gon%C3%A7alo%20do%20Amarante!5e0!3m2!1spt-BR!2sbr!4v1764092824395!5m2!1spt-BR!2sbr"
-  },
-
-  "sao-paulo-do-potengi": {
-    titulo: "Campus São Paulo do Potengi",
-    endereco: "Av. Potengi, São Paulo do Potengi ",
-    cidade: "São Paulo do Potengi — RN",
-    telefone: "(84) 4005-4112",
-    descricao: "O Campus São Paulo do Potengi do IFRN, inaugurado em 2 de outubro de 2013, integra a terceira fase de expansão da Rede Federal. Localizado a cerca de 73 km de Natal e inserido no território do Potengi, atende uma região formada por 11 municípios, somando aproximadamente 84 mil habitantes. Com foco nas áreas de Construção Civil e Meio Ambiente, oferta cursos nas modalidades integrado, subsequente, ProEJA, EaD e, eventualmente, graduação. A unidade possui capacidade para atender 1.200 estudantes e 120 servidores, desenvolvendo ações de Ensino, Pesquisa e Extensão voltadas ao fortalecimento social e econômico da região.",
-    mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3968.714196864057!2d-35.754631700000004!3d-5.8957132!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7b22feeeca6345f%3A0xc5f89e3bf5bffeba!2sIFRN%20-%20Campus%20S%C3%A3o%20Paulo%20do%20Potengi!5e0!3m2!1spt-BR!2sbr!4v1764092929298!5m2!1spt-BR!2sbr"
-  },
-
-  "ead": {
-    titulo: "Campus Natal-Zona leste-EaD",
-    endereco: "Tirol, Natal - RN",
-    cidade: "Natal — RN",
-    telefone: "(84) 3092-8900",
-    descricao: "O Campus Avançado Natal – Zona Leste do IFRN, criado em 2010 e oficializado em 2018, é responsável pela oferta de cursos na modalidade a distância no estado. Em parceria com a Rede e-tec Brasil e o Sistema UAB, oferece cursos técnicos, superiores, pós-graduação e formações FIC, contando com polos em 16 municípios. As atividades são realizadas no AVA Moodle, que reúne videoaulas, fóruns, atividades e materiais de estudo. O campus conta com equipe de servidores, estagiários, bolsistas, tutores e professores, garantindo suporte à comunidade estudantil.",
-    mapa: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3969.3139155665262!2d-35.2039249!3d-5.8112669!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7b2ff8d99f610a1%3A0x1066bf114e3ad4ed!2sIFRN%20-%20Campus%20Zona%20Leste%20(EaD)!5e0!3m2!1spt-BR!2sbr!4v1764091870929!5m2!1spt-BR!2sbr"
+  // 1. Abrir/Fechar Menu
+  function toggleAccessMenu() {
+    const menu = document.getElementById('access-menu');
+    menu.classList.toggle('show');
   }
-};
 
+  // 2. Alto Contraste
+  function toggleContrast() {
+    document.body.classList.toggle('high-contrast');
+    if (document.body.classList.contains('high-contrast')) {
+      localStorage.setItem('contrast', 'true');
+    } else {
+      localStorage.removeItem('contrast');
+    }
+  }
 
-function updateCampusInfo(campusKey) {
-const data = campusData[campusKey];
-if (!data) return;
+  // Verifica preferência salva
+  if (localStorage.getItem('contrast') === 'true') {
+    document.body.classList.add('high-contrast');
+  }
 
+  // 3. Controle de Fonte
+  let currentFontSize = 100; 
 
-document.getElementById('campus-title').textContent = data.titulo || '---';
-document.getElementById('campus-endereco').textContent = data.endereco || '---';
-document.getElementById('campus-cidade').textContent = data.cidade || '---';
-document.getElementById('campus-telefone').textContent = data.telefone || '---';
-document.getElementById('campus-descricao').textContent = data.descricao || '---';
+  function increaseFont() {
+    if (currentFontSize < 150) {
+      currentFontSize += 10;
+      document.body.style.fontSize = currentFontSize + '%';
+    }
+  }
 
+  function decreaseFont() {
+    if (currentFontSize > 80) {
+      currentFontSize -= 10;
+      document.body.style.fontSize = currentFontSize + '%';
+    }
+  }
 
-const iframe = document.getElementById('map-frame');
-const externalLink = document.getElementById('external-map-link');
-
-
-if (!data.mapa) {
-iframe.src = '';
-externalLink.href = '#';
-return;
-}
-
-
-iframe.src = '';
-setTimeout(() => iframe.src = data.mapa, 30);
-externalLink.href = data.mapa;
-}
-
-
-document.addEventListener('DOMContentLoaded', () => {
-const search = document.getElementById('campus-search');
-
-
-search.addEventListener('input', () => {
-const query = search.value.toLowerCase().trim();
-const key = Object.keys(campusData).find(k => k.includes(query));
-if (key) updateCampusInfo(key);
-});
-});
+  function resetAccess() {
+    currentFontSize = 100;
+    document.body.style.fontSize = '100%';
+    document.body.classList.remove('high-contrast');
+    localStorage.removeItem('contrast');
+  }
 </script>
+  <div id="access-menu" class="access-menu-container">
+    <h6 class="mb-3 border-bottom pb-2">Acessibilidade</h6>
+    <div class="d-grid gap-2">
+      <button class="btn btn-sm btn-outline-dark d-flex justify-content-between align-items-center" onclick="toggleContrast()">
+        <span>Alto Contraste</span>
+        <i class="bi bi-circle-half"></i>
+      </button>
+      <div class="btn-group" role="group">
+        <button class="btn btn-sm btn-outline-dark" onclick="increaseFont()">
+          <i class="bi bi-zoom-in"></i> Aumentar
+        </button>
+        <button class="btn btn-sm btn-outline-dark" onclick="decreaseFont()">
+          <i class="bi bi-zoom-out"></i> Diminuir
+        </button>
+      </div>
+      <button class="btn btn-sm btn-outline-danger" onclick="resetAccess()">
+        <i class="bi bi-arrow-counterclockwise"></i> Resetar
+      </button>
+    </div>
+  </div>
+
+  <button class="btn-access-float" onclick="toggleAccessMenu()" title="Opções de Acessibilidade">
+    <i class="bi bi-universal-access"></i>
+  </button>
 </body>
 </html>

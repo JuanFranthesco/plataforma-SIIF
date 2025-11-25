@@ -34,14 +34,14 @@
 
       <div class="profile-header-container">
         
-        {% set banner_img = 'fotos_perfil/' + current_user.banner_perfil if current_user and current_user.banner_perfil else 'img/default_banner.jpg' %}
+        {% set banner_img = 'fotos_perfil/' + current_user.perfil.banner_perfil if current_user.perfil and current_user.perfil.banner_perfil else 'img/default_banner.jpg' %}
         
         <div class="profile-banner" style="background-image: url('{{ url_for('static', filename=banner_img) }}');">
         </div>
 
         <div class="profile-info-bar">
           
-          {% set avatar_img = 'fotos_perfil/' + current_user.foto_url if current_user and current_user.foto_url else 'fotos_perfil/default_profile.png' %}
+          {% set avatar_img = 'fotos_perfil/' + current_user.perfil.foto_perfil if current_user.perfil and current_user.perfil.foto_perfil else 'img/default_profile.png' %}
           
           <img src="{{ url_for('static', filename=avatar_img) }}" alt="Avatar do usuário" class="profile-avatar">
           
@@ -62,10 +62,10 @@
           
           <div class="profile-user-details">
             <h2 class="profile-name">{{ current_user.name }}</h2>
-            <p class="profile-bio">{{ current_user.bio or 'Sem bio definida. Edite seu perfil para adicionar uma.' }}</p>
+            <p class="profile-bio">{{ current_user.perfil.bio or 'Sem bio definida. Edite seu perfil para adicionar uma.' }}</p>
             <p class="profile-course">
               <i class="bi bi-mortarboard-fill"></i>
-              {{ current_user.curso or 'Curso não informado' }} – {{ current_user.campus or 'Campus não informado' }}
+              {{ current_user.perfil.curso or 'Curso não informado' }} – {{ current_user.perfil.campus or 'Campus não informado' }}
             </p>
           </div>
         </div>

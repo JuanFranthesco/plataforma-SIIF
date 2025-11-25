@@ -37,9 +37,16 @@ class RegisterForm(FlaskForm):
             raise ValidationError('Este e-mail já está em uso. Tente outro.')
 
 class ProfileForm(FlaskForm):
-    bio = TextAreaField('Bio', validators=[Length(min=0, max=500)])
+    """
+    Formulário para editar as informações do Perfil.
+    Os nomes dos campos (curso, campus, bio) devem ser
+    idênticos aos do modelo models.py/Perfil.
+    """
     curso = StringField('Curso')
     campus = StringField('Campus')
-    foto = FileField('Alterar Foto de Perfil', validators=[FileAllowed(['jpg', 'png'])])
+    bio = TextAreaField('Sobre mim', validators=[Length(min=0, max=500)])
+    foto = FileField('Atualizar Foto de Perfil', validators=[
+        FileAllowed(['jpg', 'png', 'jpeg'], 'Apenas imagens jpg e png são permitidas!')
+    ])
     banner = FileField('Alterar Banner', validators=[FileAllowed(['jpg', 'png'])])
     submit = SubmitField('Salvar Alterações')

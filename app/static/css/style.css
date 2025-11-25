@@ -54,111 +54,90 @@ main {
 }
 
 
-/* --- NAVBAR MODERNA --- */
-
-/* Garante que o header fique sobre o conteúdo se rolar */
+/* --- NAVBAR (PADRÃO BOOTSTRAP) --- */
 .navbar-custom {
-    background-color: #386641; /* Mantendo a cor original */
-    transition: all 0.3s ease;
+  background: transparent;
+  padding: 1rem 2.5rem;
 }
 
-/* Links da Navbar */
-.navbar-custom .nav-link {
-    color: rgba(255, 255, 255, 0.85) !important;
-    font-weight: 500;
-    position: relative;
-    padding: 0.5rem 0;
-    margin: 0 0.5rem;
-    transition: color 0.3s ease;
+.navbar-custom .nav-link,
+.navbar-custom .navbar-brand {
+  color: #fff !important;
+  /* TEXTO BRANCO */
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
 }
 
-.navbar-custom .nav-link:hover,
+.navbar-custom .navbar-brand img {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  /*background-color: #fff; /* FUNDO BRANCO */
+}
+
 .navbar-custom .nav-link.active {
-    color: #ffffff !important;
+  border-bottom: 2px solid white;
+  /* BRANCO */
+  padding-bottom: 3px;
 }
 
-/* Animação de sublinhado (Hover Effect) */
-.nav-link-animated::after {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: 0;
-    left: 50%;
-    background-color: #fff;
-    transition: all 0.3s ease;
-    transform: translateX(-50%);
+.navbar-custom .nav-link:hover {
+  opacity: 0.9;
 }
 
-.nav-link-animated:hover::after,
-.nav-link-animated.active::after {
-    width: 100%;
+.profile-link {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  /* FUNDO BRANCO */
+  color: #386641;
+  /* VERDE PADRÃO */
+  border-radius: 30px;
+  padding: 5px 15px 5px 10px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+  font-size: 0.95rem;
 }
 
-/* Botão de Ícone (Sino) */
-.btn-icon-nav {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
+.profile-link:hover {
+  background-color: #E7E7E4;
+  /* CINZA CLARO PADRÃO */
+}
+
+.profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-left: 10px;
+  background-color: #ccc;
+  /* CINZA PLACEHOLDER */
+}
+
+.profile-pic img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 991px) {
+  .navbar-custom {
+    padding: 1rem 1.5rem;
+  }
+
+  .navbar-collapse {
+    margin-top: 15px;
+  }
+
+  .profile-link {
+    margin-top: 10px;
+    display: inline-flex;
+    width: auto;
     justify-content: center;
-    transition: background 0.2s;
-}
-.btn-icon-nav:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-/* Foto de Perfil no Header */
-.profile-pic-header img {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid rgba(255,255,255,0.3);
-    transition: border-color 0.2s;
-}
-.profile-trigger:hover .profile-pic-header img {
-    border-color: #fff;
-}
-
-/* Dropdown do Usuário */
-.dropdown-menu {
-    border-radius: 12px;
-    padding: 0.5rem;
-}
-.dropdown-item {
-    border-radius: 8px;
-    padding: 8px 15px;
-}
-.dropdown-item:hover {
-    background-color: #f8f9fa;
-    color: #386641;
-}
-.dropdown-item.text-danger:hover {
-    background-color: #fee2e2;
-    color: #dc3545;
-}
-
-/* Ícone circular nas notificações */
-.icon-circle {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-/* Ajustes de texto */
-.line-height-sm {
-    line-height: 1.2;
-}
-.tracking-wide {
-    letter-spacing: 1px;
+  }
 }
 
 /* --- BOTÃO DE AJUDA FLUTUANTE --- */

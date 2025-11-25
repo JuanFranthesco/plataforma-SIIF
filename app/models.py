@@ -45,7 +45,8 @@ material_favoritos = db.Table('material_favoritos',
 # ===================================================================
 # USUÁRIOS E PERFIL
 # ===================================================================
-class User(db.model,UserMixin):
+
+class User(db.Model, UserMixin):
     __tablename__ = 'user'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -54,11 +55,10 @@ class User(db.model,UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=True)
     is_admin = db.Column(db.Boolean, default=False)
-    curso = db.Column(db.String(100), nullable=True)
-    campus = db.Column(db.String(100), nullable=True)
-    bio = db.Column(db.Text, nullable=True)
+    
+    # Campos de Perfil
     foto_url = db.Column(db.String(255), nullable=True)
-    banner_perfil = db.Column(db.String(120), default='default_banner.jpg')
+    campus = db.Column(db.String(50), nullable=True)
 
     # Relações com outros modelos
     perfil = db.relationship('Perfil', backref='user', uselist=False, lazy=True)
@@ -318,7 +318,8 @@ class Material(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String(200), nullable=False)
     descricao = db.Column(db.Text, nullable=True)
-    arquivo_path = db.Column(db.String(300), nullable=False)
+    arquivo_path = db.Column(db.String(300), nullable=True)
+    link_externo = db.Column(db.String(500), nullable=True) # Link externo (YouTube, Drive, etc.)
     
     # NOVOS CAMPOS
     imagem_capa = db.Column(db.String(300), nullable=True) # Caminho da imagem de capa
