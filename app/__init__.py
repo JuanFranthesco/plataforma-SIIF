@@ -1,34 +1,52 @@
 import os
 from datetime import timedelta
 from flask import Flask
+from werkzeug.middleware.proxy_fix import ProxyFix # <--- IMPORTANTE
 
 def create_app():
     app = Flask(__name__, instance_relative_config=False)
 
     # --------------------------
+    # CONFIGURAÇÃO CRÍTICA PARA O RENDER
+    # --------------------------
+    # O Render usa Load Balancers. Sem isso, o Flask gera links 'http' 
+    # em vez de 'https', quebrando o Login do SUAP.
+    app.wsgi_app = ProxyFix(
+        app.wsgi_app, 
+        x_for=1, 
+        x_proto=1, 
+        x_host=1, 
+        x_prefix=1
+    )
+
+    # --------------------------
     # Configurações principais
     # --------------------------
-    # Banco de Dados
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
         'DATABASE_URL',
         'sqlite:///' + os.path.join(app.root_path, 'site.db')
     )
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
-    # Chave Secreta (Importante para sessões e segurança)
+    # Chave Secreta
+    # No Render: Crie a variável de ambiente SECRET_KEY com um valor aleatório longo.
+    # Se não criar, ele usa o valor inseguro abaixo (bom só para teste local).
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-change-this')
 
     # Configuração de Sessão
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
     app.config['SESSION_PERMANENT'] = True
+    
+    # Segurança de Cookie (Obrigatório para OAuth em Produção)
+    # Só ativa se não estiver em modo debug/local
+    if os.environ.get('FLASK_ENV') != 'development':
+        app.config['SESSION_COOKIE_SECURE'] = True   # Só envia cookie via HTTPS
+        app.config['SESSION_COOKIE_HTTPONLY'] = True # JS não lê o cookie
+        app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
-    # --- [SEGURANÇA DE UPLOAD - NOVO] ---
-    # Limita o tamanho máximo do upload. 
-    # 16 * 1024 * 1024 = 16 Megabytes.
-    # Se o arquivo for maior que isso, o Flask rejeitará com erro 413 (Request Entity Too Large).
+    # --- [SEGURANÇA DE UPLOAD] ---
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 
     
-    # Pasta de Uploads
     app.config['UPLOAD_FOLDER'] = os.environ.get(
         'UPLOAD_FOLDER',
         os.path.join(app.root_path, 'static', 'uploads')
@@ -47,17 +65,14 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     
-    # Configuração do Flask-Login
     login_manager.init_app(app)
-    login_manager.login_view = 'auth.login' # Redireciona para cá se não estiver logado
+    login_manager.login_view = 'auth.login'
     login_manager.login_message_category = 'info'
 
-    # Carregador de usuário para o Flask-Login
     from app.models import User
 
     @login_manager.user_loader
     def load_user(user_id):
-        # Retorna o usuário do banco ou None se não achar
         return User.query.get(int(user_id))
 
     # --------------------------
@@ -79,28 +94,25 @@ def create_app():
         pass
 
     # --------------------------
-    # Configuração do Banco de Dados (Criação de Tabelas e Admin)
+    # Banco de Dados
     # --------------------------
     with app.app_context():
         db.create_all()
         
-        # Verifica e cria usuário admin padrão se não existir
-        admin_exists = User.query.filter_by(matricula="1234").first()
-        if not admin_exists:
+        # Cria admin se não existir
+        if not User.query.filter_by(matricula="1234").first():
             print("Criando usuário administrador padrão...")
             admin_user = User(
                 matricula="1234",
                 is_admin=True,
                 email="admin@siif.com", 
                 name="Administrador",
-                password_hash="admin" # Nota: Em produção, use hash real!
+                password_hash="admin" 
             )
-            # Se o seu modelo User tiver método set_password, use-o aqui:
             if hasattr(admin_user, 'set_password'):
                 admin_user.set_password("admin")
                 
             db.session.add(admin_user)
             db.session.commit()
-            print("Usuário administrador '1234' criado com sucesso.")
 
     return app
