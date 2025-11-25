@@ -2198,91 +2198,85 @@ ESTILOS ADICIONAIS PARA TELA INICIAL (tela_inicial.html)
 
 /* ---
 ============================================================
-ESTILOS DO FOOTER PADRÃO (VERSÃO ATUALIZADA - FUNDO CLARO)
+FOOTER MODERNO (ATUALIZADO)
 ============================================================
 --- */
 
 .site-footer {
-  /* ATUALIZADO: Fundo cinza claro da sua paleta */
-  background-color: #E7E7E4;
-  /* O padding é igual ao do <main> para alinhar */
-  padding: 40px 50px;
-  /* ATUALIZADO: Cor de texto escura */
-  color: #555;
-  border-top: 1px solid #D1D1D1;
-  /* Borda cinza mais escura */
-  /* Remove o arredondamento de baixo do .page-container */
-  margin-bottom: -25px;
-  margin-left: -1px;
-  margin-right: -1px;
+    background-color: #E7E7E4;
+    color: #555;
+    font-size: 0.95rem;
+    border-top: 1px solid #d1d1d1;
+    margin-top: auto; /* Garante que o footer fique no fundo em flexbox */
 }
 
-/* Ajusta o padding em telas menores, igual ao <main> */
-@media (max-width: 768px) {
-  .site-footer {
-    padding: 30px 25px;
-  }
-}
-
-@media (max-width: 576px) {
-  .site-footer {
-    padding: 20px 15px;
-  }
-}
-
-.site-footer h5 {
-  font-weight: 600;
-  color: #386641;
-  /* ATUALIZADO: Verde Padrão */
-  margin-bottom: 15px;
-}
-
-.footer-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  color: #386641;
-  /* ATUALIZADO: Verde Padrão */
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 15px;
-}
-
-.footer-logo img {
-  height: 40px;
-  /* ATUALIZADO: Remove o filtro de inversão */
-  filter: none;
-}
-
-.footer-copyright {
-  font-size: 0.9rem;
-  line-height: 1.4rem;
-  color: #555;
-  /* ATUALIZADO: Cinza escuro */
-}
-
+/* Links do Footer */
 .footer-links li {
-  margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
 .footer-links a {
-  text-decoration: none;
-  color: #386641;
-  /* ATUALIZADO: Verde Padrão */
-  opacity: 0.9;
-  transition: all 0.2s ease-in-out;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+    text-decoration: none;
+    color: #555;
+    transition: all 0.3s ease;
+    display: inline-block;
 }
 
+/* Efeito de Hover Moderno: Muda cor e move levemente para a direita */
 .footer-links a:hover {
-  color: #2a4b30;
-  /* ATUALIZADO: Verde mais escuro */
-  opacity: 1;
-  transform: translateX(3px);
-  /* Efeito de hover */
+    color: #386641; /* Verde Padrão */
+    transform: translateX(5px);
+    font-weight: 500;
+}
+
+.footer-links a i.small {
+    font-size: 0.75em;
+    margin-left: 4px;
+    opacity: 0.7;
+}
+
+/* Ícones de Redes Sociais */
+.social-icons a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background-color: #fff;
+    color: #386641;
+    border-radius: 50%;
+    text-decoration: none;
+    margin-right: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.social-icons a:hover {
+    background-color: #386641;
+    color: #fff;
+    transform: translateY(-3px);
+}
+
+/* Barra Inferior (Copyright) */
+.footer-bottom {
+    background-color: rgba(56, 102, 65, 0.05); /* Um verde muito sutil */
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+/* Ajustes de Responsividade */
+@media (max-width: 768px) {
+    .site-footer {
+        text-align: center;
+    }
+    
+    .social-icons {
+        justify-content: center;
+        display: flex;
+    }
+    
+    .footer-brand {
+        justify-content: center;
+    }
 }
 
 /* ---
