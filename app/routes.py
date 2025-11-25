@@ -23,10 +23,12 @@ def add_header(response):
     """
     Adiciona cabeçalhos para evitar cache em rotas protegidas.
     """
-    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, public, max-age=0"
+    response.headers["Cache-Control"] = "no-cache, private, no-store, must-revalidate, max-age=0"
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "0"
+    response.headers["Vary"] = "Cookie"
     return response
+
 
 
 # --- FILTRO DE DATA (Para mostrar '21/11 às 14:30' no HTML) ---

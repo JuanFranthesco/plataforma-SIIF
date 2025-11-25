@@ -13,9 +13,10 @@ def add_header(response):
     Adiciona cabeçalhos para proibir o cache do navegador e de proxies.
     Isso evita que um aluno receba o cookie de sessão de outro.
     """
-    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, public, max-age=0"
+    response.headers["Cache-Control"] = "no-cache, private, no-store, must-revalidate, max-age=0"
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "0"
+    response.headers["Vary"] = "Cookie"
     return response
 
 # --- CONFIGURAÇÕES DO SUAP ---
@@ -57,6 +58,7 @@ def login():
 
 @auth_bp.route('/login/suap')
 def login_suap():
+    session.clear()
     suap = OAuth2Session(SUAP_CLIENT_ID, redirect_uri=REDIRECT_URI)
     authorization_url, state = suap.authorization_url(SUAP_AUTH_URL)
     
@@ -113,6 +115,7 @@ def suap_callback():
         
         # 4. Loga o usuário no Flask-Login
         login_user(user)
+        session.permanent = True
         flash('Login via SUAP realizado com sucesso!', 'success')
         return redirect(url_for('main.tela_inicial'))
 
@@ -124,6 +127,7 @@ def suap_callback():
 @auth_bp.route('/logout')
 @login_required  # Só pode deslogar quem está logado
 def logout():
+    session.clear()
     logout_user()
     flash('Você foi desconectado.', 'info')
     return redirect(url_for('auth.login'))
