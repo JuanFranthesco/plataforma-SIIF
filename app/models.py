@@ -45,7 +45,7 @@ material_favoritos = db.Table('material_favoritos',
 # ===================================================================
 # USUÁRIOS E PERFIL
 # ===================================================================
-
+class User(db.model):
     __tablename__ = 'user'
 
     id = db.Column(db.Integer, primary_key=True)
