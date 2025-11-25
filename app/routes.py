@@ -4,6 +4,8 @@ from sqlalchemy import or_, desc, func
 from werkzeug.utils import secure_filename
 import os
 import datetime
+import secrets
+from PIL import Image
 from thefuzz import fuzz
 # Imports completos dos modelos (Incluindo as novas tabelas)
 from app.models import (
@@ -734,20 +736,29 @@ def tela_mapa():
 @main_bp.route('/perfil', methods=['GET', 'POST'])
 @login_required 
 def tela_perfil():
-    form = ProfileForm(obj=current_user.perfil)
-    
+    # Agora o formulário é preenchido diretamente com o USUÁRIO
+    form = ProfileForm(obj=current_user)
+
     if form.validate_on_submit():
-        if not current_user.perfil:
-            perfil = Perfil(user_id=current_user.id)
-            db.session.add(perfil)
-        form.populate_obj(current_user.perfil)
+        # Lógica de Upload da Foto
+        if form.foto.data:
+            nome_foto = salvar_imagem_perfil(form.foto.data)
+            deletar_imagem_antiga(current_user.foto_url) # Deleta a antiga
+            current_user.foto_url = nome_foto
+
+        # Lógica de Upload do Banner
+        if form.banner.data:
+            nome_banner = salvar_imagem_perfil(form.banner.data)
+            deletar_imagem_antiga(current_user.banner_perfil) # Deleta a antiga
+            current_user.banner_perfil = nome_banner
         
-        try:
-            db.session.commit()
-            flash('Perfil atualizado com sucesso!', 'success')
-        except Exception as e:
-            db.session.rollback()
-            flash(f'Erro ao atualizar o perfil: {e}', 'danger')
+        # Salva os textos
+        current_user.bio = form.bio.data
+        current_user.curso = form.curso.data
+        current_user.campus = form.campus.data
+        
+        db.session.commit()
+        flash('Perfil atualizado com sucesso!', 'success')
         return redirect(url_for('main.tela_perfil'))
 
     meus_posts = Topico.query.filter_by(autor_id=current_user.id).order_by(Topico.criado_em.desc()).all()
@@ -764,7 +775,7 @@ def tela_perfil():
         materiais=meus_materiais,
         salvos=meus_salvos
     )
-
+    
 @main_bp.route('/denuncias')
 @login_required
 def tela_denuncias():
