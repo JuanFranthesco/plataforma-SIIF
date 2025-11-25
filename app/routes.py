@@ -357,12 +357,32 @@ def gerenciar_solicitacao(comunidade_id, sol_id, acao):
         usuario = User.query.get(solicitacao.user_id)
         comunidade.membros.append(usuario)
         db.session.delete(solicitacao)
-        db.session.commit()
-        flash(f'{usuario.name} foi aceito na comunidade!', 'success')
+        try:
+            notificacao = Notificacao(
+                mensagem=f"Sua solicitação para entrar na comunidade {comunidade.nome} foi aceita.",
+                link_url=url_for('main.ver_comunidade', comunidade_id=comunidade.id),
+                usuario_id=usuario.id
+            )
+            db.session.add(notificacao)
+            db.session.commit()
+            flash(f'{usuario.name} foi aceito na comunidade!', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Erro ao criar notificação: {e}', 'danger')
     elif acao == 'recusar':
-        db.session.delete(solicitacao)
-        db.session.commit()
-        flash('Solicitação recusada.', 'info')
+        try:
+            notificacao = Notificacao(
+                mensagem=f"Sua solicitação para entrar na comunidade {comunidade.nome} foi recusada.",
+                link_url=url_for('main.tela_comunidades'),
+                usuario_id=solicitacao.user_id
+            )
+            db.session.add(notificacao)
+            db.session.delete(solicitacao)
+            db.session.commit()
+            flash('Solicitação recusada.', 'info')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Erro ao criar notificação: {e}', 'danger')
         
     return redirect(url_for('main.configurar_comunidade', comunidade_id=comunidade_id))
 
@@ -407,7 +427,7 @@ def tela_foruns():
     salvos_usuario = [s.topico_id for s in PostSalvo.query.filter_by(user_id=current_user.id).all()]
 
     # Fetch notifications for current user
-    notificacoes = Notificacao.query.filter_by(usuario_id=current_user.id, lida=False).order_by(desc(Notificacao.data_criacao)).limit(10).all()
+    notificacoes = Notificacao.query.filter_by(usuario_id=current_user.id, lida=False).order_by(desc(Notificacao.data_criacao)).limit(30).all()
 
     return render_template(
         'tela_foruns.html', 
@@ -567,6 +587,7 @@ def comentar_post(topico_id):
                     link_url=link_destino, 
                     usuario_id=comentario_pai.autor_id
                 ))
+
         # Se for comentário no post
         elif topico.autor_id != current_user.id:
             db.session.add(Notificacao(
@@ -574,6 +595,17 @@ def comentar_post(topico_id):
                 link_url=link_destino, 
                 usuario_id=topico.autor_id
             ))
+
+        # Aqui: Notificar também os outros membros da comunidade (exceto autor do comentário e autor do post)
+        if topico.comunidade_id:
+            comunidade = Comunidade.query.get(topico.comunidade_id)
+            membros_notificar = [membro.id for membro in comunidade.membros if membro.id not in (current_user.id, topico.autor_id)]
+            for usuario_id in membros_notificar:
+                db.session.add(Notificacao(
+                    mensagem=f"{current_user.name} comentou em um post da comunidade {comunidade.nome}.",
+                    link_url=link_destino,
+                    usuario_id=usuario_id
+                ))
         
         db.session.commit()
         flash('Comentário enviado!', 'success')

@@ -10,6 +10,19 @@ ARQUIVO CSS CENTRAL - style.css
   font-family: 'Poppins', sans-serif;
 }
 
+/* Custom notification message style to allow wrapping without overflow */
+.notification-message {
+  white-space: normal !important;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+.modal-body {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
 body {
   background-color: #d1d1d1;
   /* CINZA DE FUNDO */

@@ -22,10 +22,10 @@ def create_user(matricula, email, name, password, is_admin=False):
 
 if __name__ == "__main__":
     # Replace values below with desired new user data
-    matricula = "202200000"
-    email = "newuser@example.com"
-    name = "New User"
-    password = "password123"  # Replace with desired password
+    matricula = "123"
+    email = "newuser@teste.com"
+    name = "teste"
+    password = "123"  # Replace with desired password
     is_admin = False
 
     create_user(matricula, email, name, password, is_admin)
