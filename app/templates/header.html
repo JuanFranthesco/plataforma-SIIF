@@ -1,104 +1,101 @@
-nav class="navbar navbar-expand-lg navbar-custom py-3">
+<nav class="navbar navbar-expand-lg navbar-custom py-3">
     <div class="container-fluid px-4">
-
+        
         <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.tela_inicial') }}">
             <img src="{{ url_for('static', filename='img/LOGO.png') }}" alt="Logo SIIF" height="40">
             <span class="ms-2 fw-bold text-white tracking-wide d-none d-sm-block">SIIF</span>
         </a>
 
-        <button class="navbar-toggler border-0 text-white focus-ring-0" type="button" data-bs-toggle="collapse"
-            data-bs-target="#navbarNav">
+        <button class="navbar-toggler border-0 text-white focus-ring-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <i class="bi bi-list fs-1"></i>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarNav">
-
+            
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-lg-3 ms-lg-4">
                 <li class="nav-item">
-                    <a class="nav-link nav-link-animated {% if request.endpoint == 'main.tela_inicial' %}active{% endif %}"
-                        href="{{ url_for('main.tela_inicial') }}">
-                        Início
+                    <a class="nav-link nav-link-animated {% if request.endpoint == 'main.tela_inicial' %}active{% endif %}" 
+                       href="{{ url_for('main.tela_inicial') }}">
+                       Início
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link nav-link-animated {% if request.endpoint == 'main.tela_foruns' %}active{% endif %}"
-                        href="{{ url_for('main.tela_foruns') }}">
-                        Fóruns
+                    <a class="nav-link nav-link-animated {% if request.endpoint == 'main.tela_foruns' %}active{% endif %}" 
+                       href="{{ url_for('main.tela_foruns') }}">
+                       Fóruns
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link nav-link-animated {% if request.endpoint == 'main.tela_divulgacao' %}active{% endif %}"
-                        href="{{ url_for('main.tela_divulgacao') }}">
-                        Divulgação
+                    <a class="nav-link nav-link-animated {% if request.endpoint == 'main.tela_divulgacao' %}active{% endif %}" 
+                       href="{{ url_for('main.tela_divulgacao') }}">
+                       Divulgação
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link nav-link-animated {% if request.endpoint == 'main.tela_materiais' %}active{% endif %}"
-                        href="{{ url_for('main.tela_materiais') }}">
-                        Materiais
+                    <a class="nav-link nav-link-animated {% if request.endpoint == 'main.tela_materiais' %}active{% endif %}" 
+                       href="{{ url_for('main.tela_materiais') }}">
+                       Materiais
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link nav-link-animated {% if request.endpoint == 'main.tela_mapa' %}active{% endif %}"
-                        href="{{ url_for('main.tela_mapa') }}">
-                        Mapa
+                    <a class="nav-link nav-link-animated {% if request.endpoint == 'main.tela_mapa' %}active{% endif %}" 
+                       href="{{ url_for('main.tela_mapa') }}">
+                       Mapa
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link nav-link-animated {% if request.endpoint == 'main.tela_comunidades' %}active{% endif %}"
-                        href="{{ url_for('main.tela_comunidades') }}">
-                        Comunidades
+                    <a class="nav-link nav-link-animated {% if request.endpoint == 'main.tela_comunidades' %}active{% endif %}" 
+                       href="{{ url_for('main.tela_comunidades') }}">
+                       Comunidades
                     </a>
                 </li>
-            <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
+                
+                {% if current_user.is_admin %}
+                <li class="nav-item">
+                    <a class="nav-link nav-link-animated text-warning {% if request.endpoint == 'main.tela_usuarios' %}active{% endif %}" 
+                       href="{{ url_for('main.tela_usuarios') }}">
+                       <i class="bi bi-shield-lock-fill"></i> Admin
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
 
-                <button type="button" class="btn btn-icon-nav position-relative" data-bs-toggle="modal"
-                    data-bs-target="#modalNotificacoes">
+            <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
+                
+                <button type="button" class="btn btn-icon-nav position-relative" data-bs-toggle="modal" data-bs-target="#modalNotificacoes">
                     <i class="bi bi-bell-fill text-white fs-5"></i>
                     {% if notificacoes and notificacoes|length > 0 %}
-                    <span
-                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light p-1">
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light p-1">
                         <span class="visually-hidden">Novas notificações</span>
                     </span>
                     {% endif %}
                 </button>
 
                 <div class="dropdown">
-                    <a href="#"
-                        class="d-flex align-items-center text-white text-decoration-none dropdown-toggle profile-trigger"
-                        id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle profile-trigger" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="text-end me-2 d-none d-md-block line-height-sm">
-                            <div class="fw-bold small">{{ current_user.name.split()[0] }}</div>
-                            <div class="text-white-50" style="font-size: 0.75rem;">Online</div>
+                            <div class="fw-bold small">{{ current_user.name.split()[0] }}</div> <div class="text-white-50" style="font-size: 0.75rem;">Online</div>
                         </div>
                         <div class="profile-pic-header">
-                            <img src="{{ current_user.foto_url or url_for('static', filename='img/image.png') }}"
-                                alt="Foto de {{ current_user.name }}">
+                            <img src="{{ current_user.foto_url or url_for('static', filename='img/image.png') }}" alt="Foto de {{ current_user.name }}">
                         </div>
                     </a>
-
+                    
                     <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2" aria-labelledby="dropdownUser">
+                        <li><h6 class="dropdown-header">Minha Conta</h6></li>
                         <li>
-                            <h6 class="dropdown-header">Minha Conta</h6>
-                        </li>
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2"
-                                href="{{ url_for('main.tela_perfil') }}">
+                            <a class="dropdown-item d-flex align-items-center gap-2" href="{{ url_for('main.tela_perfil') }}">
                                 <i class="bi bi-person-circle"></i> Perfil
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2"
-                                href="{{ url_for('main.suporte') }}">
+                            <a class="dropdown-item d-flex align-items-center gap-2" href="{{ url_for('main.suporte') }}">
                                 <i class="bi bi-life-preserver"></i> Suporte
                             </a>
                         </li>
+                        <li><hr class="dropdown-divider"></li>
                         <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li>
-                            <a class="dropdown-item text-danger d-flex align-items-center gap-2"
-                                href="{{ url_for('auth.logout') }}">
+                            <a class="dropdown-item text-danger d-flex align-items-center gap-2" href="{{ url_for('auth.logout') }}">
                                 <i class="bi bi-box-arrow-right"></i> Sair
                             </a>
                         </li>
