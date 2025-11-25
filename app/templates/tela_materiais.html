@@ -11,8 +11,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <!-- Tom Select CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
 </head>
 
 <body class="role-user">
@@ -144,26 +142,9 @@
                         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
                             {% for material in materiais %}
 
-                            {# --- LÓGICA VISUAL --- #}
-                            {% set is_link = material.link_externo is not none %}
+                            {# --- LÓGICA VISUAL JINJA2 --- #}
                             {% set ext = material.arquivo_path.split('.')[-1].lower() if material.arquivo_path else ''
                             %}
-
-                            {% if is_link %}
-                            {% set icon = 'bi-link-45deg' %}
-                            {% set color = 'text-primary' %}
-                            {% set badge = 'bg-primary' %}
-                            {% set label_ext = 'LINK' %}
-                            {% set url_acao = material.link_externo %}
-                            {% set target = '_blank' %}
-                            {% set btn_label = 'Acessar' %}
-                            {% set tipo_preview = 'link' %}
-                            {% else %}
-                            {% set url_acao = url_for('main.download_material', material_id=material.id) %}
-                            {% set target = '_self' %}
-                            {% set btn_label = 'Baixar' %}
-                            {% set tipo_preview = ext %}
-                            {% set label_ext = ext|upper %}
 
                             {% if ext == 'pdf' %}
                             {% set icon = 'bi-file-earmark-pdf-fill' %}
@@ -181,19 +162,14 @@
                             {% set icon = 'bi-file-earmark-zip-fill' %}
                             {% set color = 'text-warning' %}
                             {% set badge = 'bg-warning' %}
-                            {% elif ext in ['jpg', 'png', 'jpeg', 'gif'] %}
+                            {% elif ext in ['jpg', 'png', 'jpeg'] %}
                             {% set icon = 'bi-file-earmark-image-fill' %}
                             {% set color = 'text-info' %}
                             {% set badge = 'bg-info' %}
-                            {% elif ext == 'mp4' %}
-                            {% set icon = 'bi-file-earmark-play-fill' %}
-                            {% set color = 'text-danger' %}
-                            {% set badge = 'bg-danger' %}
                             {% else %}
                             {% set icon = 'bi-file-earmark-text-fill' %}
                             {% set color = 'text-secondary' %}
                             {% set badge = 'bg-secondary' %}
-                            {% endif %}
                             {% endif %}
 
                             <div class="col">
@@ -215,15 +191,12 @@
                                     </div>
                                     {% endif %}
 
-                                    <!-- Capa do Material (Clicável para Preview) -->
-                                    <div class="position-relative bg-light d-flex align-items-center justify-content-center cursor-pointer"
-                                        style="height: 160px; overflow: hidden;"
-                                        onclick="abrirPreview('{{ material.titulo }}', '{{ url_acao }}', '{{ tipo_preview }}')">
-
+                                    <!-- Capa do Material -->
+                                    <div class="position-relative bg-light d-flex align-items-center justify-content-center"
+                                        style="height: 160px; overflow: hidden;">
                                         {% if material.imagem_capa %}
                                         <img src="{{ material.imagem_capa }}" class="w-100 h-100"
-                                            style="object-fit: cover; transition: transform 0.3s;"
-                                            alt="{{ material.titulo }}">
+                                            style="object-fit: cover;" alt="{{ material.titulo }}">
                                         {% else %}
                                         <!-- Placeholder Inteligente -->
                                         <div class="text-center opacity-50">
@@ -231,17 +204,9 @@
                                         </div>
                                         {% endif %}
 
-                                        <!-- Overlay de Hover -->
-                                        <div
-                                            class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-25 d-flex align-items-center justify-content-center opacity-0 hover-opacity-100 transition-opacity">
-                                            <span class="btn btn-light rounded-pill shadow-sm fw-bold btn-sm">
-                                                <i class="bi bi-eye me-1"></i> Visualizar
-                                            </span>
-                                        </div>
-
                                         <!-- Badge de Extensão -->
                                         <span class="position-absolute bottom-0 end-0 m-2 badge {{ badge }} shadow-sm">
-                                            {{ label_ext }}
+                                            {{ ext|upper }}
                                         </span>
                                     </div>
 
@@ -273,8 +238,9 @@
 
                                             <div class="d-flex align-items-center gap-3">
                                                 <!-- Contador de Downloads -->
-                                                <small class="text-muted" title="{{ material.download_count }} Acessos">
-                                                    <i class="bi bi-eye me-1"></i> {{ material.download_count }}
+                                                <small class="text-muted"
+                                                    title="{{ material.download_count }} Downloads">
+                                                    <i class="bi bi-download me-1"></i> {{ material.download_count }}
                                                 </small>
 
                                                 <!-- Botão Favoritar -->
@@ -290,9 +256,10 @@
                                                 </form>
                                             </div>
 
-                                            <a href="{{ url_acao }}" target="{{ target }}"
+                                            <a href="{{ url_for('main.download_material', material_id=material.id) }}"
+                                                target="_blank"
                                                 class="btn btn-sm btn-success rounded-pill px-3 fw-bold">
-                                                {{ btn_label }}
+                                                Baixar
                                             </a>
                                         </div>
                                     </div>
@@ -376,21 +343,6 @@
                         <form id="formAdicionarMaterial" method="POST" action="{{ url_for('main.adicionar_material') }}"
                             enctype="multipart/form-data">
 
-                            <!-- TABS DE TIPO DE UPLOAD -->
-                            <div class="d-flex justify-content-center mb-4 bg-light rounded-pill p-1 border">
-                                <button type="button" id="btn-tab-arquivo"
-                                    class="btn btn-success rounded-pill px-4 w-50 fw-bold"
-                                    onclick="toggleUploadType('arquivo')">
-                                    <i class="bi bi-file-earmark-arrow-up me-2"></i>Arquivo
-                                </button>
-                                <button type="button" id="btn-tab-link"
-                                    class="btn btn-light rounded-pill px-4 w-50 fw-bold text-secondary"
-                                    onclick="toggleUploadType('link')">
-                                    <i class="bi bi-link-45deg me-2"></i>Link Externo
-                                </button>
-                            </div>
-                            <input type="hidden" name="tipoUpload" id="input-tipo-upload" value="arquivo">
-
                             <div class="mb-3">
                                 <label class="form-label fw-bold small text-secondary">TÍTULO DO MATERIAL</label>
                                 <input type="text" class="form-control bg-light border-0 p-3 rounded-3"
@@ -404,32 +356,24 @@
                                     placeholder="Uma breve descrição sobre o conteúdo..."></textarea>
                             </div>
 
-                            <!-- CONTAINER ARQUIVO -->
-                            <div id="container-arquivo" class="mb-3">
-                                <label class="form-label fw-bold small text-secondary">ARQUIVO (MÁX 16MB)</label>
-                                <input class="form-control" type="file" name="materialArquivo" id="input-arquivo"
-                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.jpg,.jpeg,.png,.mp4"
-                                    onchange="validarTamanhoArquivo(this)" required>
-                                <div class="form-text small text-muted">
-                                    Permitido: PDF, Office, Imagens, Vídeo.
+                            <!-- UPLOAD DE ARQUIVO E CAPA (LADO A LADO) -->
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-secondary">ARQUIVO PRINCIPAL</label>
+                                    <input class="form-control" type="file" name="materialArquivo" required>
+                                    <div class="form-text small text-muted">
+                                        PDF, DOCX, ZIP, etc.
+                                    </div>
                                 </div>
-                            </div>
-
-                            <!-- CONTAINER LINK -->
-                            <div id="container-link" class="mb-3 d-none">
-                                <label class="form-label fw-bold small text-secondary">LINK EXTERNO</label>
-                                <input type="url" class="form-control bg-light border-0 p-3 rounded-3"
-                                    name="materialLink" id="input-link" placeholder="https://youtube.com/watch?v=...">
-                                <div class="form-text small text-muted">
-                                    YouTube, Google Drive, Artigos, etc.
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-secondary">IMAGEM DE CAPA
+                                        (OPCIONAL)</label>
+                                    <input class="form-control" type="file" name="materialCapa" accept="image/*"
+                                        onchange="previewCapa(this)">
+                                    <div class="form-text small text-muted">
+                                        JPG, PNG.
+                                    </div>
                                 </div>
-                            </div>
-
-                            <!-- IMAGEM DE CAPA -->
-                            <div class="mb-3">
-                                <label class="form-label fw-bold small text-secondary">IMAGEM DE CAPA (OPCIONAL)</label>
-                                <input class="form-control" type="file" name="materialCapa" accept="image/*"
-                                    onchange="previewCapa(this)">
                             </div>
 
                             <!-- PREVIEW DA CAPA -->
@@ -441,19 +385,19 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label fw-bold small text-secondary">TAGS (MÁX 3)</label>
+                                <label class="form-label fw-bold small text-secondary">TAGS (SEPARADAS POR
+                                    VÍRGULA)</label>
                                 <input type="text" class="form-control bg-light border-0 p-3 rounded-3"
                                     name="materialTags" placeholder="Ex: Cálculo, 2024, Professor João">
-                                <div class="form-text small text-muted">Separe por vírgulas.</div>
                             </div>
 
                             <hr class="text-muted opacity-25 my-4">
 
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold small text-secondary">CATEGORIA</label>
-                                    <select id="select-categoria" name="materialCategoriaExistente"
-                                        class="form-select border-0 p-3 rounded-3" placeholder="Selecione...">
+                                    <label class="form-label fw-bold small text-secondary">CATEGORIA EXISTENTE</label>
+                                    <select name="materialCategoriaExistente"
+                                        class="form-select bg-light border-0 p-3 rounded-3">
                                         <option value="">Selecione...</option>
                                         {% for cat in categorias %}
                                         <option value="{{ cat }}">{{ cat }}</option>
@@ -466,6 +410,9 @@
                                     <input type="text" class="form-control bg-light border-0 p-3 rounded-3"
                                         name="materialCategoriaNova" placeholder="Ex: História">
                                 </div>
+                            </div>
+                            <div class="form-text small text-end mt-2">
+                                Se ambos preenchidos, a "Nova Categoria" terá prioridade.
                             </div>
 
                             <div class="mt-4 d-flex justify-content-end gap-2">
@@ -588,145 +535,6 @@
             </button>
         </div>
     </div>
-
-    <!-- MODAL DE PREVIEW -->
-    <div class="modal fade" id="modalPreview" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg rounded-4 bg-dark text-white">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title fw-bold" id="previewTitle">Visualizar Material</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-0 d-flex align-items-center justify-content-center"
-                    style="min-height: 80vh; background: black;">
-                    <div id="previewContent" class="w-100 h-100 d-flex align-items-center justify-content-center">
-                        <!-- Conteúdo injetado via JS -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tom Select JS -->
-    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
-
-    <script>
-        // --- 1. CONFIGURAÇÃO DO TOM SELECT (CATEGORIAS) ---
-        document.addEventListener('DOMContentLoaded', function () {
-            new TomSelect("#select-categoria", {
-                create: false, // Proíbe criar novas categorias livremente
-                sortField: {
-                    field: "text",
-                    direction: "asc"
-                },
-                placeholder: "Selecione uma categoria...",
-                plugins: ['dropdown_input'], // Permite buscar na lista
-            });
-        });
-
-        // --- 2. VALIDAÇÃO DE TAMANHO DE ARQUIVO (16MB) ---
-        function validarTamanhoArquivo(input) {
-            const MAX_SIZE = 16 * 1024 * 1024; // 16MB
-            if (input.files && input.files[0]) {
-                if (input.files[0].size > MAX_SIZE) {
-                    alert("O arquivo é muito grande! O limite é de 16MB.");
-                    input.value = ""; // Limpa o campo
-                }
-            }
-        }
-
-        // --- 3. TOGGLE UPLOAD (ARQUIVO vs LINK) ---
-        function toggleUploadType(type) {
-            const containerArquivo = document.getElementById('container-arquivo');
-            const containerLink = document.getElementById('container-link');
-            const btnArquivo = document.getElementById('btn-tab-arquivo');
-            const btnLink = document.getElementById('btn-tab-link');
-            const inputTipo = document.getElementById('input-tipo-upload');
-
-            inputTipo.value = type;
-
-            if (type === 'arquivo') {
-                containerArquivo.classList.remove('d-none');
-                containerLink.classList.add('d-none');
-                btnArquivo.classList.add('active', 'btn-success');
-                btnArquivo.classList.remove('btn-light');
-                btnLink.classList.remove('active', 'btn-success');
-                btnLink.classList.add('btn-light');
-
-                // Required toggle
-                document.getElementById('input-arquivo').required = true;
-                document.getElementById('input-link').required = false;
-            } else {
-                containerArquivo.classList.add('d-none');
-                containerLink.classList.remove('d-none');
-                btnArquivo.classList.remove('active', 'btn-success');
-                btnArquivo.classList.add('btn-light');
-                btnLink.classList.add('active', 'btn-success');
-                btnLink.classList.remove('btn-light');
-
-                // Required toggle
-                document.getElementById('input-arquivo').required = false;
-                document.getElementById('input-link').required = true;
-            }
-        }
-
-        // --- 4. PREVIEW LOGIC ---
-        function abrirPreview(titulo, url, tipo) {
-            const modal = new bootstrap.Modal(document.getElementById('modalPreview'));
-            const titleEl = document.getElementById('previewTitle');
-            const contentEl = document.getElementById('previewContent');
-
-            titleEl.textContent = titulo;
-            contentEl.innerHTML = ''; // Limpa anterior
-
-            let html = '';
-
-            if (tipo === 'pdf') {
-                html = `<iframe src="${url}" class="w-100 h-100" style="min-height: 80vh;" frameborder="0"></iframe>`;
-            } else if (['jpg', 'jpeg', 'png', 'gif'].includes(tipo)) {
-                html = `<img src="${url}" class="img-fluid" style="max-height: 80vh;">`;
-            } else if (tipo === 'mp4') {
-                html = `<video controls class="w-100" style="max-height: 80vh;"><source src="${url}" type="video/mp4"></video>`;
-            } else if (tipo === 'link') {
-                // Tenta embedar se for YouTube, senão mostra botão
-                if (url.includes('youtube.com') || url.includes('youtu.be')) {
-                    let videoId = url.split('v=')[1];
-                    const ampersandPosition = videoId ? videoId.indexOf('&') : -1;
-                    if (ampersandPosition != -1) {
-                        videoId = videoId.substring(0, ampersandPosition);
-                    }
-                    html = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen style="min-height: 80vh;"></iframe>`;
-                } else {
-                    html = `
-                        <div class="text-center">
-                            <i class="bi bi-box-arrow-up-right text-secondary" style="font-size: 5rem;"></i>
-                            <h4 class="mt-3">Link Externo</h4>
-                            <p class="text-muted mb-4">${url}</p>
-                            <a href="${url}" target="_blank" class="btn btn-success btn-lg rounded-pill px-5">
-                                Abrir em Nova Aba
-                            </a>
-                        </div>
-                    `;
-                }
-            } else {
-                // Fallback para download
-                html = `
-                    <div class="text-center">
-                        <i class="bi bi-file-earmark-arrow-down text-secondary" style="font-size: 5rem;"></i>
-                        <h4 class="mt-3">Visualização não disponível</h4>
-                        <p class="text-muted mb-4">Este formato (${tipo}) deve ser baixado.</p>
-                        <a href="${url}" class="btn btn-success btn-lg rounded-pill px-5">
-                            Baixar Arquivo
-                        </a>
-                    </div>
-                `;
-            }
-
-            contentEl.innerHTML = html;
-            modal.show();
-        }
-    </script>
 
     <button class="btn-access-float shadow-sm" onclick="toggleAccessMenu()" title="Opções de Acessibilidade">
         <i class="bi bi-universal-access"></i>

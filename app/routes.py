@@ -4,9 +4,9 @@ from sqlalchemy import or_, desc, func
 from werkzeug.utils import secure_filename
 import os
 import datetime
+import secrets
+from PIL import Image
 from thefuzz import fuzz
-import bleach
-from better_profanity import profanity
 # Imports completos dos modelos (Incluindo as novas tabelas)
 from app.models import (
     Material, User, FAQ, Denuncia, Noticia, Evento, Perfil, 
@@ -15,21 +15,6 @@ from app.models import (
 )
 from app.extensions import db
 from app.forms import ProfileForm
-
-# CONFIGURAÇÕES DE SEGURANÇA
-ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'jpg', 'jpeg', 'png', 'mp4'}
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-def limpar_input(texto):
-    """Sanitiza o input removendo tags HTML e scripts maliciosos."""
-    if not texto:
-        return ""
-    return bleach.clean(texto, tags=[], attributes={}, strip=True)
-
-# Inicializa profanity filter (pode ser feito no __init__, mas garantindo aqui)
-profanity.load_censor_words()
 
 main_bp = Blueprint('main', __name__)
 
@@ -42,11 +27,6 @@ def add_header(response):
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "0"
     return response
-
-@main_bp.app_errorhandler(413)
-def request_entity_too_large(error):
-    flash('O arquivo enviado é muito grande. O limite é de 16MB.', 'danger')
-    return redirect(request.url)
 
 
 # --- FILTRO DE DATA (Para mostrar '21/11 às 14:30' no HTML) ---
@@ -756,20 +736,29 @@ def tela_mapa():
 @main_bp.route('/perfil', methods=['GET', 'POST'])
 @login_required 
 def tela_perfil():
-    form = ProfileForm(obj=current_user.perfil)
-    
+    # Agora o formulário é preenchido diretamente com o USUÁRIO
+    form = ProfileForm(obj=current_user)
+
     if form.validate_on_submit():
-        if not current_user.perfil:
-            perfil = Perfil(user_id=current_user.id)
-            db.session.add(perfil)
-        form.populate_obj(current_user.perfil)
+        # Lógica de Upload da Foto
+        if form.foto.data:
+            nome_foto = salvar_imagem_perfil(form.foto.data)
+            deletar_imagem_antiga(current_user.foto_url) # Deleta a antiga
+            current_user.foto_url = nome_foto
+
+        # Lógica de Upload do Banner
+        if form.banner.data:
+            nome_banner = salvar_imagem_perfil(form.banner.data)
+            deletar_imagem_antiga(current_user.banner_perfil) # Deleta a antiga
+            current_user.banner_perfil = nome_banner
         
-        try:
-            db.session.commit()
-            flash('Perfil atualizado com sucesso!', 'success')
-        except Exception as e:
-            db.session.rollback()
-            flash(f'Erro ao atualizar o perfil: {e}', 'danger')
+        # Salva os textos
+        current_user.bio = form.bio.data
+        current_user.curso = form.curso.data
+        current_user.campus = form.campus.data
+        
+        db.session.commit()
+        flash('Perfil atualizado com sucesso!', 'success')
         return redirect(url_for('main.tela_perfil'))
 
     meus_posts = Topico.query.filter_by(autor_id=current_user.id).order_by(Topico.criado_em.desc()).all()
@@ -786,7 +775,7 @@ def tela_perfil():
         materiais=meus_materiais,
         salvos=meus_salvos
     )
-
+    
 @main_bp.route('/denuncias')
 @login_required
 def tela_denuncias():
@@ -912,86 +901,51 @@ def tela_materiais():
 def adicionar_material():
     if request.method == 'POST':
         try:
-            # 1. Sanitização de Inputs (Anti-XSS)
-            titulo = limpar_input(request.form.get('materialTitulo'))
-            descricao = limpar_input(request.form.get('materialDescricao'))
-            tipo_upload = request.form.get('tipoUpload') # 'arquivo' ou 'link'
-            link_externo = limpar_input(request.form.get('materialLink'))
-            tags_input = limpar_input(request.form.get('materialTags'))
+            titulo = request.form.get('materialTitulo')
+            descricao = request.form.get('materialDescricao')
+            arquivo = request.files.get('materialArquivo')
+            imagem_capa = request.files.get('materialCapa') # Novo campo
+            tags_input = request.form.get('materialTags')   # Novo campo
             
-            categoria_nova = limpar_input(request.form.get('materialCategoriaNova'))
-            categoria_existente = request.form.get('materialCategoriaExistente')
-            categoria = categoria_nova.strip().capitalize() if categoria_nova else categoria_existente
+            categoria_nova = request.form.get('materialCategoriaNova')
+            categoria = categoria_nova.strip().capitalize() if categoria_nova else request.form.get('materialCategoriaExistente')
             
-            # 2. Validação de Profanidade (Moderação)
-            if profanity.contains_profanity(titulo) or profanity.contains_profanity(tags_input):
-                flash('O título ou as tags contêm palavras impróprias.', 'danger')
+            if not titulo or not arquivo or not arquivo.filename:
+                flash('Erro: Título e Arquivo são obrigatórios.', 'danger')
                 return redirect(url_for('main.tela_materiais'))
 
-            if not titulo:
-                flash('O título é obrigatório.', 'warning')
-                return redirect(url_for('main.tela_materiais'))
-
-            db_path = None
+            # Salvar Arquivo Principal
+            filename = secure_filename(arquivo.filename)
+            ts = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+            filename = f"mat_{ts}_{filename}" # Prefixo para evitar colisão
             
-            # 3. Processamento do Upload
-            if tipo_upload == 'arquivo':
-                arquivo = request.files.get('materialArquivo')
-                if not arquivo or not arquivo.filename:
-                    flash('Você selecionou "Arquivo", mas não enviou nenhum.', 'warning')
-                    return redirect(url_for('main.tela_materiais'))
-                
-                if not allowed_file(arquivo.filename):
-                    flash('Formato de arquivo não permitido. Use PDF, DOCX, Imagens ou Vídeos.', 'danger')
-                    return redirect(url_for('main.tela_materiais'))
+            upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            arquivo.save(upload_path)
+            db_path = f"/static/uploads/{filename}"
 
-                filename = secure_filename(arquivo.filename)
-                ts = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-                filename = f"mat_{ts}_{filename}"
-                
-                upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-                arquivo.save(upload_path)
-                db_path = f"/static/uploads/{filename}"
-                
-            elif tipo_upload == 'link':
-                if not link_externo:
-                    flash('Você selecionou "Link Externo", mas não informou a URL.', 'warning')
-                    return redirect(url_for('main.tela_materiais'))
-                # Opcional: Validar se é uma URL válida com regex
-            
-            # 4. Imagem de Capa (Opcional)
-            imagem_capa = request.files.get('materialCapa')
+            # Salvar Imagem de Capa (Se houver)
             capa_db_path = None
             if imagem_capa and imagem_capa.filename:
-                if allowed_file(imagem_capa.filename): # Reusa a validação, mas idealmente seria só img
-                    capa_filename = secure_filename(imagem_capa.filename)
-                    ts = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-                    capa_filename = f"capa_{ts}_{capa_filename}"
-                    capa_path = os.path.join(current_app.config['UPLOAD_FOLDER'], capa_filename)
-                    imagem_capa.save(capa_path)
-                    capa_db_path = f"/static/uploads/{capa_filename}"
-                else:
-                    flash('Formato da capa inválido.', 'warning')
+                capa_filename = secure_filename(imagem_capa.filename)
+                capa_filename = f"capa_{ts}_{capa_filename}"
+                capa_path = os.path.join(current_app.config['UPLOAD_FOLDER'], capa_filename)
+                imagem_capa.save(capa_path)
+                capa_db_path = f"/static/uploads/{capa_filename}"
 
-            # 5. Salvar no Banco
             novo_material = Material(
                 titulo=titulo,
                 descricao=descricao,
                 arquivo_path=db_path,
-                link_externo=link_externo if tipo_upload == 'link' else None,
                 imagem_capa=capa_db_path,
                 categoria=categoria,
                 autor_id=current_user.id 
             )
             
-            # 6. Processar Tags (Máximo 3)
+            # Processar Tags
             if tags_input:
                 tags_list = [t.strip() for t in tags_input.split(',') if t.strip()]
-                if len(tags_list) > 3:
-                    flash('Máximo de 3 tags permitidas. As excedentes foram ignoradas.', 'info')
-                    tags_list = tags_list[:3]
-                    
                 for tag_nome in tags_list:
+                    # Busca tag existente ou cria nova
                     tag = Tag.query.filter_by(nome=tag_nome).first()
                     if not tag:
                         tag = Tag(nome=tag_nome)
@@ -1000,7 +954,7 @@ def adicionar_material():
             
             db.session.add(novo_material)
             db.session.commit()
-            flash('Material publicado com sucesso!', 'success')
+            flash('Material adicionado com sucesso!', 'success')
         
         except Exception as e:
             db.session.rollback()
@@ -1018,24 +972,13 @@ def download_material(material_id):
     material.download_count += 1
     db.session.commit()
     
-    # Se for Link Externo
-    if material.link_externo:
-        return redirect(material.link_externo)
-
-    # Se for Arquivo Local
-    if material.arquivo_path:
-        try:
-            # Extrai apenas o nome do arquivo do caminho relativo salvo no banco
-            # Ex: /static/uploads/arquivo.pdf -> arquivo.pdf
-            filename = os.path.basename(material.arquivo_path)
-            directory = os.path.join(current_app.root_path, 'static', 'uploads')
-            return send_from_directory(directory, filename, as_attachment=False, conditional=True)
-        except FileNotFoundError:
-            flash('Arquivo não encontrado.', 'danger')
-            return redirect(url_for('main.tela_materiais'))
-    
-    flash('Este material não possui arquivo nem link.', 'warning')
-    return redirect(url_for('main.tela_materiais'))
+    try:
+        directory = os.path.join(current_app.root_path, 'static', 'uploads')
+        filename = os.path.basename(material.arquivo_path)
+        return send_from_directory(directory, filename, as_attachment=False, conditional=True)
+    except FileNotFoundError:
+        flash('Arquivo não encontrado.', 'danger')
+        return redirect(url_for('main.tela_materiais'))
 
 
 @main_bp.route('/materiais/favoritar/<int:material_id>', methods=['POST'])

@@ -103,17 +103,6 @@ main {
     width: 40px;
     height: 40px;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
-}
-.btn-icon-nav:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-/* Foto de Perfil no Header */
-.profile-pic-header img {
-    width: 42px;
     height: 42px;
     border-radius: 50%;
     object-fit: cover;
