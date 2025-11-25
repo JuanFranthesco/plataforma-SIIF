@@ -27,6 +27,13 @@ def add_header(response):
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "0"
     response.headers["Vary"] = "Cookie"
+    
+    # Remove ETag and Last-Modified to prevent conditional requests (HTTP 304)
+    if 'ETag' in response.headers:
+        del response.headers['ETag']
+    if 'Last-Modified' in response.headers:
+        del response.headers['Last-Modified']
+        
     return response
 
 
