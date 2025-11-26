@@ -52,8 +52,8 @@
                 
                 {% if current_user.is_admin %}
                 <li class="nav-item">
-                    <a class="nav-link nav-link-animated text-warning {% if request.endpoint == 'main.tela_usuarios' %}active{% endif %}" 
-                       href="{{ url_for('main.tela_usuarios') }}">
+                    <a class="nav-link nav-link-animated text-warning {% if request.endpoint == 'main.tela_admin' %}active{% endif %}" 
+                       href="{{ url_for('main.tela_admin') }}">
                        <i class="bi bi-shield-lock-fill"></i> Admin
                     </a>
                 </li>
