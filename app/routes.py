@@ -895,7 +895,7 @@ def tela_materiais():
     if termo_pesquisa:
         resultados_fuzzy = []
         for material in materiais_query:
-            texto_completo = f"{material.titulo} {material.descricao or ''}"
+            texto_completo = f"{material.titulo} {material.descricao or ''} {material.autor.name}"
             score = fuzz.partial_ratio(termo_pesquisa.lower(), texto_completo.lower()) 
             if score > 60:
                 resultados_fuzzy.append((material, score))
@@ -909,6 +909,9 @@ def tela_materiais():
         if categoria not in materiais_agrupados:
             materiais_agrupados[categoria] = []
         materiais_agrupados[categoria].append(material)
+    
+    # Ordenação alfabética das categorias
+    materiais_agrupados = dict(sorted(materiais_agrupados.items()))
     
     # IDs dos materiais favoritados pelo usuário atual
     favoritos_ids = [m.id for m in current_user.materiais_favoritos_rel]
