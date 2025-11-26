@@ -34,7 +34,7 @@ def create_app():
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-change-this')
 
     # Configuração de Sessão
-    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
     app.config['SESSION_PERMANENT'] = True
     
     # Segurança de Cookie (Obrigatório para OAuth em Produção)
