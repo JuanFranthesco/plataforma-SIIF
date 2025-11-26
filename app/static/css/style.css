@@ -2422,75 +2422,105 @@ body.login-page {
   height: auto;
 }
 
-/* --- Estilos do Painel de Login (Direita) --- */
+/* --- Estilos do Painel de Login (Atualizado e Moderno) --- */
 .login-page .login-panel {
-  justify-content: center;
-  position: relative;
+    justify-content: center;
+    position: relative;
+    padding: 50px;
 }
 
 .login-page .login-panel h2 {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 30px;
-  color: #FFFFFF;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #FFFFFF;
 }
 
-.login-page .input-group {
-  margin-bottom: 20px;
+.login-page .input-group-login {
+    margin-bottom: 15px;
 }
 
-.login-page .input-group label {
-  display: block;
-  font-size: 0.9rem;
-  margin-bottom: 8px;
-  color: #FFFFFF;
+.login-page .input-group-login label {
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
 }
 
-.login-page .input-group input {
-  width: 100%;
-  padding: 12px 15px;
-  border: none;
-  border-radius: 10px;
-  background-color: #E7E7E4;
-  font-size: 1rem;
-  color: #000000;
+/* Inputs mais modernos */
+.login-page .form-control-custom {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid transparent;
+    border-radius: 12px; /* Mais arredondado */
+    background-color: #f0f2f5;
+    font-size: 1rem;
+    color: #333;
+    transition: all 0.3s;
 }
 
-.login-page .input-group input:focus {
-  outline: 2px solid #5ab394;
+.login-page .form-control-custom:focus {
+    outline: none;
+    background-color: #fff;
+    border-color: #5ab394; /* Verde destaque */
+    box-shadow: 0 0 0 4px rgba(90, 179, 148, 0.2);
 }
 
 .login-page .password-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
+    position: relative;
 }
 
-.login-page .password-icon-svg {
-  position: absolute;
-  right: 15px;
-  width: 20px;
-  height: 20px;
-  fill: #888;
-  opacity: 0.7;
+.login-page .password-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    pointer-events: none;
 }
 
+/* Botão Acessar (Verde claro para contraste com o fundo verde escuro) */
 .login-page .login-button {
-  width: 100%;
-  padding: 15px;
-  border: none;
-  border-radius: 10px;
-  background-color: #D1D1D1;
-  color: #386641;
-  font-size: 1.1rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-top: 10px;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background-color: #fff;
+    color: #386641;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-top: 10px;
 }
 
 .login-page .login-button:hover {
-  background-color: #c1c1c1;
+    background-color: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* Botão SUAP (Novo) */
+.login-page .btn-suap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.2); /* Transparente branco */
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s;
+}
+
+.login-page .btn-suap:hover {
+    background-color: #28a745; /* Verde SUAP */
+    border-color: #28a745;
+    color: #fff;
 }
 
 /* Estilo para as duas imagens de crédito */
