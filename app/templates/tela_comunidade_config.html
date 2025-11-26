@@ -1,203 +1,246 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Configurar {{ comunidade.nome }} - SIIF</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
+{% extends "base.html" %}
 
-<body class="role-user" style="background-color: #386641;">
+{% block title %}Configurar {{ comunidade.nome }} - SIIF{% endblock %}
 
-    <div class="page-container">
-        
-        {% include 'header.html' %}
+{% block content %}
+<div style="background-color: #f8f9fa; min-height: 100vh;">
+    <div class="container py-5">
 
-        <div class="content-wrapper-rounded mt-2">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <a href="{{ url_for('main.ver_comunidade', comunidade_id=comunidade.id) }}"
+                    class="text-decoration-none text-muted fw-bold small mb-2 d-block"><i class="bi bi-arrow-left"></i>
+                    VOLTAR PARA A COMUNIDADE</a>
+                <h2 class="fw-bold text-dark m-0">Painel de Controle: {{ comunidade.nome }}</h2>
+            </div>
+            <div class="bg-white px-3 py-2 rounded-pill shadow-sm border d-flex align-items-center gap-2">
+                <div class="bg-success rounded-circle" style="width: 10px; height: 10px;"></div>
+                <small class="fw-bold text-muted">Admin Mode</small>
+            </div>
+        </div>
 
-            {% with messages = get_flashed_messages(with_categories=true) %}
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="list-group rounded-4 shadow-sm border-0 overflow-hidden">
+                    {% if solicitacoes %}
+                    <a href="#pedidos"
+                        class="list-group-item list-group-item-action py-3 border-0 fw-bold text-danger bg-danger bg-opacity-10"
+                        data-bs-toggle="list"><i class="bi bi-bell-fill me-2"></i> Solicitações <span
+                            class="badge bg-danger rounded-pill ms-2">{{ solicitacoes|length }}</span></a>
+                    {% endif %}
+                    <a href="#geral"
+                        class="list-group-item list-group-item-action {% if not solicitacoes %}active{% endif %} py-3 border-0 fw-bold"
+                        data-bs-toggle="list"><i class="bi bi-sliders me-2"></i> Geral & Visual</a>
+                    <a href="#tags" class="list-group-item list-group-item-action py-3 border-0 fw-bold"
+                        data-bs-toggle="list"><i class="bi bi-tags-fill me-2"></i> Tags (Flairs)</a>
+                    <a href="#membros" class="list-group-item list-group-item-action py-3 border-0 fw-bold"
+                        data-bs-toggle="list"><i class="bi bi-people-fill me-2"></i> Membros</a>
+                    <a href="#seguranca" class="list-group-item list-group-item-action py-3 border-0 fw-bold"
+                        data-bs-toggle="list"><i class="bi bi-shield-lock-fill me-2"></i> Segurança & Logs</a>
+                </div>
+            </div>
+
+            <div class="col-md-9">
+                {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm rounded-4 mb-4">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
-                    {% endfor %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show rounded-4 shadow-sm mb-4">{{ message
+                    }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+                {% endfor %}
                 {% endif %}
-            {% endwith %}
+                {% endwith %}
 
-            <div class="d-flex align-items-center justify-content-between mb-5 pb-3 border-bottom">
-                <div class="d-flex align-items-center gap-3">
-                    <a href="{{ url_for('main.ver_comunidade', comunidade_id=comunidade.id) }}" class="btn btn-light rounded-circle shadow-sm" title="Voltar">
-                        <i class="bi bi-arrow-left"></i>
-                    </a>
-                    <div>
-                        <h2 class="fw-bold text-dark m-0">Configurações</h2>
-                        <p class="text-muted m-0 small">Gerenciando: <strong>{{ comunidade.nome }}</strong></p>
-                    </div>
-                </div>
-                <span class="badge bg-warning text-dark border border-warning rounded-pill px-3">
-                    <i class="bi bi-shield-fill me-1"></i> Área do Moderador
-                </span>
-            </div>
+                <div class="tab-content">
 
-            <div class="row g-4">
-                
-                <div class="col-md-3">
-                    <div class="list-group rounded-4 shadow-sm border-0 overflow-hidden">
-                        {% if solicitacoes %}
-                        <a href="#pedidos" class="list-group-item list-group-item-action py-3 border-0 fw-bold text-danger bg-danger bg-opacity-10" data-bs-toggle="list">
-                            <i class="bi bi-bell-fill me-2"></i> Solicitações <span class="badge bg-danger rounded-pill ms-2">{{ solicitacoes|length }}</span>
-                        </a>
-                        {% endif %}
-
-                        <a href="#geral" class="list-group-item list-group-item-action {% if not solicitacoes %}active{% endif %} py-3 border-0 fw-bold" data-bs-toggle="list">
-                            <i class="bi bi-sliders me-2"></i> Geral
-                        </a>
-                        <a href="#membros" class="list-group-item list-group-item-action py-3 border-0 fw-bold" data-bs-toggle="list">
-                            <i class="bi bi-people-fill me-2"></i> Membros & Equipe
-                        </a>
-                        <a href="#perigo" class="list-group-item list-group-item-action py-3 border-0 fw-bold text-danger" data-bs-toggle="list">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i> Zona de Perigo
-                        </a>
-                    </div>
-                </div>
-
-                <div class="col-md-9">
-                    <div class="tab-content">
-                        
-                        <div class="tab-pane fade {% if solicitacoes %}show active{% endif %}" id="pedidos">
-                            <div class="card border-0 shadow-sm rounded-4 mb-4">
-                                <div class="card-header bg-danger text-white fw-bold p-3 rounded-top-4">
-                                    <i class="bi bi-person-plus-fill me-2"></i> Pedidos de Entrada
-                                </div>
-                                <div class="card-body p-0">
-                                    {% if solicitacoes %}
-                                        <div class="list-group list-group-flush">
-                                            {% for sol in solicitacoes %}
-                                            <div class="list-group-item p-3 d-flex align-items-center justify-content-between">
-                                                <div class="d-flex align-items-center gap-3">
-                                                    <img src="{{ url_for('static', filename='img/image.png') }}" class="rounded-circle" width="40">
-                                                    <div>
-                                                        <h6 class="mb-0 fw-bold">{{ sol.usuario.name }}</h6>
-                                                        <small class="text-muted">{{ sol.data_solicitacao.strftime('%d/%m às %H:%M') }}</small>
-                                                    </div>
-                                                </div>
-                                                <div class="d-flex gap-2">
-                                                    <a href="{{ url_for('main.gerenciar_solicitacao', comunidade_id=comunidade.id, sol_id=sol.id, acao='recusar') }}" class="btn btn-light text-danger fw-bold rounded-pill px-3">Recusar</a>
-                                                    <a href="{{ url_for('main.gerenciar_solicitacao', comunidade_id=comunidade.id, sol_id=sol.id, acao='aceitar') }}" class="btn btn-success fw-bold rounded-pill px-3">Aceitar</a>
-                                                </div>
-                                            </div>
-                                            {% endfor %}
+                    <div class="tab-pane fade {% if solicitacoes %}show active{% endif %}" id="pedidos">
+                        <div class="card border-0 shadow-sm rounded-4 mb-4">
+                            <div class="card-header bg-danger text-white fw-bold p-3">Pedidos de Entrada</div>
+                            <div class="card-body p-0">
+                                <div class="list-group list-group-flush">
+                                    {% for sol in solicitacoes %}
+                                    <div class="list-group-item p-3 d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <h6 class="mb-0 fw-bold">{{ sol.usuario.name }}</h6><small
+                                                class="text-muted">{{ sol.data_solicitacao.strftime('%d/%m %H:%M')
+                                                }}</small>
                                         </div>
-                                    {% else %}
-                                        <div class="p-5 text-center text-muted">
-                                            <i class="bi bi-check-circle fs-1 mb-2"></i>
-                                            <p>Nenhuma solicitação pendente.</p>
+                                        <div class="d-flex gap-2">
+                                            <a href="{{ url_for('main.gerenciar_solicitacao', comunidade_id=comunidade.id, sol_id=sol.id, acao='recusar') }}"
+                                                class="btn btn-sm btn-outline-danger rounded-pill px-3">Recusar</a>
+                                            <a href="{{ url_for('main.gerenciar_solicitacao', comunidade_id=comunidade.id, sol_id=sol.id, acao='aceitar') }}"
+                                                class="btn btn-sm btn-success rounded-pill px-3">Aceitar</a>
                                         </div>
-                                    {% endif %}
+                                    </div>
+                                    {% endfor %}
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="tab-pane fade {% if not solicitacoes %}show active{% endif %}" id="geral">
-                            <div class="card border-0 shadow-sm rounded-4">
-                                <div class="card-body p-5">
-                                    <h4 class="fw-bold mb-4 text-success">Identidade da Comunidade</h4>
-                                    <form method="POST" enctype="multipart/form-data">
-                                        <div class="mb-4">
-                                            <label class="form-label fw-bold small text-muted">NOME</label>
-                                            <input type="text" class="form-control bg-light" value="{{ comunidade.nome }}" disabled>
-                                        </div>
-                                        <div class="mb-4">
-                                            <label class="form-label fw-bold small text-muted">DESCRIÇÃO</label>
-                                            <textarea class="form-control bg-light border-0 p-3" name="descricao" rows="3">{{ comunidade.descricao }}</textarea>
-                                        </div>
-                                        <div class="mb-4">
-                                            <label class="form-label fw-bold small text-muted">REGRAS</label>
-                                            <textarea class="form-control bg-light border-0 p-3" name="regras" rows="6">{{ comunidade.regras or '' }}</textarea>
-                                        </div>
-                                        <div class="mb-4">
-                                            <label class="form-label fw-bold small text-muted">ALTERAR LOGO</label>
-                                            <input type="file" class="form-control" name="imagem_comunidade" accept="image/*">
-                                        </div>
-                                        <hr class="my-4">
-                                        <div class="d-flex justify-content-end">
-                                            <button type="submit" class="btn btn-success fw-bold rounded-pill px-5 shadow-sm">Salvar</button>
-                                        </div>
-                                    </form>
+                    <div class="tab-pane fade {% if not solicitacoes %}show active{% endif %}" id="geral">
+                        <div class="card border-0 shadow-sm rounded-4 p-4">
+                            <h5 class="fw-bold mb-4">Identidade Visual</h5>
+                            <form method="POST" enctype="multipart/form-data">
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-muted">COR DO TEMA</label>
+                                        <input type="color" class="form-control form-control-color w-100"
+                                            name="cor_tema" value="{{ comunidade.cor_tema or '#386641' }}">
+                                        <div class="form-text">Define a cor dos botões e fundo.</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-muted">BANNER (CAPA)</label>
+                                        <input type="file" class="form-control" name="banner_comunidade"
+                                            accept="image/*">
+                                    </div>
                                 </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-muted">DESCRIÇÃO</label>
+                                    <textarea class="form-control bg-light border-0 p-3" name="descricao"
+                                        rows="2">{{ comunidade.descricao }}</textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-muted">REGRAS</label>
+                                    <textarea class="form-control bg-light border-0 p-3" name="regras"
+                                        rows="4">{{ comunidade.regras or '' }}</textarea>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold small text-muted">ALTERAR LOGO</label>
+                                    <input type="file" class="form-control" name="imagem_comunidade" accept="image/*">
+                                </div>
+                                <div class="d-flex justify-content-end"><button
+                                        class="btn btn-success fw-bold rounded-pill px-5 shadow-sm">Salvar
+                                        Alterações</button></div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="tags">
+                        <div class="card border-0 shadow-sm rounded-4 p-4">
+                            <h5 class="fw-bold mb-4">Gerenciar Tags de Postagem</h5>
+
+                            <div class="d-flex flex-wrap gap-2 mb-4">
+                                {% for tag in tags %}
+                                <span class="badge p-2 d-flex align-items-center gap-2"
+                                    style="background-color: {{ tag.cor }}; font-size: 0.9rem;">
+                                    {{ tag.nome }}
+                                    <a href="{{ url_for('main.excluir_tag', comunidade_id=comunidade.id, tag_id=tag.id) }}"
+                                        class="text-white text-decoration-none bg-dark bg-opacity-25 rounded-circle px-1"
+                                        style="font-size: 0.7rem;">✕</a>
+                                </span>
+                                {% else %}
+                                <p class="text-muted fst-italic">Nenhuma tag criada ainda.</p>
+                                {% endfor %}
+                            </div>
+
+                            <div class="bg-light p-3 rounded-4 border">
+                                <h6 class="fw-bold small text-muted mb-3">CRIAR NOVA TAG</h6>
+                                <form action="{{ url_for('main.criar_tag', comunidade_id=comunidade.id) }}"
+                                    method="POST" class="row g-2 align-items-end">
+                                    <div class="col-md-6">
+                                        <label class="form-label small">Nome</label>
+                                        <input type="text" name="nome_tag" class="form-control" placeholder="Ex: Dúvida"
+                                            required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label small">Cor</label>
+                                        <input type="color" name="cor_tag" class="form-control form-control-color w-100"
+                                            value="#6c757d">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-primary w-100">Adicionar</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="tab-pane fade" id="membros">
-                            <div class="card border-0 shadow-sm rounded-4 mb-4">
-                                <div class="card-body p-4">
-                                    <h5 class="fw-bold mb-3 text-success">Moderadores</h5>
-                                    <div class="d-flex flex-wrap gap-2">
-                                        <div class="badge bg-warning text-dark border border-warning rounded-pill p-2 px-3 d-flex align-items-center gap-2">
-                                            <i class="bi bi-star-fill"></i> Dono
-                                        </div>
-                                        {% for mod in comunidade.moderadores %}
-                                            {% if mod.id != comunidade.criador_id %}
-                                                <div class="badge bg-white text-dark border rounded-pill p-2 px-3 d-flex align-items-center gap-2">
-                                                    <i class="bi bi-shield-check text-success"></i> {{ mod.name }}
-                                                    {% if comunidade.criador_id == current_user.id %}
-                                                        <a href="{{ url_for('main.promover_moderador', comunidade_id=comunidade.id, user_id=mod.id) }}" class="text-danger ms-1"><i class="bi bi-x-circle-fill"></i></a>
-                                                    {% endif %}
-                                                </div>
-                                            {% endif %}
+                    <div class="tab-pane fade" id="seguranca">
+                        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                            <h5 class="fw-bold mb-4">Moderação Automática</h5>
+                            <form method="POST">
+                                <div class="mb-4 form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="trancada" id="checkLock" {% if
+                                        comunidade.trancada %}checked{% endif %}>
+                                    <label class="form-check-label fw-bold" for="checkLock">Trancar Comunidade (Ninguém
+                                        posta)</label>
+                                    <div class="form-text">Ative isso em caso de spam ou ataques. Apenas moderadores
+                                        poderão postar.</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-muted">PALAVRAS PROIBIDAS
+                                        (AutoMod)</label>
+                                    <textarea class="form-control bg-light border-0" name="palavras_proibidas" rows="2"
+                                        placeholder="Separe por vírgula (ex: palavra1, palavra2)">{{ comunidade.palavras_proibidas or '' }}</textarea>
+                                    <div class="form-text">Posts contendo essas palavras serão bloqueados
+                                        automaticamente.</div>
+                                </div>
+                                <button class="btn btn-danger btn-sm">Salvar Regras de Segurança</button>
+                            </form>
+                        </div>
+
+                        <div class="card border-0 shadow-sm rounded-4 p-4">
+                            <h5 class="fw-bold mb-3">Log de Auditoria</h5>
+                            <ul class="list-group list-group-flush small">
+                                {% for log in logs %}
+                                <li class="list-group-item px-0 py-2 text-muted">
+                                    <span class="text-dark fw-bold">{{ log.data.strftime('%d/%m %H:%M') }}</span> •
+                                    <span class="text-primary">{{ log.autor.name }}</span>: {{ log.acao }}
+                                </li>
+                                {% else %}
+                                <li class="list-group-item px-0 text-muted">Nenhuma atividade registrada recente.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="membros">
+                        <div class="card border-0 shadow-sm rounded-4 p-4">
+                            <h5 class="fw-bold mb-4">Estatísticas</h5>
+                            <div class="row g-3 mb-4">
+                                <div class="col-6">
+                                    <div class="p-3 bg-light rounded-3 text-center">
+                                        <h3 class="m-0">{{ stats.membros }}</h3><small>Membros</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="p-3 bg-light rounded-3 text-center">
+                                        <h3 class="m-0">{{ stats.posts }}</h3><small>Posts</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <h5 class="fw-bold mb-3">Membros Ativos</h5>
+                            <div class="table-responsive">
+                                <table class="table align-middle">
+                                    <tbody>
+                                        {% for membro in comunidade.membros %}
+                                        {% if membro.id != comunidade.criador_id %}
+                                        <tr>
+                                            <td>{{ membro.name }} {% if membro in comunidade.moderadores %}<span
+                                                    class="badge bg-warning text-dark">MOD</span>{% endif %}</td>
+                                            <td class="text-end">
+                                                {% if comunidade.criador_id == current_user.id %}
+                                                <a href="{{ url_for('main.promover_moderador', comunidade_id=comunidade.id, user_id=membro.id) }}"
+                                                    class="btn btn-sm btn-outline-dark rounded-pill">
+                                                    {% if membro in comunidade.moderadores %}Rebaixar{% else
+                                                    %}Promover{% endif %}
+                                                </a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endif %}
                                         {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="card border-0 shadow-sm rounded-4">
-                                <div class="card-body p-0">
-                                    <div class="p-4 border-bottom"><h5 class="fw-bold m-0">Lista de Membros</h5></div>
-                                    <div class="table-responsive">
-                                        <table class="table table-hover align-middle mb-0">
-                                            <tbody>
-                                                {% for membro in comunidade.membros %}
-                                                    {% if membro.id != comunidade.criador_id and membro not in comunidade.moderadores %}
-                                                    <tr>
-                                                        <td class="ps-4 fw-bold text-secondary">
-                                                            <img src="{{ url_for('static', filename='img/image.png') }}" class="rounded-circle me-2" width="30">
-                                                            {{ membro.name }}
-                                                        </td>
-                                                        <td class="text-end pe-4">
-                                                            {% if comunidade.criador_id == current_user.id %}
-                                                                <a href="{{ url_for('main.promover_moderador', comunidade_id=comunidade.id, user_id=membro.id) }}" class="btn btn-sm btn-outline-success rounded-pill fw-bold">Promover a Mod</a>
-                                                            {% else %}<span class="text-muted small">Membro</span>{% endif %}
-                                                        </td>
-                                                    </tr>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-
-                        <div class="tab-pane fade" id="perigo">
-                            <div class="card border border-danger bg-danger bg-opacity-10 rounded-4">
-                                <div class="card-body p-5">
-                                    <h4 class="text-danger fw-bold mb-3">Zona de Perigo</h4>
-                                    <div class="d-flex justify-content-between align-items-center bg-white p-3 rounded-3 border border-danger-subtle">
-                                        <div><strong>Excluir Comunidade</strong><p class="mb-0 small text-muted">Ação irreversível.</p></div>
-                                        <button class="btn btn-danger fw-bold rounded-pill px-4" disabled>Excluir</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
+
                 </div>
             </div>
-
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+</div>
+{% endblock %}

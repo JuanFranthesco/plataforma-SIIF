@@ -125,12 +125,33 @@ class Notificacao(db.Model):
 
 class SolicitacaoParticipacao(db.Model):
     __tablename__ = 'solicitacao_participacao'
-
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     comunidade_id = db.Column(db.Integer, db.ForeignKey('comunidade.id'), nullable=False)
     data_solicitacao = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     status = db.Column(db.String(20), default='Pendente') # Pendente, Aceito, Rejeitado
+
+
+class ComunidadeTag(db.Model):
+    """Tags (Flairs) para categorizar posts dentro da comunidade"""
+    __tablename__ = 'comunidade_tag'
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(50), nullable=False)
+    cor = db.Column(db.String(20), default='#6c757d') # Cor da etiqueta
+    comunidade_id = db.Column(db.Integer, db.ForeignKey('comunidade.id'), nullable=False)
+
+
+class AuditLog(db.Model):
+    """Registro de ações de moderação (Quem fez o que)"""
+    __tablename__ = 'audit_log'
+    id = db.Column(db.Integer, primary_key=True)
+    acao = db.Column(db.String(100), nullable=False)
+    detalhes = db.Column(db.String(255), nullable=True)
+    data = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    comunidade_id = db.Column(db.Integer, db.ForeignKey('comunidade.id'), nullable=False)
+    autor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    # Relação para saber quem fez a ação
+    autor = db.relationship('User', foreign_keys=[autor_id])
 
 
 class Comunidade(db.Model):
@@ -140,12 +161,20 @@ class Comunidade(db.Model):
     nome = db.Column(db.String(100), unique=True, nullable=False)
     descricao = db.Column(db.String(300), nullable=False)
     
-    # Novos campos para deixar "Profissional"
+    # Organização
     categoria = db.Column(db.String(50), default='Geral') 
-    tipo_acesso = db.Column(db.String(20), default='Público') # Público ou Restrito
+    tipo_acesso = db.Column(db.String(20), default='Público') 
     regras = db.Column(db.Text, nullable=True)
     
-    imagem_url = db.Column(db.String(300), default='default_community.png')
+    # Identidade Visual Avançada
+    imagem_url = db.Column(db.String(300), default='default_community.png') # Logo Redonda
+    banner_url = db.Column(db.String(300), nullable=True) # Capa Retangular
+    cor_tema = db.Column(db.String(20), default='#386641') # Cor Principal
+    
+    # Segurança e Moderação
+    palavras_proibidas = db.Column(db.Text, nullable=True) # Lista separada por vírgula
+    trancada = db.Column(db.Boolean, default=False) # Se True, ninguém posta
+    
     criado_em = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     criador_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     
@@ -153,6 +182,8 @@ class Comunidade(db.Model):
     topicos = db.relationship('Topico', backref='comunidade', lazy=True)
     moderadores = db.relationship('User', secondary=moderadores_comunidade, backref=db.backref('comunidades_moderadas', lazy='dynamic'))
     solicitacoes = db.relationship('SolicitacaoParticipacao', backref='comunidade', lazy=True)
+    tags = db.relationship('ComunidadeTag', backref='comunidade', lazy=True)
+    logs = db.relationship('AuditLog', backref='comunidade', lazy=True)
 
     def __repr__(self):
         return f'<Comunidade {self.nome}>'

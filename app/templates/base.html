@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}SIIF{% endblock %}</title> 
-    
+    <title>{% block title %}SIIF{% endblock %}</title>
+
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/LOGO.png') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
@@ -12,14 +13,15 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
     {% block config_js %}{% endblock %}
-    {% block head_extras %}{% endblock %} 
+    {% block head_extras %}{% endblock %}
 </head>
+
 <body class="{% block body_class %}{% endblock %}">
-    
+
     {% include 'header.html' %}
-    
+
     {% block content %}{% endblock %}
-    
+
     {% block modals %}{% endblock %}
 
     {% include 'footer.html' %}
@@ -34,7 +36,8 @@
     <div id="access-menu" class="access-menu-container">
         <h6 class="mb-3 border-bottom pb-2">Acessibilidade</h6>
         <div class="d-grid gap-2">
-            <button class="btn btn-sm btn-outline-dark d-flex justify-content-between align-items-center" onclick="toggleContrast()">
+            <button class="btn btn-sm btn-outline-dark d-flex justify-content-between align-items-center"
+                onclick="toggleContrast()">
                 <span>Alto Contraste</span>
                 <i class="bi bi-circle-half"></i>
             </button>
@@ -54,13 +57,13 @@
     <button class="btn-access-float" onclick="toggleAccessMenu()" title="Opções de Acessibilidade">
         <i class="bi bi-universal-access"></i>
     </button>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
     <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
     <script> new window.VLibras.Widget('https://vlibras.gov.br/app'); </script>
-    
+
     <script>
         // Variável global para controle de zoom
         let currentFontSize = 100;
@@ -114,4 +117,5 @@
     {% block scripts %}{% endblock %}
 
 </body>
+
 </html>

@@ -8,288 +8,533 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    
-    <style>
-        /* --- ESTILOS LOCAIS PARA GARANTIR O FUNCIONAMENTO --- */
-        
-        /* Imagens */
-        .post-image { width: 100%; max-height: 500px; object-fit: cover; border-radius: 12px; margin-top: 15px; border: 1px solid #eee; }
-        .comment-image { max-width: 150px; border-radius: 8px; margin-top: 8px; display: block; border: 1px solid #eee; }
-        
-        /* Comentário */
-        .comment-wrapper { display: flex; gap: 12px; margin-bottom: 10px; animation: fadeIn 0.3s ease; }
-        .comment-bubble { 
-            background-color: #f0f2f5; 
-            border-radius: 18px; 
-            padding: 10px 15px; 
-            position: relative; 
-            display: inline-block; 
-            min-width: 150px; 
-        }
-        
-        .comment-author-name { font-size: 0.9rem; font-weight: 700; color: #1a1a1a; display: block; margin-bottom: 2px; text-decoration: none; }
-        .comment-content-text { font-size: 0.95rem; color: #333; line-height: 1.4; margin-bottom: 0; white-space: pre-line; }
-        
-        .comment-actions { display: flex; gap: 15px; margin-left: 12px; margin-top: 2px; font-size: 0.75rem; color: #65676b; align-items: center; }
-        
-        /* Botões de Ação no Comentário */
-        .btn-reply-action { font-weight: 700; cursor: pointer; color: #65676b; transition: 0.2s; }
-        .btn-reply-action:hover { color: #386641; text-decoration: underline; }
-        
-        .btn-like-comment { cursor: pointer; font-weight: 700; display: flex; align-items: center; gap: 4px; border:none; background:none; padding:0; color: #65676b; font-size: 0.75rem; }
-        .btn-like-comment.liked { color: #dc3545; }
-        .btn-like-comment:hover { color: #dc3545; }
 
-        /* --- HIERARQUIA (A ESCADINHA) --- */
+    <style>
+        :root {
+            /* Usa a cor definida no banco ou o verde padrão */
+            --comm-color: {{ comunidade.cor_tema or '#386641' }};
+        }
+
+        /* Fundo da página segue o tema */
+        body.role-user {
+            background-color: var(--comm-color) !important;
+            transition: background-color 0.5s ease;
+        }
+
+        /* Banner (Capa) */
+        .comm-banner {
+            height: 220px;
+            width: 100%;
+            background-color: #e9ecef;
+            background-image: url('{{ comunidade.banner_url or "" }}');
+            background-size: cover;
+            background-position: center;
+            border-radius: 40px 40px 0 0;
+            position: relative;
+            margin-bottom: 50px; /* Espaço para o avatar sobreposto */
+        }
+
+        /* Avatar sobreposto ao Banner */
+        .comm-avatar-overlay {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            border: 5px solid #fff;
+            position: absolute;
+            bottom: -40px;
+            left: 40px;
+            background-color: #fff;
+            object-fit: cover;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--comm-color);
+        }
+
+        /* Botões Temáticos */
+        .btn-theme {
+            background-color: var(--comm-color);
+            color: white;
+            border: none;
+        }
+        .btn-theme:hover {
+            filter: brightness(0.9);
+            color: white;
+        }
+
+        .text-theme {
+            color: var(--comm-color);
+        }
+
+        /* Badge de Tag (Flair) */
+        .badge-flair {
+            font-size: 0.7rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            vertical-align: middle;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        /* Ajustes padrão */
+        .post-image {
+            width: 100%;
+            max-height: 500px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-top: 15px;
+            border: 1px solid #eee;
+        }
+
+        .comment-image {
+            max-width: 150px;
+            border-radius: 8px;
+            margin-top: 8px;
+            display: block;
+            border: 1px solid #eee;
+        }
+
+        .comment-wrapper {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 10px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .comment-bubble {
+            background-color: #f0f2f5;
+            border-radius: 18px;
+            padding: 10px 15px;
+            position: relative;
+            display: inline-block;
+            min-width: 150px;
+        }
+
+        .comment-author-name {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            display: block;
+            margin-bottom: 2px;
+            text-decoration: none;
+        }
+
+        .comment-content-text {
+            font-size: 0.95rem;
+            color: #333;
+            line-height: 1.4;
+            margin-bottom: 0;
+            white-space: pre-line;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 15px;
+            margin-left: 12px;
+            margin-top: 2px;
+            font-size: 0.75rem;
+            color: #65676b;
+            align-items: center;
+        }
+
+        .btn-reply-action {
+            font-weight: 700;
+            cursor: pointer;
+            color: #65676b;
+            transition: 0.2s;
+        }
+
+        .btn-reply-action:hover {
+            color: var(--comm-color);
+            text-decoration: underline;
+        }
+
         .replies-container {
-            margin-left: 40px; /* Recuo para a direita */
+            margin-left: 40px;
             padding-left: 15px;
-            border-left: 3px solid #e0e0e0; /* Linha Guia */
+            border-left: 3px solid #e0e0e0;
             margin-top: 10px;
             display: block;
         }
-        .replies-container:hover { border-left-color: #386641; }
 
-        /* Badge "Respondendo a..." */
-        .replying-badge { 
-            background-color: #e9f5eb; color: #386641; border: 1px solid #386641; 
-            padding: 5px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; 
-            display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px;
+        .replies-container:hover {
+            border-left-color: var(--comm-color);
         }
-        
-        .suggestion-card { background-color: white; border: 1px solid #eee; border-radius: 20px; padding: 20px; margin-top: 0; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+
+        .replying-badge {
+            background-color: #f8f9fa;
+            color: var(--comm-color);
+            border: 1px solid var(--comm-color);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .suggestion-card {
+            background-color: white;
+            border: 1px solid #eee;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+        }
     </style>
 </head>
 
-<body class="role-user" style="background-color: #386641;">
+<body class="role-user">
 
     {% macro render_comment(resposta, topico_id) %}
     <div class="comment-item" id="comment-{{ resposta.id }}">
         <div class="comment-wrapper">
-            <img src="{{ url_for('static', filename='img/image.png') }}" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
-            
+            <img src="{{ url_for('static', filename='img/image.png') }}" class="rounded-circle" width="32" height="32"
+                style="object-fit: cover;">
             <div class="flex-grow-1">
                 <div class="comment-bubble">
                     <a href="#" class="comment-author-name">
                         {{ resposta.autor.name }}
-                        {% if resposta.autor.is_admin %}
-                            <i class="bi bi-patch-check-fill text-primary ms-1" title="Admin"></i>
-                        {% elif resposta.autor in comunidade.moderadores %}
-                            <i class="bi bi-shield-check text-success ms-1" title="Moderador"></i>
-                        {% endif %}
+                        {% if resposta.autor.is_admin %}<i class="bi bi-patch-check-fill text-primary ms-1"
+                            title="Admin"></i>
+                        {% elif resposta.autor in comunidade.moderadores %}<i
+                            class="bi bi-shield-check text-success ms-1" title="Moderador"></i>{% endif %}
                     </a>
                     <p class="comment-content-text">{{ resposta.conteudo }}</p>
-                    
-                    {% if resposta.imagem_resposta %}
-                        <a href="{{ resposta.imagem_resposta }}" target="_blank">
-                            <img src="{{ resposta.imagem_resposta }}" class="comment-image">
-                        </a>
-                    {% endif %}
+                    {% if resposta.imagem_resposta %}<a href="{{ resposta.imagem_resposta }}" target="_blank"><img
+                            src="{{ resposta.imagem_resposta }}" class="comment-image"></a>{% endif %}
                 </div>
-
                 <div class="comment-actions">
                     <span>{{ resposta.criado_em | format_data_br }}</span>
-                    
-                    <form action="{{ url_for('main.like_comentario', resposta_id=resposta.id) }}" method="POST" class="d-inline">
-                        <button class="btn-like-comment {% if resposta.id in likes_respostas_usuario %}liked{% endif %}">
-                            {% if resposta.id in likes_respostas_usuario %}<i class="bi bi-heart-fill"></i>{% else %}<i class="bi bi-heart"></i>{% endif %}
+                    <form action="{{ url_for('main.like_comentario', resposta_id=resposta.id) }}" method="POST"
+                        class="d-inline">
+                        <button
+                            class="btn-like-comment {% if resposta.id in likes_respostas_usuario %}text-danger{% endif %}"
+                            style="border:none; background:none; font-size:0.75rem; font-weight:700; color:#666;">
+                            <i
+                                class="bi {% if resposta.id in likes_respostas_usuario %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
                             {{ resposta.likes|length }}
                         </button>
                     </form>
-
-                    <span class="btn-reply-action" onclick="responderComentario('{{ topico_id }}', '{{ resposta.autor.name }}', '{{ resposta.id }}')">Responder</span>
+                    <span class="btn-reply-action"
+                        onclick="responderComentario('{{ topico_id }}', '{{ resposta.autor.name }}', '{{ resposta.id }}')">Responder</span>
                 </div>
             </div>
         </div>
-
         {% if resposta.filhos %}
-            <div class="replies-container">
-                {% for filho in resposta.filhos %}
-                    {{ render_comment(filho, topico_id) }}
-                {% endfor %}
-            </div>
+        <div class="replies-container">
+            {% for filho in resposta.filhos %}
+            {{ render_comment(filho, topico_id) }}
+            {% endfor %}
+        </div>
         {% endif %}
     </div>
     {% endmacro %}
-    <div class="page-container">
-        
+
+    <div class="page-container" style="background: transparent; box-shadow: none;">
+
         {% include 'header.html' %}
 
-        <div class="content-wrapper-rounded mt-2">
-            
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm rounded-4 mb-4">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-            
-            <div class="d-flex align-items-center flex-wrap gap-4 mb-5 border-bottom pb-4">
-                <div class="comm-header-avatar shadow-sm">
-                    {% if comunidade.imagem_url and 'static' in comunidade.imagem_url %}
-                        <img src="{{ comunidade.imagem_url }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
-                    {% else %}{{ comunidade.nome[0] | upper }}{% endif %}
-                </div>
-                <div class="flex-grow-1">
-                    <h1 class="fw-bold text-dark mb-1">{{ comunidade.nome }}</h1>
-                    <div class="d-flex gap-2 align-items-center text-muted mb-2">
-                        <span>c/{{ comunidade.nome | replace(" ", "") | lower }}</span><span>•</span><span>{{ comunidade.membros.count() }} membros</span>
-                        {% if comunidade.tipo_acesso == 'Restrito' %}<i class="bi bi-lock-fill"></i>{% endif %}
-                    </div>
-                    <div class="d-flex gap-2">
-                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill">{{ comunidade.categoria }}</span>
-                        <span class="badge bg-light text-dark border rounded-pill">{{ comunidade.tipo_acesso }}</span>
-                    </div>
-                </div>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-light border rounded-pill px-3 fw-bold" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasInfo"><i class="bi bi-info-circle me-1"></i> Sobre</button>
-                    
-                    {% if comunidade.criador_id == current_user.id or current_user in comunidade.moderadores %}
-                        <a href="{{ url_for('main.configurar_comunidade', comunidade_id=comunidade.id) }}" class="btn btn-light border rounded-pill px-3"><i class="bi bi-gear-fill"></i></a>
-                    {% endif %}
+        <div class="content-wrapper-rounded mt-2 p-0 overflow-hidden">
 
-                    {% if current_user in comunidade.membros %}
-                        <a href="{{ url_for('main.participar_comunidade', comunidade_id=comunidade.id) }}" class="btn btn-outline-danger rounded-pill fw-bold px-4">Sair</a>
-                    {% elif solicitacao_pendente %}
-                        <button class="btn btn-secondary rounded-pill px-4" disabled>Pendente</button>
-                    {% else %}
-                        <a href="{{ url_for('main.participar_comunidade', comunidade_id=comunidade.id) }}" class="btn btn-success rounded-pill fw-bold px-4 shadow-sm">Participar</a>
-                    {% endif %}
-                </div>
+            <div class="comm-banner">
+                {% if comunidade.imagem_url and 'static' in comunidade.imagem_url %}
+                <img src="{{ comunidade.imagem_url }}" class="comm-avatar-overlay">
+                {% else %}
+                <div class="comm-avatar-overlay">{{ comunidade.nome[0] | upper }}</div>
+                {% endif %}
             </div>
 
-            {% if tem_acesso %}
-            <div class="row g-5">
-                <div class="col-lg-8">
-                    
-                    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-light">
-                        <div class="card-body p-3 d-flex align-items-center gap-3">
-                            <div class="profile-pic" style="width: 40px; height: 40px;"><img src="{{ current_user.foto_url or url_for('static', filename='img/image.png') }}"></div>
-                            <input type="text" class="form-control rounded-pill border-0 bg-white py-2 shadow-sm" placeholder="Criar publicação..." data-bs-toggle="modal" data-bs-target="#modalPostarComunidade" readonly style="cursor: pointer;">
-                            <button class="btn btn-link text-secondary" data-bs-toggle="modal" data-bs-target="#modalPostarComunidade"><i class="bi bi-image fs-4"></i></button>
+            <div class="px-5 pb-4">
+
+                <div class="d-flex justify-content-between align-items-end mb-5 flex-wrap gap-3">
+                    <div class="mt-2">
+                        <h1 class="fw-bold text-dark m-0">{{ comunidade.nome }}</h1>
+                        <div class="d-flex gap-2 align-items-center text-muted mt-1">
+                            <span>c/{{ comunidade.nome | replace(" ", "") | lower }}</span>
+                            <span>•</span>
+                            <span>{{ comunidade.membros.count() }} membros</span>
+                            {% if comunidade.tipo_acesso == 'Restrito' %}<i class="bi bi-lock-fill"
+                                title="Restrito"></i>{% endif %}
+                        </div>
+
+                        <div class="d-flex gap-2 mt-2">
+                            <span class="badge bg-light text-dark border rounded-pill">{{ comunidade.categoria }}</span>
+                            {% if comunidade.trancada %}
+                            <span class="badge bg-danger"><i class="bi bi-lock-fill"></i> Trancada</span>
+                            {% endif %}
                         </div>
                     </div>
 
-                    {% if not topicos %}
-                        <div class="text-center py-5 text-muted"><h5>Ainda não há discussões aqui.</h5></div>
-                    {% endif %}
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-light border rounded-pill px-3 fw-bold" data-bs-toggle="offcanvas"
+                            data-bs-target="#offcanvasInfo"><i class="bi bi-info-circle me-1"></i> Sobre</button>
 
-                    {% for topico in topicos %}
+                        {% if comunidade.criador_id == current_user.id or current_user in comunidade.moderadores %}
+                        <a href="{{ url_for('main.configurar_comunidade', comunidade_id=comunidade.id) }}"
+                            class="btn btn-light border rounded-pill px-3" title="Configurar"><i
+                                class="bi bi-gear-fill"></i></a>
+                        {% endif %}
+
+                        {% if current_user in comunidade.membros %}
+                        <a href="{{ url_for('main.participar_comunidade', comunidade_id=comunidade.id) }}"
+                            class="btn btn-outline-danger rounded-pill fw-bold px-4">Sair</a>
+                        {% elif solicitacao_pendente %}
+                        <button class="btn btn-secondary rounded-pill px-4" disabled>Pendente</button>
+                        {% else %}
+                        <a href="{{ url_for('main.participar_comunidade', comunidade_id=comunidade.id) }}"
+                            class="btn btn-theme rounded-pill fw-bold px-4 shadow-sm">Participar</a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm rounded-4 mb-4">{{ message
+                    }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                {% if tem_acesso %}
+                <div class="row g-5">
+                    <div class="col-lg-8">
+
+                        {% if not comunidade.trancada or current_user in comunidade.moderadores %}
+                        <div class="card border-0 shadow-sm rounded-4 mb-4 bg-light">
+                            <div class="card-body p-3 d-flex align-items-center gap-3">
+                                <div class="profile-pic" style="width: 40px; height: 40px;"><img
+                                        src="{{ current_user.foto_url or url_for('static', filename='img/image.png') }}"
+                                        class="w-100 h-100 rounded-circle" style="object-fit: cover;"></div>
+                                <input type="text" class="form-control rounded-pill border-0 bg-white py-2 shadow-sm"
+                                    placeholder="Criar publicação..." data-bs-toggle="modal"
+                                    data-bs-target="#modalPostarComunidade" readonly style="cursor: pointer;">
+                                <button class="btn btn-link text-secondary"><i class="bi bi-image fs-4"></i></button>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if not topicos %}
+                        <div class="text-center py-5 text-muted">
+                            <h5>Ainda não há discussões aqui.</h5>
+                        </div>
+                        {% endif %}
+
+                        {% for topico in topicos %}
                         <article class="forum-post-card bg-white mb-4 border rounded-4 overflow-hidden shadow-sm">
                             <div class="p-4">
-                                <div class="d-flex align-items-center mb-3">
-                                    <img src="{{ url_for('static', filename='img/image.png') }}" class="rounded-circle me-2" width="32" height="32">
-                                    <div>
-                                        <span class="fw-bold text-dark d-block">{{ topico.autor.name }}</span>
-                                        <small class="text-muted" style="font-size: 0.75rem;">{{ topico.criado_em | format_data_br }}</small>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="{{ url_for('static', filename='img/image.png') }}"
+                                            class="rounded-circle" width="32">
+                                        <div>
+                                            <span class="fw-bold text-dark d-block" style="line-height: 1.2;">{{
+                                                topico.autor.name }}</span>
+                                            <small class="text-muted" style="font-size: 0.75rem;">
+                                                {{ topico.criado_em | format_data_br }}
+                                                {% if topico.autor in comunidade.moderadores %}<span
+                                                    class="text-theme fw-bold ms-1">• Mod</span>{% endif %}
+                                            </small>
+                                        </div>
                                     </div>
-                                    <div class="ms-auto dropdown">
-                                        <button class="btn btn-link text-muted p-0" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></button>
-                                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
-                                            <li><form action="{{ url_for('main.salvar_post', topico_id=topico.id) }}" method="POST"><button class="dropdown-item">Salvar</button></form></li>
-                                            {% if current_user.is_admin or topico.autor_id == current_user.id or current_user in comunidade.moderadores %}
-                                            <li><hr class="dropdown-divider"></li>
-                                            <li><form action="{{ url_for('main.excluir_post', topico_id=topico.id) }}" method="POST"><button class="dropdown-item text-danger" onclick="return confirm('Excluir?')">Excluir</button></form></li>
-                                            {% endif %}
-                                        </ul>
+
+                                    <div class="d-flex align-items-center gap-2">
+                                        {% if topico.tag %}
+                                        <span class="badge-flair" style="background-color: {{ topico.tag.cor }};">{{
+                                            topico.tag.nome }}</span>
+                                        {% endif %}
+
+                                        <div class="dropdown">
+                                            <button class="btn btn-link text-muted p-0" data-bs-toggle="dropdown"><i
+                                                    class="bi bi-three-dots"></i></button>
+                                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
+                                                <li>
+                                                    <form
+                                                        action="{{ url_for('main.salvar_post', topico_id=topico.id) }}"
+                                                        method="POST"><button class="dropdown-item">Salvar</button>
+                                                    </form>
+                                                </li>
+                                                {% if current_user.is_admin or topico.autor_id == current_user.id or
+                                                current_user in comunidade.moderadores %}
+                                                <li>
+                                                    <hr class="dropdown-divider">
+                                                </li>
+                                                <li>
+                                                    <form
+                                                        action="{{ url_for('main.excluir_post', topico_id=topico.id) }}"
+                                                        method="POST"><button class="dropdown-item text-danger"
+                                                            onclick="return confirm('Excluir?')">Excluir</button></form>
+                                                </li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
-                                <h4 class="fw-bold mb-2">{{ topico.titulo }}</h4>
+
+                                <h4 class="fw-bold mb-2 mt-3">{{ topico.titulo }}</h4>
                                 <p class="text-secondary" style="white-space: pre-line;">{{ topico.conteudo }}</p>
-                                {% if topico.imagem_post %}<img src="{{ topico.imagem_post }}" class="post-image">{% endif %}
-                                
+                                {% if topico.imagem_post %}<img src="{{ topico.imagem_post }}" class="post-image">{%
+                                endif %}
+
                                 <div class="d-flex gap-3 mt-4 pt-3 border-top">
                                     <form action="{{ url_for('main.like_post', topico_id=topico.id) }}" method="POST">
-                                        <button class="btn btn-light rounded-pill px-3 fw-bold {% if topico.id in likes_usuario %}text-success bg-success bg-opacity-10{% endif %}"><i class="bi bi-arrow-up-circle-fill me-1"></i> {{ topico.likes|length }} Relevante</button>
+                                        <button
+                                            class="btn btn-light rounded-pill px-3 fw-bold {% if topico.id in likes_usuario %}text-theme bg-light{% else %}text-secondary{% endif %}"><i
+                                                class="bi bi-arrow-up-circle-fill me-1"></i> {{ topico.likes|length
+                                            }}</button>
                                     </form>
-                                    <button class="btn btn-light rounded-pill px-3 fw-bold text-secondary" data-bs-toggle="collapse" data-bs-target="#comments-{{ topico.id }}"><i class="bi bi-chat-dots-fill me-1"></i> {{ topico.respostas|length }} Comentários</button>
+                                    <button class="btn btn-light rounded-pill px-3 fw-bold text-secondary"
+                                        data-bs-toggle="collapse" data-bs-target="#comments-{{ topico.id }}"><i
+                                            class="bi bi-chat-dots-fill me-1"></i> {{ topico.respostas|length }}
+                                        Comentários</button>
                                 </div>
                             </div>
 
                             <div class="collapse bg-light border-top p-4" id="comments-{{ topico.id }}">
-                                
-                                <form action="{{ url_for('main.comentar_post', topico_id=topico.id) }}" method="POST" enctype="multipart/form-data" class="mb-4" id="form-comentario-{{ topico.id }}">
+                                <form action="{{ url_for('main.comentar_post', topico_id=topico.id) }}" method="POST"
+                                    enctype="multipart/form-data" class="mb-4" id="form-comentario-{{ topico.id }}">
                                     <div class="d-flex gap-2 align-items-start flex-column">
-                                        
-                                        <div id="badge-resposta-{{ topico.id }}" class="replying-badge d-none">
-                                            <i class="bi bi-arrow-return-right"></i>
-                                            <span id="nome-resposta-{{ topico.id }}">Respondendo...</span>
-                                            <i class="bi bi-x-circle-fill text-danger ms-2" style="cursor: pointer;" onclick="cancelarResposta('{{ topico.id }}')" title="Cancelar"></i>
-                                        </div>
-
+                                        <div id="badge-resposta-{{ topico.id }}" class="replying-badge d-none"><i
+                                                class="bi bi-arrow-return-right"></i><span
+                                                id="nome-resposta-{{ topico.id }}">Respondendo...</span><i
+                                                class="bi bi-x-circle-fill ms-2" style="cursor: pointer;"
+                                                onclick="cancelarResposta('{{ topico.id }}')"></i></div>
                                         <div class="d-flex gap-2 w-100 align-items-center">
                                             <div class="flex-grow-1">
                                                 <input type="hidden" name="parent_id" id="parent-id-{{ topico.id }}">
-                                                
-                                                <input type="text" name="conteudo_comentario" id="input-comentario-{{ topico.id }}" class="form-control rounded-pill border-0" placeholder="Escreva um comentário..." required>
-                                                <input type="file" name="midia_comentario" id="file-comment-{{ topico.id }}" class="d-none" accept="image/*">
+                                                <input type="text" name="conteudo_comentario"
+                                                    id="input-comentario-{{ topico.id }}"
+                                                    class="form-control rounded-pill border-0"
+                                                    placeholder="Escreva um comentário..." required>
+                                                <input type="file" name="midia_comentario"
+                                                    id="file-comment-{{ topico.id }}" class="d-none" accept="image/*">
                                             </div>
-                                            <label for="file-comment-{{ topico.id }}" class="btn btn-light rounded-circle text-secondary"><i class="bi bi-image"></i></label>
-                                            <button class="btn btn-success rounded-circle"><i class="bi bi-send-fill"></i></button>
+                                            <label for="file-comment-{{ topico.id }}"
+                                                class="btn btn-light rounded-circle text-secondary"><i
+                                                    class="bi bi-image"></i></label>
+                                            <button class="btn btn-theme rounded-circle"><i
+                                                    class="bi bi-send-fill"></i></button>
                                         </div>
                                     </div>
                                 </form>
 
                                 {% for resposta in topico.respostas %}
-                                    {% if not resposta.parent_id %}
-                                        {{ render_comment(resposta, topico.id) }}
-                                    {% endif %}
-                                {% else %}
-                                    <p class="text-center text-muted small py-3">Nenhum comentário ainda.</p>
+                                {% if not resposta.parent_id %}
+                                {{ render_comment(resposta, topico.id) }}
+                                {% endif %}
                                 {% endfor %}
                             </div>
                         </article>
-                    {% endfor %}
-                </div>
-
-                <div class="col-lg-4 d-none d-lg-block">
-                    <div class="suggestion-card">
-                        <h6 class="fw-bold text-muted small mb-3">SUGESTÕES</h6>
-                        {% for sug in sugestoes %}
-                            <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">{{ sug.nome[0] | upper }}</div>
-                                <div class="flex-grow-1 overflow-hidden"><div class="fw-bold small text-truncate">{{ sug.nome }}</div><div class="text-muted small">{{ sug.membros.count() }} membros</div></div>
-                                <a href="{{ url_for('main.ver_comunidade', comunidade_id=sug.id) }}" class="btn btn-sm btn-outline-success rounded-pill px-3">Ver</a>
-                            </div>
                         {% endfor %}
                     </div>
-                </div>
-            </div>
 
-            {% else %}
-                <div class="text-center py-5">
-                    <div class="bg-light d-inline-flex p-5 rounded-circle mb-4 shadow-sm"><i class="bi bi-lock-fill fs-1 text-muted" style="font-size: 3rem;"></i></div>
+                    <div class="col-lg-4 d-none d-lg-block">
+                        <div class="suggestion-card">
+                            <h6 class="fw-bold text-muted small mb-3 text-uppercase">Recomendações</h6>
+                            {% for sug in sugestoes %}
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="bg-light text-theme rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                                    style="width: 40px; height: 40px; border: 1px solid var(--comm-color);">{{
+                                    sug.nome[0] | upper }}</div>
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <div class="fw-bold small text-truncate">{{ sug.nome }}</div>
+                                    <div class="text-muted small">{{ sug.membros.count() }} membros</div>
+                                </div>
+                                <a href="{{ url_for('main.ver_comunidade', comunidade_id=sug.id) }}"
+                                    class="btn btn-sm btn-outline-secondary rounded-pill px-3">Ver</a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                {% else %}
+                <div class="text-center py-5 my-5">
+                    <div class="bg-light d-inline-flex p-5 rounded-circle mb-4 shadow-sm"><i
+                            class="bi bi-lock-fill fs-1 text-muted" style="font-size: 3rem;"></i></div>
                     <h2 class="fw-bold text-dark">Comunidade Privada</h2>
-                    <p class="text-muted mb-4">Conteúdo visível apenas para membros.</p>
+                    <p class="text-muted mb-4">Conteúdo restrito aos membros.</p>
                     {% if solicitacao_pendente %}
-                        <button class="btn btn-secondary rounded-pill px-5 py-2 disabled">Solicitação Pendente</button>
+                    <button class="btn btn-secondary rounded-pill px-5 py-2 disabled">Solicitação Pendente</button>
                     {% else %}
-                        <a href="{{ url_for('main.participar_comunidade', comunidade_id=comunidade.id) }}" class="btn btn-success rounded-pill px-5 py-2 fw-bold shadow">Solicitar Entrada</a>
+                    <a href="{{ url_for('main.participar_comunidade', comunidade_id=comunidade.id) }}"
+                        class="btn btn-theme rounded-pill px-5 py-2 fw-bold shadow">Solicitar Entrada</a>
                     {% endif %}
                 </div>
-            {% endif %}
+                {% endif %}
+
+            </div>
         </div>
     </div>
 
     <div class="offcanvas offcanvas-end rounded-start-4 border-0" tabindex="-1" id="offcanvasInfo">
-        <div class="offcanvas-header bg-success text-white"><h5 class="offcanvas-title fw-bold">Sobre</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button></div>
+        <div class="offcanvas-header text-white" style="background-color: var(--comm-color);">
+            <h5 class="offcanvas-title fw-bold">Sobre</h5><button type="button" class="btn-close btn-close-white"
+                data-bs-dismiss="offcanvas"></button>
+        </div>
         <div class="offcanvas-body bg-light">
-            <div class="bg-white p-4 rounded-4 shadow-sm mb-4"><h6 class="fw-bold text-success small mb-3">Descrição</h6><p class="text-muted small mb-0">{{ comunidade.descricao }}</p></div>
-            {% if comunidade.regras %}<div class="bg-white p-4 rounded-4 shadow-sm mb-4"><h6 class="fw-bold text-success small mb-3">Regras</h6><div class="small text-secondary">{{ comunidade.regras }}</div></div>{% endif %}
+            <div class="bg-white p-4 rounded-4 shadow-sm mb-4">
+                <h6 class="fw-bold text-theme small mb-3">Descrição</h6>
+                <p class="text-muted small mb-0">{{ comunidade.descricao }}</p>
+            </div>
+            {% if comunidade.regras %}<div class="bg-white p-4 rounded-4 shadow-sm mb-4">
+                <h6 class="fw-bold text-theme small mb-3">Regras</h6>
+                <div class="small text-secondary" style="white-space: pre-line;">{{ comunidade.regras }}</div>
+            </div>{% endif %}
+            <div class="bg-white p-4 rounded-4 shadow-sm">
+                <h6 class="fw-bold text-theme text-uppercase small mb-3">Moderadores</h6>
+                {% for mod in comunidade.moderadores %}
+                <div class="d-flex align-items-center gap-2 mb-2"><img
+                        src="{{ url_for('static', filename='img/image.png') }}" class="rounded-circle" width="24"><span
+                        class="small fw-bold text-dark">{{ mod.name }}</span></div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
     <div class="modal fade" id="modalPostarComunidade" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <form class="modal-content border-0 shadow-lg rounded-4" action="{{ url_for('main.criar_post') }}" method="POST" enctype="multipart/form-data">
-                <div class="modal-header bg-success text-white border-0 p-4"><div><h5 class="modal-title fw-bold">Criar Publicação</h5></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-                <div class="modal-body p-4"><input type="hidden" name="comunidade_id" value="{{ comunidade.id }}"><div class="mb-3"><textarea class="form-control border-0 bg-light p-3 rounded-3" rows="6" placeholder="Escreva algo..." name="conteudo_post" required></textarea></div><div class="mb-3"><input type="file" class="form-control" name="midia_post"></div></div>
-                <div class="modal-footer border-0 p-4 pt-0"><button type="submit" class="btn btn-success fw-bold rounded-pill px-5 shadow-sm">Publicar</button></div>
+            <form class="modal-content border-0 shadow-lg rounded-4" action="{{ url_for('main.criar_post') }}"
+                method="POST" enctype="multipart/form-data">
+                <div class="modal-header text-white border-0 p-4" style="background-color: var(--comm-color);">
+                    <div>
+                        <h5 class="modal-title fw-bold">Criar Publicação</h5>
+                    </div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <input type="hidden" name="comunidade_id" value="{{ comunidade.id }}">
+
+                    {% if comunidade.tags %}
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Selecionar Tag</label>
+                        <select name="tag_id" class="form-select border-0 bg-light rounded-pill">
+                            <option value="">Nenhuma</option>
+                            {% for tag in comunidade.tags %}
+                            <option value="{{ tag.id }}">{{ tag.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-3"><textarea class="form-control border-0 bg-light p-3 rounded-3" rows="6"
+                            placeholder="Escreva algo..." name="conteudo_post" required
+                            style="resize: none;"></textarea></div>
+                    <div class="mb-3"><input type="file" class="form-control" name="midia_post"
+                            accept="image/*,video/*"></div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0"><button type="submit"
+                        class="btn btn-theme fw-bold rounded-pill px-5 shadow-sm">Publicar</button></div>
             </form>
         </div>
     </div>
 
+    {% include 'footer.html' %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function responderComentario(topicoId, nomeUsuario, comentarioId) {
@@ -297,7 +542,7 @@
             const hiddenInput = document.getElementById('parent-id-' + topicoId);
             const badge = document.getElementById('badge-resposta-' + topicoId);
             const nomeSpan = document.getElementById('nome-resposta-' + topicoId);
-            
+
             if (input && hiddenInput) {
                 hiddenInput.value = comentarioId;
                 nomeSpan.innerHTML = 'Respondendo a <b>' + nomeUsuario + '</b>';

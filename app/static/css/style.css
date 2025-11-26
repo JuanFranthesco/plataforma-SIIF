@@ -309,7 +309,7 @@ NOVA PÁGINA INICIAL (HOME DASHBOARD) - ESTILO APP
 --- */
 
 /* IMPORTANTE: Usamos a classe .home-dashboard (definida no HTML)
-   antes de cada regra. Isso garante que estas alterações 
+   antes de cada regra. Isso garante que estas alterações
    NÃO afetem o Login, Perfil ou Suporte.
 */
 
@@ -537,7 +537,7 @@ main.home-dashboard {
   position: relative;
   overflow: hidden;
   width: 100%;
-  /* Esta % define a altura. 56.25% = 16:9. 
+  /* Esta % define a altura. 56.25% = 16:9.
      Aumentei para 65% para ficar melhor no celular */
   padding-top: 65%;
   background-color: #eee;
@@ -1047,7 +1047,7 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE PERFIL (tela_perfil.html)
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   background-color: #FFFFFF;
   margin-bottom: 25px;
-  /* As margens negativas (margin-top, margin-left, margin-right) 
+  /* As margens negativas (margin-top, margin-left, margin-right)
     foram REMOVIDAS daqui para parar de cobrir a navbar.
   */
 }
@@ -2125,7 +2125,7 @@ ESTILOS ADICIONAIS PARA TELA INICIAL (tela_inicial.html)
 ============================================================
 --- */
 
-/* 1. Estilo para os botões "Materiais OBMEP" e "Fóruns" 
+/* 1. Estilo para os botões "Materiais OBMEP" e "Fóruns"
      (substitui o <button> por um <a> estilizado)
 */
 .card-home-btn {
@@ -2155,7 +2155,7 @@ ESTILOS ADICIONAIS PARA TELA INICIAL (tela_inicial.html)
   color: #386641;
 }
 
-/* 2. Wrapper para transformar cards verdes (notícias, eventos, mapa) em links 
+/* 2. Wrapper para transformar cards verdes (notícias, eventos, mapa) em links
      sem estragar o visual.
 */
 .card-link-wrapper {
@@ -2261,12 +2261,12 @@ FOOTER MODERNO (ATUALIZADO)
     .site-footer {
         text-align: center;
     }
-    
+
     .social-icons {
         justify-content: center;
         display: flex;
     }
-    
+
     .footer-brand {
         justify-content: center;
     }
@@ -3261,4 +3261,44 @@ body.high-contrast .profile-banner {
 
 .card-material-hover:hover .bi {
   transform: scale(1.1);
+}
+
+/* Efeitos de Prévia e Animação ao Passar o Mouse (Para tela_inicial.html) */
+
+/* Estilo base para itens clicáveis (Notícias e Eventos) */
+.noticia-item, .evento-badge {
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, background-color 0.3s;
+    position: relative;
+    z-index: 1; /* Garante que o item fique por cima de outros ao levantar */
+}
+
+/* Efeito de "Levantar" e Sombra ao passar o mouse */
+.noticia-item:hover, .evento-badge:hover {
+    transform: translateY(-5px); /* Move levemente para cima */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18); /* Sombra de destaque */
+    background-color: var(--card-hover-bg, #f0f4f8); /* Cor de fundo levemente alterada */
+    /* Garante que o link da notícia tenha cor ao levantar */
+    text-decoration: none;
+}
+
+/* NOVO: Estilos para o texto de prévia da Notícia */
+/* Oculta o texto de prévia por padrão */
+.noticia-item .noticia-preview-text {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
+    margin-top: 5px;
+    color: #6c757d;
+    font-size: 0.9em;
+    padding-right: 15px;
+    padding-left: 15px;
+    /* Adicionado para ajustar o espaçamento se a notícia for um list-group-item */
+    white-space: pre-wrap; /* Permite quebras de linha no conteúdo */
+}
+
+/* Revela o texto de prévia ao passar o mouse */
+.noticia-item:hover .noticia-preview-text {
+    max-height: 100px; /* Altura máxima para exibição */
+    opacity: 1;
 }
