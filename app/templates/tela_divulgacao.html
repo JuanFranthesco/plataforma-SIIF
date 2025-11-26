@@ -13,46 +13,71 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
     <style>
-        /* Container dos botões de ajuda (Suporte e Denúncia) */
-        .floating-buttons-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 1050; /* Garante que fique acima de quase tudo */
+        /* --- ESTILOS GERAIS E UTILS --- */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f6f9;
         }
 
-        .help-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
+        /* CORREÇÃO DO MENU DROPDOWN (FICAR POR CIMA DE TUDO) */
+        .dropdown-menu {
+            z-index: 9999 !important;
+        }
+
+        /* Estilo do Popover (Preview) */
+        .popover {
+            max-width: 300px; /* Largura máxima do preview */
+            border-color: #198754; /* Cor da borda verde */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .popover-header {
+            background-color: #198754;
             color: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
-            text-decoration: none;
+            font-weight: bold;
+        }
+        .popover-body {
+            font-size: 0.9rem;
+            color: #333;
         }
 
-        .help-btn:hover {
-            transform: scale(1.1);
-            color: white;
+        /* Garante que o header fique acima da sidebar sticky */
+        header, .navbar {
+            position: relative;
+            z-index: 1030;
         }
 
-        .help-btn-user { background-color: #0d6efd; } /* Azul para suporte */
-        .help-btn-admin { background-color: #386641; } /* Vermelho para denúncia */
+        /* Card Customizado (Padrão) */
+        .card-custom {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
 
-        /* Estilos do Calendário Personalizado */
+        /* Hover nos cards de notícia */
+        .group-hover:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        }
+
+        .card-header-custom {
+            background-color: transparent;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 1.5rem;
+        }
+
+        .card-body-custom {
+            padding: 1.5rem;
+        }
+
+        /* --- ESTILOS DO CALENDÁRIO --- */
         .calendar-custom {
             background: #fff;
             border-radius: 8px;
             overflow: hidden;
         }
-        
+
         .calendar-header {
             background-color: #386641;
             color: white;
@@ -88,6 +113,7 @@
             border-radius: 50%;
             position: relative;
             font-size: 0.9rem;
+            transition: background-color 0.2s;
         }
 
         .calendar-day:hover:not(.empty) {
@@ -104,37 +130,71 @@
             content: '';
             width: 6px;
             height: 6px;
-            background-color: #ffc107; /* Ponto amarelo para evento */
+            background-color: #ffc107;
             border-radius: 50%;
             position: absolute;
-            bottom: 2px;
+            bottom: 4px;
         }
-        
+
         .empty { cursor: default; }
+
+        /* --- RESPONSIVIDADE (Media Queries) --- */
+        @media (max-width: 991.98px) {
+            /* Ajustes para Tablet e Mobile */
+            .divulgacao-dashboard {
+                padding-top: 1rem !important;
+            }
+
+            h1.fw-bold {
+                font-size: 1.5rem !important;
+            }
+
+            .latest-news-card .card-img-top {
+                height: 180px !important;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            /* Ajustes específicos para telas muito pequenas (Celulares) */
+            .calendar-day {
+                height: 35px; /* Dias menores */
+                font-size: 0.8rem;
+            }
+
+            .calendar-day.has-event::after {
+                width: 4px;
+                height: 4px;
+                bottom: 2px;
+            }
+
+            .card-body {
+                padding: 1rem !important;
+            }
+        }
     </style>
 
     <script>
         const IS_ADMIN = {{ current_user.is_admin | tojson }};
         const API_URL_NOTICIAS = "/api/noticias";
         const API_URL_EVENTOS = "/api/eventos";
-        
-        // Variável global para armazenar eventos carregados e usar no calendário
-        let listaEventosGlobais = []; 
+
+        // Variável global para armazenar eventos carregados
+        let listaEventosGlobais = [];
     </script>
 </head>
 
 <body class="{% if current_user.is_admin %}role-admin{% else %}role-user{% endif %}">
-    <div class="page-container">
+    <div class="page-container d-flex flex-column min-vh-100">
 
-        {% include 'header.html' %} 
+        {% include 'header.html' %}
 
-        <main id="conteudo-principal" role="main" class="divulgacao-dashboard container-fluid py-4">
+        <main id="conteudo-principal" role="main" class="divulgacao-dashboard container-fluid py-4 flex-grow-1">
             <a href="#conteudo-principal" class="visually-hidden-focusable skip-link">Pular para o conteúdo principal</a>
 
             <div class="row g-4">
-                
+
                 <div id="sidebar-wrapper" class="col-lg-3 d-none d-lg-block">
-                    <div class="card-custom h-100">
+                    <div class="card-custom h-100 sticky-top" style="top: 20px; z-index: 1020;">
                         <div class="p-4">
                             <h2 class="mb-4 fw-bold text-success fs-5 border-bottom pb-2">
                                 <i class="bi bi-filter-circle"></i> Buscar Notícias
@@ -156,8 +216,28 @@
                                     <label for="filtrar-campus" class="form-label fw-bold small text-success">CAMPUS</label>
                                     <select id="filtrar-campus" name="campus" class="form-select bg-light border-0" onchange="aplicarFiltros()">
                                         <option value="">Todos os Campus</option>
+                                        <option value="apodi">Apodi</option>
+                                        <option value="caico">Caicó</option>
+                                        <option value="canguaretama">Canguaretama</option>
+                                        <option value="cearamirim">Ceará-Mirim</option>
+                                        <option value="curraisnovos">Currais Novos</option>
+                                        <option value="ipanguacu">Ipanguaçu</option>
+                                        <option value="joaocamara">João Câmara</option>
+                                        <option value="jucurutu">Jucurutu</option>
+                                        <option value="lajes">Lajes</option>
+                                        <option value="macau">Macau</option>
                                         <option value="mossoro">Mossoró</option>
+                                        <option value="natalcentral">Natal Central</option>
+                                        <option value="natalcidadealta">Natal Cidade Alta</option>
+                                        <option value="natalzonaleste">Natal Zona Leste</option>
+                                        <option value="natalzonanorte">Natal Zona Norte</option>
+                                        <option value="novacruz">Nova Cruz</option>
+                                        <option value="parelhas">Parelhas</option>
+                                        <option value="parnamirim">Parnamirim</option>
                                         <option value="paudosferros">Pau dos Ferros</option>
+                                        <option value="santacruz">Santa Cruz</option>
+                                        <option value="saogoncalo">São Gonçalo do Amarante</option>
+                                        <option value="saopaulo">São Paulo do Potengi</option>
                                     </select>
                                 </div>
                                 <div>
@@ -174,13 +254,13 @@
                 </div>
 
                 <div class="col-lg-9 col-md-12">
-                    
-                    <div class="d-flex justify-content-between align-items-center mb-4">
+
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
                         <div>
                              <h1 class="fw-bold text-success mb-0" style="font-size: 1.8rem;">Divulgação</h1>
                              <p class="text-muted mb-0">Fique por dentro das novidades do campus</p>
                         </div>
-                        
+
                         <button class="btn btn-outline-success d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilters" aria-controls="offcanvasFilters">
                             <i class="bi bi-filter"></i> Filtros
                         </button>
@@ -194,15 +274,15 @@
                                 <small class="text-muted">Gerencie as notícias e eventos do portal.</small>
                             </div>
                             <button class="btn btn-success rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#modalPostarNoticia">
-                                <i class="bi bi-plus-lg"></i> Nova Notícia
+                                <i class="bi bi-plus-lg"></i> <span class="d-none d-sm-inline">Nova Notícia</span>
                             </button>
                         </div>
                     </div>
                     {% endif %}
 
                     <div class="row g-4">
-                        
-                        <div class="col-lg-8">
+
+                        <div class="col-lg-8 order-2 order-lg-1">
                             <div id="latest-news-list" class="row g-4">
                                 <div class="col-12 text-center py-5">
                                     <div class="spinner-border text-success" role="status">
@@ -212,9 +292,9 @@
                             </div>
                         </div>
 
-                        <aside class="col-lg-4">
-                            <div class="sticky-top" style="top: 20px;">
-                                
+                        <aside class="col-lg-4 order-1 order-lg-2">
+                            <div class="sticky-lg-top" style="top: 20px;">
+
                                 <section class="card-custom mb-4" aria-labelledby="upcoming-events-title">
                                     <div class="card-header-custom d-flex justify-content-between align-items-center">
                                         <h3 id="upcoming-events-title" class="fs-5 mb-0 fw-bold text-success">
@@ -239,7 +319,7 @@
                                         </h3>
                                     </div>
                                     <div class="card-body-custom p-0">
-                                        <div class="calendar-custom border">
+                                        <div class="calendar-custom border border-0">
                                             <div class="calendar-header">
                                                 <button class="btn btn-sm text-white" onclick="mudarMes(-1)"><i class="bi bi-chevron-left"></i></button>
                                                 <span id="mesAnoDisplay" class="fw-bold"></span>
@@ -281,23 +361,40 @@
                     <form id="formPostarNoticia" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="noticiaTitulo" class="form-label fw-bold">Título</label>
-                            <input type="text" class="form-control bg-light" id="noticiaTitulo" rows="6" maxlength="30" placeholder="Ex: Seminário de Inovação (Máx 30 caracteres)..." required>
+                            <input type="text" class="form-control bg-light" id="noticiaTitulo" maxlength="30" placeholder="Ex: Seminário de Inovação (Máx 30 caracteres)..." required>
                         </div>
                         <div class="mb-3">
-                            
-                            <div class="mb-3">
-                                <label for="noticiaConteudo" class="form-label fw-bold">Conteúdo</label>
-                                <textarea class="form-control bg-light" id="noticiaConteudo" rows="6" maxlength="95" placeholder="Escreva o corpo da notícia aqui (Máx 95 caracteres)..." required></textarea>
-                                <div class="form-text text-end">Máximo de 95 caracteres.</div>
-                            </div>
+                            <label for="noticiaConteudo" class="form-label fw-bold">Conteúdo</label>
+                            <textarea class="form-control bg-light" id="noticiaConteudo" rows="6" maxlength="95" placeholder="Escreva o corpo da notícia aqui (Máx 95 caracteres)..." required></textarea>
+                            <div class="form-text text-end">Máximo de 95 caracteres.</div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-bold">Campus</label>
                                 <select id="noticiaCampus" class="form-select bg-light">
                                     <option value="IFRN">Geral / IFRN</option>
+                                    <option value="apodi">Apodi</option>
+                                    <option value="caico">Caicó</option>
+                                    <option value="canguaretama">Canguaretama</option>
+                                    <option value="cearamirim">Ceará-Mirim</option>
+                                    <option value="curraisnovos">Currais Novos</option>
+                                    <option value="ipanguacu">Ipanguaçu</option>
+                                    <option value="joaocamara">João Câmara</option>
+                                    <option value="jucurutu">Jucurutu</option>
+                                    <option value="lajes">Lajes</option>
+                                    <option value="macau">Macau</option>
                                     <option value="mossoro">Mossoró</option>
+                                    <option value="natalcentral">Natal Central</option>
+                                    <option value="natalcidadealta">Natal Cidade Alta</option>
+                                    <option value="natalzonaleste">Natal Zona Leste</option>
+                                    <option value="natalzonanorte">Natal Zona Norte</option>
+                                    <option value="novacruz">Nova Cruz</option>
+                                    <option value="parelhas">Parelhas</option>
+                                    <option value="parnamirim">Parnamirim</option>
                                     <option value="paudosferros">Pau dos Ferros</option>
+                                    <option value="santacruz">Santa Cruz</option>
+                                    <option value="saogoncalo">São Gonçalo do Amarante</option>
+                                    <option value="saopaulo">São Paulo do Potengi</option>
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
@@ -328,7 +425,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-success" id="btnPostarNoticia">Publicar</button> 
+                    <button type="button" class="btn btn-success" id="btnPostarNoticia">Publicar</button>
                 </div>
             </div>
         </div>
@@ -343,12 +440,12 @@
                 </div>
                 <div class="modal-body">
                     <img src="" id="modalVerNoticiaImagem" class="img-fluid rounded-3 mb-4 shadow-sm w-100" style="display: none; object-fit: cover; max-height: 400px;">
-                    
-                    <h2 id="modalVerNoticiaTitulo" class="fw-bold mb-3 text-dark"></h2>
-                    
-                    <div class="text-muted mb-4" style="white-space: pre-wrap; line-height: 1.7;" id="modalVerNoticiaConteudo"></div> 
 
-                    <div class="d-flex gap-2 pt-3 border-top">
+                    <h2 id="modalVerNoticiaTitulo" class="fw-bold mb-3 text-dark"></h2>
+
+                    <div class="text-muted mb-4" style="white-space: pre-wrap; line-height: 1.7;" id="modalVerNoticiaConteudo"></div>
+
+                    <div class="d-flex flex-wrap gap-2 pt-3 border-top">
                         <a href="#" id="modalVerNoticiaLinkExterno" class="btn btn-outline-success rounded-pill" target="_blank" style="display: none;">
                             <i class="bi bi-link-45deg"></i> Acessar Link
                         </a>
@@ -372,14 +469,11 @@
                     <form id="formAdicionarEvento">
                         <div class="mb-3">
                             <label for="eventoTitulo" class="form-label fw-bold">Nome do Evento</label>
-                            <div class="mb-3">
-                                <label for="eventoTitulo" class="form-label fw-bold">Nome do Evento</label>
-                                <input type="text" class="form-control" id="eventoTitulo" maxlength="85" placeholder="Ex: Semana de Tecnologia (Máx 95 caracteres)" required>
-                            </div>
+                            <input type="text" class="form-control" id="eventoTitulo" maxlength="85" placeholder="Ex: Semana de Tecnologia (Máx 95 caracteres)" required>
                         </div>
                         <div class="mb-3">
                             <label for="eventoData" class="form-label fw-bold">Data/Hora de Início</label>
-                            <input type="datetime-local" class="form-control" id="eventoData" required> 
+                            <input type="datetime-local" class="form-control" id="eventoData" required>
                         </div>
                         <div class="mb-3">
                             <label for="eventoLink" class="form-label fw-bold">Link</label>
@@ -418,8 +512,28 @@
                     <label for="filtrar-campus-mobile" class="form-label fw-bold small text-success">CAMPUS</label>
                     <select id="filtrar-campus-mobile" name="campus" class="form-select bg-light border-0" onchange="aplicarFiltros()">
                         <option value="">Todos os Campus</option>
+                        <option value="apodi">Apodi</option>
+                        <option value="caico">Caicó</option>
+                        <option value="canguaretama">Canguaretama</option>
+                        <option value="cearamirim">Ceará-Mirim</option>
+                        <option value="curraisnovos">Currais Novos</option>
+                        <option value="ipanguacu">Ipanguaçu</option>
+                        <option value="joaocamara">João Câmara</option>
+                        <option value="jucurutu">Jucurutu</option>
+                        <option value="lajes">Lajes</option>
+                        <option value="macau">Macau</option>
                         <option value="mossoro">Mossoró</option>
+                        <option value="natalcentral">Natal Central</option>
+                        <option value="natalcidadealta">Natal Cidade Alta</option>
+                        <option value="natalzonaleste">Natal Zona Leste</option>
+                        <option value="natalzonanorte">Natal Zona Norte</option>
+                        <option value="novacruz">Nova Cruz</option>
+                        <option value="parelhas">Parelhas</option>
+                        <option value="parnamirim">Parnamirim</option>
                         <option value="paudosferros">Pau dos Ferros</option>
+                        <option value="santacruz">Santa Cruz</option>
+                        <option value="saogoncalo">São Gonçalo do Amarante</option>
+                        <option value="saopaulo">São Paulo do Potengi</option>
                     </select>
                 </div>
                 <div>
@@ -433,15 +547,6 @@
             </form>
         </div>
       </div>
-    </div>
-    
-    <div class="floating-buttons-container">
-        <a href="{{ url_for('main.suporte') }}" class="help-btn help-btn-user" title="Suporte">
-            <i class="bi bi-headset"></i>
-        </a>
-        <a href="{{ url_for('main.tela_denuncias') }}" class="help-btn help-btn-admin" title="Denúncias">
-            <i class="bi bi-shield-check"></i>
-        </a>
     </div>
 
     <div class="modal fade" id="modalDetalhesDia" tabindex="-1" aria-hidden="true">
@@ -466,52 +571,45 @@
     </div>
     <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
     <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         // --- CONFIGURAÇÃO DO CALENDÁRIO ---
-        let calDataAtual = new Date(); // Data base para navegação (Mês/Ano)
+        let calDataAtual = new Date();
 
-        // Função para desenhar o calendário
         function renderizarCalendario() {
             const displayMes = document.getElementById('mesAnoDisplay');
             const gridDias = document.getElementById('diasCalendario');
-            
+
             if(!gridDias) return;
 
             const ano = calDataAtual.getFullYear();
-            const mes = calDataAtual.getMonth(); // 0 a 11
+            const mes = calDataAtual.getMonth();
 
-            // Nomes dos meses
             const nomesMeses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
             displayMes.textContent = `${nomesMeses[mes]} ${ano}`;
 
-            const primeiroDiaDaSemana = new Date(ano, mes, 1).getDay(); 
-            const ultimoDiaDoMes = new Date(ano, mes + 1, 0).getDate(); 
-            
+            const primeiroDiaDaSemana = new Date(ano, mes, 1).getDay();
+            const ultimoDiaDoMes = new Date(ano, mes + 1, 0).getDate();
+
             gridDias.innerHTML = "";
 
-            // Dias vazios
             for(let i = 0; i < primeiroDiaDaSemana; i++) {
                 gridDias.innerHTML += `<div class="calendar-day empty"></div>`;
             }
 
-            // Dias do mês
             const hoje = new Date();
-            
+
             for(let dia = 1; dia <= ultimoDiaDoMes; dia++) {
                 const diaEl = document.createElement('div');
                 diaEl.classList.add('calendar-day');
                 diaEl.textContent = dia;
 
-                // Destacar "Hoje"
                 if(dia === hoje.getDate() && mes === hoje.getMonth() && ano === hoje.getFullYear()) {
                     diaEl.classList.add('today');
                 }
 
-                // Verifica se há eventos neste dia específico
-                // Filtramos a lista global para encontrar eventos que batem com Dia/Mês/Ano
                 const eventosDoDia = listaEventosGlobais.filter(ev => {
                     const dataEv = new Date(ev.data_hora_inicio);
                     return dataEv.getDate() === dia && dataEv.getMonth() === mes && dataEv.getFullYear() === ano;
@@ -520,32 +618,24 @@
                 if(eventosDoDia.length > 0) {
                     diaEl.classList.add('has-event');
                     diaEl.title = "Clique para ver os eventos";
-                    
-                    // --- NOVO: Ação de Clique ---
-                    // Passamos a lista de eventos desse dia para a função que abre o modal
+
                     diaEl.onclick = () => mostrarDetalhesDoDia(dia, nomesMeses[mes], eventosDoDia);
-                    diaEl.style.cursor = "pointer"; // Garante que pareça clicável
+                    diaEl.style.cursor = "pointer";
                 }
 
                 gridDias.appendChild(diaEl);
             }
         }
 
-        // --- NOVA FUNÇÃO: ABRE O MODAL COM DETALHES ---
         function mostrarDetalhesDoDia(dia, nomeMes, eventos) {
             const modalEl = document.getElementById('modalDetalhesDia');
             const tituloEl = document.getElementById('tituloModalDia');
             const listaEl = document.getElementById('listaEventosDoDia');
-            
-            // Configura o título do Modal (Ex: Eventos de 25 de Novembro)
+
             tituloEl.textContent = `Eventos em ${dia} de ${nomeMes}`;
-            
-            // Limpa a lista anterior
             listaEl.innerHTML = "";
 
-            // Cria os itens da lista
             eventos.forEach(ev => {
-                // Formata a hora (Ex: 14:30)
                 const dataEv = new Date(ev.data_hora_inicio);
                 const hora = dataEv.getHours().toString().padStart(2, '0');
                 const min = dataEv.getMinutes().toString().padStart(2, '0');
@@ -554,23 +644,22 @@
                 item.href = ev.link || "#";
                 item.target = "_blank";
                 item.className = "list-group-item list-group-item-action";
-                
+
                 item.innerHTML = `
                     <div class="d-flex w-100 justify-content-between">
-                        <h6 class="mb-1 fw-bold text-success">${ev.titulo}</h6>
-                        <small class="text-muted">${hora}:${min}</small>
+                        <h6 class="mb-1 fw-bold text-success text-break">${ev.titulo}</h6>
+                        <small class="text-muted ms-2">${hora}:${min}</small>
                     </div>
                     <p class="mb-1 small text-muted">Clique para acessar o link.</p>
                 `;
-                
+
                 listaEl.appendChild(item);
             });
 
-            // Abre o modal usando Bootstrap
             const modalInstance = new bootstrap.Modal(modalEl);
             modalInstance.show();
         }
-        // Navegar meses
+
         function mudarMes(delta) {
             calDataAtual.setMonth(calDataAtual.getMonth() + delta);
             renderizarCalendario();
@@ -582,9 +671,8 @@
         if (modalVerNoticia) {
             modalVerNoticia.addEventListener('show.bs.modal', event => {
                 const button = event.relatedTarget;
-                
+
                 const titulo = button.getAttribute('data-noticia-titulo');
-                // Aqui pegamos o conteúdo COMPLETO guardado no atributo data
                 const conteudo = button.getAttribute('data-noticia-conteudo');
                 const imagemUrl = button.getAttribute('data-noticia-imagem-url');
                 const linkExterno = button.getAttribute('data-noticia-link-externo');
@@ -605,16 +693,24 @@
                 } else {
                     elImagem.style.display = 'none';
                 }
-                
-                // Botões de Link
+
                 elLink.href = linkExterno || '#';
                 elLink.style.display = (linkExterno && linkExterno !== 'null' && linkExterno !== '#') ? 'inline-flex' : 'none';
-                
+
                 elArquivo.href = arquivoUrl || '#';
                 elArquivo.style.display = (arquivoUrl && arquivoUrl !== 'null' && arquivoUrl !== '#') ? 'inline-flex' : 'none';
             });
         }
-        
+
+        // Função para inicializar os popovers (tooltips avançados)
+        function initPopovers() {
+            const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+            const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl, {
+                trigger: 'hover', // Garante que abra no hover
+                html: true // Permite HTML dentro se necessário
+            }));
+        }
+
         async function carregarDados() {
             const noticiasContainer = document.getElementById("latest-news-list");
             const eventosContainer = document.getElementById("upcoming-events-list");
@@ -622,13 +718,12 @@
             noticiasContainer.innerHTML = `<div class="col-12 text-center py-5"><div class="spinner-border text-success" role="status"><span class="visually-hidden">Carregando...</span></div></div>`;
             eventosContainer.innerHTML = `<li class='text-muted text-center py-3'>Carregando eventos...</li>`;
 
-            // A. CARREGAR NOTÍCIAS
             try {
                 const response = await fetch(API_URL_NOTICIAS);
                 const noticias = await response.json();
 
                 noticiasContainer.innerHTML = "";
-                
+
                 if (noticias.length === 0) {
                     noticiasContainer.innerHTML = `<div class="col-12 text-center text-muted p-5">Nenhuma notícia encontrada.</div>`;
                 }
@@ -645,44 +740,49 @@
                         `;
                     }
 
-                    // FIX 4: TRUNCAR TEXTO (Previa da Notícia)
-                    // Se o conteúdo for maior que 200 caracteres, corta e adiciona "..."
-                    // Isso evita que o card fique gigante.
                     let conteudoCompleto = n.conteudo || "";
                     let conteudoPrevia = conteudoCompleto;
-                    
+
+                    // Limpar aspas para não quebrar o atributo HTML do popover
+                    let conteudoSafe = conteudoCompleto.replace(/"/g, '&quot;');
+
                     if (conteudoPrevia.length > 95) {
                         conteudoPrevia = conteudoPrevia.substring(0, 95) + "...";
                     }
 
-                    const imgDisplay = n.imagem_url 
+                    const imgDisplay = n.imagem_url
                         ? `<img src="${n.imagem_url}" class="card-img-top" alt="${n.titulo}" style="height: 200px; object-fit: cover;">`
                         : `<div class="card-img-top bg-secondary d-flex align-items-center justify-content-center text-white" style="height: 200px;">
                                 <i class="bi bi-newspaper fs-1 opacity-50"></i>
                               </div>`;
 
                     const cardWrapper = document.createElement("div");
-                    cardWrapper.classList.add("col-md-6", "col-xl-4", "latest-news-card");
+                    // Ajuste de grid para Mobile (col-12), Tablet (col-md-6) e Desktop Grande (col-xl-4)
+                    cardWrapper.classList.add("col-12", "col-md-6", "col-xl-4", "latest-news-card");
                     cardWrapper.setAttribute('data-campus', n.campus || '');
                     cardWrapper.setAttribute('data-categoria', n.categoria || '');
 
-                    // IMPORTANTE: No atributo data-noticia-conteudo, colocamos 'conteudoCompleto'
-                    // Mas na tag <p> visível, colocamos 'conteudoPrevia'.
+                    // Adicionado Popover aqui
                     cardWrapper.innerHTML = `
-                        <div class="card-custom h-100 position-relative overflow-hidden group-hover">
+                        <div class="card-custom h-100 position-relative overflow-hidden group-hover"
+                             data-bs-toggle="popover"
+                             data-bs-placement="top"
+                             data-bs-title="${n.titulo}"
+                             data-bs-content="${conteudoSafe}">
+
                             ${deleteButtonHtml}
                             <a href="#" class="text-decoration-none text-dark h-100 d-flex flex-column"
                                 data-bs-toggle="modal" data-bs-target="#modalVerNoticia"
                                 data-noticia-titulo="${n.titulo}"
-                                data-noticia-conteudo="${conteudoCompleto}" 
+                                data-noticia-conteudo="${conteudoCompleto}"
                                 data-noticia-imagem-url="${n.imagem_url || ''}"
                                 data-noticia-link-externo="${n.link_externo || ''}"
                                 data-noticia-arquivo-url="${n.arquivo_url || ''}">
-                                
+
                                 <div class="overflow-hidden">
                                     ${imgDisplay}
                                 </div>
-                                
+
                                 <div class="card-body d-flex flex-column flex-grow-1 p-4">
                                     <div class="mb-2">
                                         <span class="badge bg-light text-success border border-success border-opacity-25 rounded-pill">
@@ -692,13 +792,13 @@
                                             ${n.campus ? n.campus.toUpperCase() : 'IFRN'}
                                         </span>
                                     </div>
-                                    
+
                                     <h5 class="card-title fw-bold mb-3 text-success" style="line-height: 1.4;">${n.titulo}</h5>
-                                    
+
                                     <p class="card-text text-muted small mb-4 flex-grow-1">
                                         ${conteudoPrevia}
                                     </p>
-                                    
+
                                     <div class="d-flex align-items-center text-success fw-bold small mt-auto">
                                         LER MAIS <i class="bi bi-arrow-right ms-2"></i>
                                     </div>
@@ -709,7 +809,7 @@
 
                     noticiasContainer.appendChild(cardWrapper);
                 });
-                
+
                 if (typeof aplicarFiltros === 'function') aplicarFiltros();
 
             } catch (err) {
@@ -717,13 +817,11 @@
                 noticiasContainer.innerHTML = "<div class='col-12 text-center text-danger p-5'>Erro ao carregar notícias.</div>";
             }
 
-            // B. CARREGAR EVENTOS
             try {
                 const resp = await fetch(API_URL_EVENTOS);
                 const eventos = await resp.json();
-                
-                // Salva na variavel global para o calendário usar
-                listaEventosGlobais = eventos; 
+
+                listaEventosGlobais = eventos;
 
                 eventosContainer.innerHTML = "";
 
@@ -736,12 +834,12 @@
                     const dia = dataObj.getDate().toString().padStart(2, '0');
                     const mes = dataObj.toLocaleString('pt-BR', { month: 'short' }).toUpperCase().replace('.', '');
 
-                    // --- NOVO: Limite de 95 Caracteres ---
                     let tituloExibido = e.titulo || "Sem Título";
+                    let tituloCompletoSafe = tituloExibido.replace(/"/g, '&quot;');
+
                     if (tituloExibido.length > 95) {
                         tituloExibido = tituloExibido.substring(0, 95) + "...";
                     }
-                    // --------------------------------------
 
                     let deleteBtn = '';
                     if (IS_ADMIN) {
@@ -752,15 +850,21 @@
                         `;
                     }
 
+                    // Adicionado Popover aqui no link
                     const li = `
                         <li class="d-flex align-items-center py-3 border-bottom" data-event-id="${e.id}">
-                            <div class="rounded text-center text-white me-3 d-flex flex-column justify-content-center" 
+                            <div class="rounded text-center text-white me-3 d-flex flex-column justify-content-center"
                                  style="width: 50px; height: 50px; background-color: #386641; flex-shrink: 0;">
                                 <span class="fw-bold fs-5 lh-1">${dia}</span>
                                 <span style="font-size: 0.65rem;">${mes}</span>
                             </div>
                             <div class="flex-grow-1" style="min-width: 0;">
-                                <a href="${e.link || '#'}" target="_blank" class="text-dark fw-bold text-decoration-none d-block" style="word-wrap: break-word;" title="${e.titulo}">
+                                <a href="${e.link || '#'}" target="_blank" class="text-dark fw-bold text-decoration-none d-block text-break"
+                                   title="${tituloCompletoSafe}"
+                                   data-bs-toggle="popover"
+                                   data-bs-trigger="hover"
+                                   data-bs-placement="left"
+                                   data-bs-content="Clique para acessar o link do evento.">
                                     ${tituloExibido}
                                 </a>
                                 <small class="text-muted">IFRN Campus</small>
@@ -771,30 +875,36 @@
                     eventosContainer.insertAdjacentHTML('beforeend', li);
                 });
 
-                // Atualiza o calendário após carregar eventos
                 renderizarCalendario();
+
+                // IMPORTANTE: Inicializar os popovers após inserir no DOM
+                initPopovers();
 
             } catch (err) {
                 console.error('Erro ao carregar eventos:', err);
                 eventosContainer.innerHTML = "<li class='text-danger text-center py-3'>Erro ao carregar eventos.</li>";
             }
         }
-        
+
         document.addEventListener("DOMContentLoaded", carregarDados);
 
-        // --- MANTEVE-SE A LÓGICA DE FILTROS E POSTAGENS DO CÓDIGO ORIGINAL ABAIXO ---
-
         function aplicarFiltros() {
-            const campusFiltro = (document.getElementById('filtrar-campus').value || document.getElementById('filtrar-campus-mobile').value || "").trim().toLowerCase();
-            const categoriaFiltro = (document.getElementById('filtrar-categoria').value || document.getElementById('filtrar-categoria-mobile').value || "").trim().toLowerCase();
-            const termoBusca = (document.getElementById('pesquisar').value || document.getElementById('pesquisar-mobile').value || "").trim().toLowerCase();
-            
-            document.getElementById('filtrar-campus').value = campusFiltro;
-            document.getElementById('filtrar-campus-mobile').value = campusFiltro;
-            document.getElementById('filtrar-categoria').value = categoriaFiltro;
-            document.getElementById('filtrar-categoria-mobile').value = categoriaFiltro;
-            document.getElementById('pesquisar').value = termoBusca;
-            document.getElementById('pesquisar-mobile').value = termoBusca;
+            // Verifica o valor de ambos os inputs (Desktop ou Mobile)
+            const campusVal = document.getElementById('filtrar-campus').value || document.getElementById('filtrar-campus-mobile').value || "";
+            const categoriaVal = document.getElementById('filtrar-categoria').value || document.getElementById('filtrar-categoria-mobile').value || "";
+            const searchVal = document.getElementById('pesquisar').value || document.getElementById('pesquisar-mobile').value || "";
+
+            const campusFiltro = campusVal.trim().toLowerCase();
+            const categoriaFiltro = categoriaVal.trim().toLowerCase();
+            const termoBusca = searchVal.trim().toLowerCase();
+
+            // Sincroniza os inputs Desktop e Mobile para manter consistência visual
+            document.getElementById('filtrar-campus').value = campusVal;
+            document.getElementById('filtrar-campus-mobile').value = campusVal;
+            document.getElementById('filtrar-categoria').value = categoriaVal;
+            document.getElementById('filtrar-categoria-mobile').value = categoriaVal;
+            document.getElementById('pesquisar').value = searchVal;
+            document.getElementById('pesquisar-mobile').value = searchVal;
 
             const cards = document.querySelectorAll('.latest-news-card');
             let noticiasVisiveis = 0;
@@ -802,25 +912,24 @@
             cards.forEach(card => {
                 const campusCard = (card.getAttribute('data-campus') || "").trim().toLowerCase();
                 const categoriaCard = (card.getAttribute('data-categoria') || "").trim().toLowerCase();
-                
+
                 const link = card.querySelector('a');
                 const titulo = link ? link.getAttribute('data-noticia-titulo').toLowerCase() : '';
-                // Busca no texto completo, mesmo que esteja cortado visualmente
                 const conteudo = link ? link.getAttribute('data-noticia-conteudo').toLowerCase() : '';
 
                 const okCampus = (!campusFiltro || campusFiltro === "todos os campus") || (campusCard === campusFiltro);
                 const okCategoria = (!categoriaFiltro || categoriaFiltro === "todas as categorias") || (categoriaCard === categoriaFiltro);
                 const okBusca = (!termoBusca) || (titulo.includes(termoBusca) || conteudo.includes(termoBusca));
-                
+
                 const isVisible = (okCampus && okCategoria && okBusca);
                 card.style.display = isVisible ? "block" : "none";
-                
+
                 if (isVisible) noticiasVisiveis++;
             });
-            
+
              const noticiasContainer = document.getElementById("latest-news-list");
              const existingMsg = document.getElementById('no-results-message');
-             
+
              if (noticiasVisiveis === 0) {
                  if (!existingMsg) {
                      noticiasContainer.insertAdjacentHTML('beforeend', `<div class="col-12 text-center text-muted p-5" id="no-results-message">Nenhuma notícia corresponde aos filtros aplicados.</div>`);
@@ -835,7 +944,7 @@
             try {
                 const response = await fetch(url, {
                     method: 'POST',
-                    body: formData, 
+                    body: formData,
                 });
 
                 if (!response.ok) {
@@ -849,7 +958,7 @@
                 const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
                 modalInstance.hide();
                 modalElement.querySelector('form').reset();
-                await carregarDados(); 
+                await carregarDados();
             } catch (error) {
                 console.error('Erro de rede:', error);
                 alert('Erro de conexão ao enviar dados.');
@@ -858,7 +967,7 @@
 
         const formNoticia = document.getElementById('formPostarNoticia');
         const btnNoticia = document.getElementById('btnPostarNoticia');
-        
+
         if (formNoticia && btnNoticia) {
             btnNoticia.addEventListener('click', () => formNoticia.dispatchEvent(new Event('submit')));
             formNoticia.addEventListener('submit', (e) => {
@@ -869,55 +978,50 @@
                 formData.append('campus', formNoticia.querySelector('#noticiaCampus').value);
                 formData.append('categoria', formNoticia.querySelector('#noticiaCategoria').value);
                 formData.append('link_externo', formNoticia.querySelector('#noticiaLink').value);
-                
+
                 const imagemFile = formNoticia.querySelector('#noticiaImagem').files[0];
                 if (imagemFile) formData.append('imagem', imagemFile);
-                
+
                 const arquivoFile = formNoticia.querySelector('#noticiaArquivo').files[0];
                 if (arquivoFile) formData.append('arquivo', arquivoFile);
-                
+
                 enviarFormulario(API_URL_NOTICIAS, formData, 'modalPostarNoticia');
             });
         }
-        
+
         const formEvento = document.getElementById('formAdicionarEvento');
         const btnEvento = document.getElementById('btnAdicionarEvento');
 
         if (formEvento && btnEvento) {
              btnEvento.addEventListener('click', () => formEvento.dispatchEvent(new Event('submit')));
-             
+
              formEvento.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                
+
                 const dataHoraInput = formEvento.querySelector('#eventoData').value;
                 let dataHoraFormatada = null;
-                
+
                 if (dataHoraInput) {
-                    // CORREÇÃO: Removemos o 'Z' e milissegundos para evitar erro de formato no Python
-                    // Envia no formato: "YYYY-MM-DDTHH:MM:SS"
                     const dataLocal = new Date(dataHoraInput);
-                    // O slice(0, 19) pega apenas "2023-11-25T14:30:00"
-                    dataHoraFormatada = dataLocal.toISOString().slice(0, 19); 
+                    dataHoraFormatada = dataLocal.toISOString().slice(0, 19);
                 }
 
                 const data = {
                     titulo: formEvento.querySelector('#eventoTitulo').value,
                     data_hora_inicio: dataHoraFormatada,
                     link: formEvento.querySelector('#eventoLink').value,
-                    // ADIÇÃO DE SEGURANÇA: Enviamos campos vazios caso o backend exija
-                    descricao: "", 
-                    campus: "IFRN" 
+                    descricao: "",
+                    campus: "IFRN"
                 };
-                
+
                  try {
                     const response = await fetch(API_URL_EVENTOS, {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify(data),
                     });
-                    
+
                     if (!response.ok) {
-                        // Tenta ler o erro específico enviado pelo servidor
                         const errorData = await response.json().catch(() => ({}));
                         const msgErro = errorData.error || response.statusText;
                         alert(`Erro ao adicionar evento: ${msgErro}\nVerifique se todos os campos obrigatórios estão preenchidos.`);
@@ -925,16 +1029,14 @@
                     }
 
                     alert('Evento adicionado com sucesso!');
-                    
-                    // Resetar e fechar modal
+
                     const modalElement = document.getElementById('modalAdicionarEvento');
                     const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
                     modalInstance.hide();
                     modalElement.querySelector('form').reset();
-                    
-                    // Recarregar calendário e lista
-                    await carregarDados(); 
-                    
+
+                    await carregarDados();
+
                  } catch (error) {
                     console.error('Erro de rede:', error);
                     alert('Erro de conexão ao enviar dados do evento.');
@@ -953,13 +1055,13 @@
                 }
                 alert('Notícia excluída com sucesso!');
                 element.closest('.latest-news-card').remove();
-                await carregarDados(); 
+                await carregarDados();
             } catch (error) {
                 console.error('Erro de exclusão:', error);
                 alert('Erro de conexão ao tentar excluir a notícia.');
             }
         }
-        
+
         window.deletarEvento = async function(id, element) {
             if (!IS_ADMIN || !confirm(`Tem certeza que deseja excluir o evento ID ${id}?`)) return;
             try {
@@ -971,7 +1073,7 @@
                 }
                 alert('Evento excluído com sucesso!');
                 element.closest('li').remove();
-                await carregarDados(); 
+                await carregarDados();
             } catch (error) {
                 console.error('Erro de exclusão:', error);
                 alert('Erro de conexão ao tentar excluir o evento.');
