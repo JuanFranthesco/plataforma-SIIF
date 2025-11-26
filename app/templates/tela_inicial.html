@@ -9,15 +9,34 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+  <style>
+    /* Estilo do Popover (Preview) para ficar igual à tela de divulgação */
+    .popover {
+        max-width: 300px;
+        border-color: #198754; /* Borda verde */
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .popover-header {
+        background-color: #198754;
+        color: white;
+        font-weight: bold;
+        border-bottom: 0;
+    }
+    .popover-body {
+        font-size: 0.9rem;
+        color: #333;
+    }
+  </style>
 </head>
 
 <body class="role-user">
   <div class="page-container">
-    
+
     {% include 'header.html' %}
 
     <main class="home-dashboard">
-      
+
       <div class="row mb-4">
         <div class="col-12">
           <h2 class="page-title">Bem-vindo ao SIIF</h2>
@@ -26,7 +45,7 @@
       </div>
 
       <div class="row g-4 mb-4">
-        
+
         <div class="col-lg-6 col-md-12">
           <a href="{{ url_for('main.tela_divulgacao') }}" class="text-decoration-none">
             <div class="card-custom card-news h-100">
@@ -36,7 +55,12 @@
               <div class="card-body-custom">
                 {% if noticias and noticias|length > 0 %}
                   {% for n in noticias %}
-                  <div class="noticia-item">
+                  <div class="noticia-item"
+                       data-bs-toggle="popover"
+                       data-bs-trigger="hover"
+                       data-bs-placement="top"
+                       data-bs-title="{{ n.titulo }}"
+                       data-bs-content="{{ n.conteudo }}">
                     <div class="icon-bullet"><i class="bi bi-newspaper"></i></div>
                     <span>{{ n.titulo }}</span>
                   </div>
@@ -53,7 +77,7 @@
         </div>
 
         <div class="col-lg-3 col-md-6">
-          <div class="card-custom card-action h-100"> 
+          <div class="card-custom card-action h-100">
             <div class="card-img-wrapper">
               <img src="{{ url_for('static', filename='img/obmep.jpg') }}" alt="Imagem OBMEP">
             </div>
@@ -82,7 +106,7 @@
       </div>
 
       <div class="row g-4">
-        
+
         <div class="col-lg-5 col-md-12">
           <a href="{{ url_for('main.tela_divulgacao') }}" class="text-decoration-none">
             <div class="card-custom card-events h-100">
@@ -92,7 +116,12 @@
               <div class="eventos-lista">
                 {% if eventos and eventos|length > 0 %}
                   {% for e in eventos %}
-                  <div class="evento-badge">
+                  <div class="evento-badge"
+                       data-bs-toggle="popover"
+                       data-bs-trigger="hover"
+                       data-bs-placement="left"
+                       data-bs-title="{{ e.titulo }}"
+                       data-bs-content="Clique para ver mais detalhes na área de Divulgação.">
                     <div class="date-box">
                       <span class="day">{{ e.data_hora_inicio.strftime('%d') }}</span>
                       <span class="month">{{ e.data_hora_inicio.strftime('%b')|upper }}</span>
@@ -121,8 +150,8 @@
               </div>
               <div class="map-responsive-wrapper">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4218.752729359187!2d-37.80725470000001!3d-5.627263199999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7baf7f6172a76a7%3A0x4df8711927cb367!2sIFRN%20-%20Campus%20Apodi!5e1!3m2!1spt-BR!2sbr!4v1763338919324!5m2!1spt-BR!2sbr" 
-                  loading="lazy" 
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4218.752729359187!2d-37.80725470000001!3d-5.627263199999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7baf7f6172a76a7%3A0x4df8711927cb367!2sIFRN%20-%20Campus%20Apodi!5e1!3m2!1spt-BR!2sbr!4v1763338919324!5m2!1spt-BR!2sbr"
+                  loading="lazy"
                   referrerpolicy="no-referrer-when-downgrade">
                 </iframe>
               </div>
@@ -131,14 +160,14 @@
         </div>
       </div>
     </main>
-    
+
     {% include 'footer.html' %}
 
-  </div> 
+  </div>
 
   <a href="{{ url_for('main.suporte') }}" class="help-btn help-btn-user"><i class="bi bi-headset"></i></a>
   <a href="{{ url_for('main.tela_denuncias') }}" class="help-btn help-btn-admin"><i class="bi bi-shield-check"></i></a>
-  
+
   <div vw class="enabled">
     <div vw-access-button class="active"></div>
     <div vw-plugin-wrapper><div class="vw-plugin-top-wrapper"></div></div>
@@ -146,22 +175,29 @@
   <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
   <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  
+
   <script>
+  // Inicialização dos Popovers (Previews)
+  document.addEventListener("DOMContentLoaded", function() {
+      const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+      const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
+  });
+
+  // Scripts de Acessibilidade
   function toggleAccessMenu() { document.getElementById('access-menu').classList.toggle('show'); }
   function toggleContrast() {
     document.body.classList.toggle('high-contrast');
-    if (document.body.classList.contains('high-contrast')) { localStorage.setItem('contrast', 'true'); } 
+    if (document.body.classList.contains('high-contrast')) { localStorage.setItem('contrast', 'true'); }
     else { localStorage.removeItem('contrast'); }
   }
   if (localStorage.getItem('contrast') === 'true') { document.body.classList.add('high-contrast'); }
-  
-  let currentFontSize = 100; 
+
+  let currentFontSize = 100;
   function increaseFont() { if (currentFontSize < 150) { currentFontSize += 10; document.body.style.fontSize = currentFontSize + '%'; } }
   function decreaseFont() { if (currentFontSize > 80) { currentFontSize -= 10; document.body.style.fontSize = currentFontSize + '%'; } }
   function resetAccess() { currentFontSize = 100; document.body.style.fontSize = '100%'; document.body.classList.remove('high-contrast'); localStorage.removeItem('contrast'); }
   </script>
-  
+
   <div id="access-menu" class="access-menu-container">
     <h6 class="mb-3 border-bottom pb-2">Acessibilidade</h6>
     <div class="d-grid gap-2">
