@@ -318,10 +318,11 @@ class Material(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String(200), nullable=False)
     descricao = db.Column(db.Text, nullable=True)
-    arquivo_path = db.Column(db.String(300), nullable=False)
+    arquivo_path = db.Column(db.String(300), nullable=True) # Agora pode ser NULL se for link
     
     # NOVOS CAMPOS
     imagem_capa = db.Column(db.String(300), nullable=True) # Caminho da imagem de capa
+    link_externo = db.Column(db.String(500), nullable=True) # Link externo (YouTube, Drive, etc)
     download_count = db.Column(db.Integer, default=0)      # Contador de downloads
     
     data_upload = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))

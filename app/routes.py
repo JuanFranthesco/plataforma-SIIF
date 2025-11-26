@@ -7,6 +7,24 @@ import datetime
 import secrets
 from PIL import Image
 from thefuzz import fuzz
+import bleach
+
+# --- CONFIGURAÇÕES DE SEGURANÇA E CONSTANTES ---
+ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'jpg', 'jpeg', 'png', 'mp4'}
+
+CATEGORIAS_PADRAO = [
+    "Artes", "Biologia", "Educação Física", "Filosofia", "Física", "Geografia", "História",
+    "Língua Estrangeira", "Língua Portuguesa", "Matemática", "Química", "Sociologia",
+    "Informática", "Redes de Computadores", "Análise e Desenv. de Sistemas", "Engenharia de Computação",
+    "Edificações", "Eletrotécnica", "Mecânica", "Petróleo e Gás", "Saneamento", "Segurança do Trabalho",
+    "Agroecologia", "Agropecuária", "Zootecnia", "Meio Ambiente", "Gestão Ambiental",
+    "Administração", "Logística", "Eventos", "Turismo",
+    "TCC/Monografias", "Documentos Institucionais", "Geral"
+]
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 # Imports completos dos modelos (Incluindo as novas tabelas)
 from app.models import (
     Material, User, FAQ, Denuncia, Noticia, Evento, Perfil, 
@@ -35,6 +53,12 @@ def add_header(response):
         del response.headers['Last-Modified']
         
     return response
+
+@main_bp.app_errorhandler(413)
+def request_entity_too_large(error):
+    flash('O arquivo enviado é muito grande. O limite é 16MB.', 'danger')
+    return redirect(request.url)
+
 
 
 
@@ -855,7 +879,7 @@ def tela_materiais():
     if filtro_favoritos:
         query_base = query_base.filter(Material.favoritado_por.any(id=current_user.id))
 
-    if categoria_filtro:
+    if categoria_filtro and categoria_filtro != 'Todas':
         query_base = query_base.filter(Material.categoria == categoria_filtro)
     
     # Ordenação
@@ -886,9 +910,6 @@ def tela_materiais():
             materiais_agrupados[categoria] = []
         materiais_agrupados[categoria].append(material)
     
-    categorias_query = db.session.query(Material.categoria).distinct().order_by(Material.categoria)
-    categorias = [c[0] for c in categorias_query if c[0]]
-    
     # IDs dos materiais favoritados pelo usuário atual
     favoritos_ids = [m.id for m in current_user.materiais_favoritos_rel]
 
@@ -896,7 +917,7 @@ def tela_materiais():
         'tela_materiais.html', 
         materiais_agrupados=materiais_agrupados,
         materiais_lista=materiais_query, # Passando lista plana também
-        categorias=categorias,
+        categorias=CATEGORIAS_PADRAO,
         categoria_selecionada=categoria_filtro,
         termo_pesquisado=termo_pesquisa,
         ordenacao_selecionada=ordenar_por,
@@ -910,51 +931,78 @@ def tela_materiais():
 def adicionar_material():
     if request.method == 'POST':
         try:
-            titulo = request.form.get('materialTitulo')
-            descricao = request.form.get('materialDescricao')
+            # Sanitização dos inputs de texto
+            titulo = bleach.clean(request.form.get('materialTitulo') or '')
+            descricao = bleach.clean(request.form.get('materialDescricao') or '')
+            tags_input = bleach.clean(request.form.get('materialTags') or '')
+            categoria = request.form.get('materialCategoria')
+            tipo_upload = request.form.get('tipoUpload') # 'arquivo' ou 'link'
+            link_externo = request.form.get('materialLink')
+
             arquivo = request.files.get('materialArquivo')
-            imagem_capa = request.files.get('materialCapa') # Novo campo
-            tags_input = request.form.get('materialTags')   # Novo campo
-            
-            categoria_nova = request.form.get('materialCategoriaNova')
-            categoria = categoria_nova.strip().capitalize() if categoria_nova else request.form.get('materialCategoriaExistente')
-            
-            if not titulo or not arquivo or not arquivo.filename:
-                flash('Erro: Título e Arquivo são obrigatórios.', 'danger')
+            imagem_capa = request.files.get('materialCapa')
+
+            # Validação Básica
+            if not titulo:
+                flash('O título é obrigatório.', 'danger')
                 return redirect(url_for('main.tela_materiais'))
 
-            # Salvar Arquivo Principal
-            filename = secure_filename(arquivo.filename)
-            ts = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-            filename = f"mat_{ts}_{filename}" # Prefixo para evitar colisão
-            
-            upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-            arquivo.save(upload_path)
-            db_path = f"/static/uploads/{filename}"
+            if categoria not in CATEGORIAS_PADRAO:
+                 categoria = "Geral"
 
-            # Salvar Imagem de Capa (Se houver)
+            db_path = None
+            link_final = None
+
+            # Lógica Híbrida: Arquivo vs Link
+            if tipo_upload == 'link':
+                if not link_externo:
+                    flash('Para adicionar um link, você deve colar a URL.', 'danger')
+                    return redirect(url_for('main.tela_materiais'))
+                link_final = bleach.clean(link_externo)
+            
+            else: # tipo_upload == 'arquivo'
+                if not arquivo or not arquivo.filename:
+                    flash('Selecione um arquivo para enviar.', 'danger')
+                    return redirect(url_for('main.tela_materiais'))
+                
+                if not allowed_file(arquivo.filename):
+                    flash('Tipo de arquivo não permitido. Extensões válidas: PDF, DOC, IMG, MP4, etc.', 'danger')
+                    return redirect(url_for('main.tela_materiais'))
+
+                filename = secure_filename(arquivo.filename)
+                ts = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+                filename = f"mat_{ts}_{filename}"
+                
+                upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+                arquivo.save(upload_path)
+                db_path = f"/static/uploads/{filename}"
+
+            # Salvar Imagem de Capa (Opcional)
             capa_db_path = None
             if imagem_capa and imagem_capa.filename:
-                capa_filename = secure_filename(imagem_capa.filename)
-                capa_filename = f"capa_{ts}_{capa_filename}"
-                capa_path = os.path.join(current_app.config['UPLOAD_FOLDER'], capa_filename)
-                imagem_capa.save(capa_path)
-                capa_db_path = f"/static/uploads/{capa_filename}"
+                if allowed_file(imagem_capa.filename): # Reutilizando a whitelist, mas idealmente seria só img
+                    capa_filename = secure_filename(imagem_capa.filename)
+                    ts = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+                    capa_filename = f"capa_{ts}_{capa_filename}"
+                    capa_path = os.path.join(current_app.config['UPLOAD_FOLDER'], capa_filename)
+                    imagem_capa.save(capa_path)
+                    capa_db_path = f"/static/uploads/{capa_filename}"
 
             novo_material = Material(
                 titulo=titulo,
                 descricao=descricao,
                 arquivo_path=db_path,
+                link_externo=link_final,
                 imagem_capa=capa_db_path,
                 categoria=categoria,
                 autor_id=current_user.id 
             )
             
-            # Processar Tags
+            # Processar Tags (Máximo 3)
             if tags_input:
                 tags_list = [t.strip() for t in tags_input.split(',') if t.strip()]
-                for tag_nome in tags_list:
-                    # Busca tag existente ou cria nova
+                for i, tag_nome in enumerate(tags_list):
+                    if i >= 3: break # Limite de 3 tags
                     tag = Tag.query.filter_by(nome=tag_nome).first()
                     if not tag:
                         tag = Tag(nome=tag_nome)
@@ -963,11 +1011,11 @@ def adicionar_material():
             
             db.session.add(novo_material)
             db.session.commit()
-            flash('Material adicionado com sucesso!', 'success')
+            flash('Material publicado com sucesso!', 'success')
         
         except Exception as e:
             db.session.rollback()
-            flash(f'Erro interno: {e}', 'danger')
+            flash(f'Erro interno ao publicar: {e}', 'danger')
 
     return redirect(url_for('main.tela_materiais'))
 
@@ -981,13 +1029,23 @@ def download_material(material_id):
     material.download_count += 1
     db.session.commit()
     
-    try:
-        directory = os.path.join(current_app.root_path, 'static', 'uploads')
-        filename = os.path.basename(material.arquivo_path)
-        return send_from_directory(directory, filename, as_attachment=False, conditional=True)
-    except FileNotFoundError:
-        flash('Arquivo não encontrado.', 'danger')
-        return redirect(url_for('main.tela_materiais'))
+    # Se for link externo, redireciona
+    if material.link_externo:
+        return redirect(material.link_externo)
+
+    # Se for arquivo local
+    if material.arquivo_path:
+        try:
+            # Remove '/static/uploads/' do path para usar send_from_directory corretamente
+            filename = os.path.basename(material.arquivo_path)
+            directory = os.path.join(current_app.root_path, 'static', 'uploads')
+            return send_from_directory(directory, filename, as_attachment=True)
+        except FileNotFoundError:
+            flash('Arquivo físico não encontrado no servidor.', 'danger')
+            return redirect(url_for('main.tela_materiais'))
+            
+    flash('Este material não possui arquivo para download.', 'warning')
+    return redirect(url_for('main.tela_materiais'))
 
 
 @main_bp.route('/materiais/favoritar/<int:material_id>', methods=['POST'])
@@ -997,15 +1055,10 @@ def favoritar_material(material_id):
     
     if current_user in material.favoritado_por:
         material.favoritado_por.remove(current_user)
-        acao = 'removido'
     else:
         material.favoritado_por.append(current_user)
-        acao = 'adicionado'
         
     db.session.commit()
-    
-    # Se for AJAX, retorna JSON (opcional, mas bom para UX fluida)
-    # Por enquanto, redirect simples para manter consistência
     return redirect(request.referrer or url_for('main.tela_materiais'))
 
 
@@ -1019,15 +1072,20 @@ def excluir_material(material_id):
         return redirect(url_for('main.tela_materiais'))
 
     try:
-        arquivo_path_abs = os.path.join(current_app.root_path, material.arquivo_path)
-        if os.path.exists(arquivo_path_abs):
-            os.remove(arquivo_path_abs)
+        # Tenta apagar arquivo físico se existir
+        if material.arquivo_path:
+            # Constrói caminho absoluto corretamente
+            filename = os.path.basename(material.arquivo_path)
+            arquivo_path_abs = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            if os.path.exists(arquivo_path_abs):
+                os.remove(arquivo_path_abs)
+                
         db.session.delete(material)
         db.session.commit()
         flash('Material excluído.', 'success')
     except Exception as e:
         db.session.rollback()
-        flash(f'Erro: {e}', 'danger')
+        flash(f'Erro ao excluir: {e}', 'danger')
     return redirect(url_for('main.tela_materiais'))
 
 
