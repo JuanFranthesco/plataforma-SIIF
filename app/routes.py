@@ -31,7 +31,8 @@ def allowed_file(filename):
 from app.models import (
     Material, User, FAQ, Denuncia, Noticia, Evento, Perfil,
     Topico, Resposta, PostSalvo, PostLike, Notificacao,
-    Comunidade, SolicitacaoParticipacao, RespostaLike, Tag, ComunidadeTag, AuditLog
+    Comunidade, SolicitacaoParticipacao, RespostaLike, Tag, ComunidadeTag, AuditLog,
+    material_favoritos
 )
 from app.extensions import db, limiter
 from app.forms import ProfileForm
@@ -905,13 +906,34 @@ def tela_materiais():
     categoria_filtro = request.args.get('categoria')
     termo_pesquisa = request.args.get('q')
     ordenar_por = request.args.get('ordenarPor', 'recente')  # recente, baixados, antigos
-    filtro_favoritos = request.args.get('filtro') == 'favoritos'  # Novo filtro
+    filtro = request.args.get('filtro') # favoritos, meus
+    
+    filtro_favoritos = (filtro == 'favoritos')
+    filtro_meus = (filtro == 'meus')
 
     query_base = Material.query
+
+    # Variáveis de Estatísticas (Apenas para 'Meus Materiais')
+    total_downloads = 0
+    total_favoritos = 0
 
     # Filtro de Favoritos (Meus Materiais Salvos)
     if filtro_favoritos:
         query_base = query_base.filter(Material.favoritado_por.any(id=current_user.id))
+    
+    # Filtro de Meus Materiais (Materiais que eu postei)
+    elif filtro_meus:
+        query_base = query_base.filter(Material.autor_id == current_user.id)
+        
+        # Calcular Estatísticas
+        # 1. Total de Downloads
+        total_downloads = db.session.query(func.sum(Material.download_count)).filter(Material.autor_id == current_user.id).scalar() or 0
+        
+        # 2. Total de Favoritos Recebidos
+        # Faz um join com a tabela associativa material_favoritos
+        total_favoritos = db.session.query(func.count(material_favoritos.c.user_id))\
+            .join(Material, material_favoritos.c.material_id == Material.id)\
+            .filter(Material.autor_id == current_user.id).scalar() or 0
 
     if categoria_filtro and categoria_filtro != 'Todas':
         query_base = query_base.filter(Material.categoria == categoria_filtro)
@@ -959,7 +981,10 @@ def tela_materiais():
         termo_pesquisado=termo_pesquisa,
         ordenacao_selecionada=ordenar_por,
         favoritos_ids=favoritos_ids,
-        filtro_favoritos=filtro_favoritos
+        filtro_favoritos=filtro_favoritos,
+        filtro_meus=filtro_meus,
+        total_downloads=total_downloads,
+        total_favoritos=total_favoritos
     )
 
 
