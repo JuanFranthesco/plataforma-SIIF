@@ -61,19 +61,29 @@ def create_app():
     # --------------------------
     # Inicializa extensões
     # --------------------------
-    from .extensions import db, migrate, login_manager
+    from .extensions import db, migrate, login_manager, limiter
     db.init_app(app)
     migrate.init_app(app, db)
     
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
     login_manager.login_message_category = 'info'
+    
+    # Inicializa Rate Limiter
+    limiter.init_app(app)
 
     from app.models import User
 
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
+    
+    # Handler para erro de Rate Limit (429)
+    @app.errorhandler(429)
+    def ratelimit_handler(e):
+        from flask import flash, redirect, request, url_for
+        flash('Você atingiu o limite de requisições. Por favor, aguarde alguns minutos e tente novamente.', 'warning')
+        return redirect(request.referrer or url_for('main.tela_inicial'))
 
     # --------------------------
     # Registrar Blueprints

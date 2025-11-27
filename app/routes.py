@@ -33,7 +33,7 @@ from app.models import (
     Topico, Resposta, PostSalvo, PostLike, Notificacao,
     Comunidade, SolicitacaoParticipacao, RespostaLike, Tag, ComunidadeTag, AuditLog
 )
-from app.extensions import db
+from app.extensions import db, limiter
 from app.forms import ProfileForm
 
 main_bp = Blueprint('main', __name__)
@@ -965,6 +965,7 @@ def tela_materiais():
 
 @main_bp.route('/materiais/adicionar', methods=['POST'])
 @login_required
+@limiter.limit("10 per hour")
 def adicionar_material():
     if request.method == 'POST':
         try:
@@ -1059,6 +1060,7 @@ def adicionar_material():
 
 @main_bp.route('/materiais/download/<int:material_id>')
 @login_required
+@limiter.limit("100 per hour")
 def download_material(material_id):
     material = Material.query.get_or_404(material_id)
 
@@ -1087,6 +1089,7 @@ def download_material(material_id):
 
 @main_bp.route('/materiais/favoritar/<int:material_id>', methods=['POST'])
 @login_required
+@limiter.limit("50 per hour")
 def favoritar_material(material_id):
     material = Material.query.get_or_404(material_id)
 
@@ -1101,6 +1104,7 @@ def favoritar_material(material_id):
 
 @main_bp.route('/materiais/excluir/<int:material_id>', methods=['POST'])
 @login_required
+@limiter.limit("20 per hour")
 def excluir_material(material_id):
     material = Material.query.get_or_404(material_id)
 
