@@ -1,0 +1,30 @@
+/* Reposicionamento do VLibras para Mobile - Canto Inferior Direito */
+/* Aumentando especificidade para sobrescrever CSS inline */
+@media (max-width: 768px) {
+    html body div[vw] {
+        top: auto !important;
+        bottom: 20px !important;
+        right: 30px !important;
+        left: auto !important;
+        transform: none !important;
+    }
+
+    html body div[vw].enabled,
+    html body div[vw] .enabled {
+        top: auto !important;
+        bottom: 20px !important;
+        right: 30px !important;
+        left: auto !important;
+        transform: none !important;
+    }
+
+    html body .access-button,
+    html body [vw] .access-button,
+    html body div[vw] .access-button {
+        top: auto !important;
+        bottom: 20px !important;
+        right: 30px !important;
+        left: auto !important;
+        transform: none !important;
+    }
+}
