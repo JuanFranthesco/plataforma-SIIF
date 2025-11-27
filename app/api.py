@@ -1,13 +1,34 @@
 from flask import Blueprint, request, jsonify, render_template, current_app
-from app.models import Noticia, Evento, db, User
+from app.models import Noticia, Evento, db, User, Material, Comentario
 from datetime import datetime, timezone
 import os
 from werkzeug.utils import secure_filename
+from flask_login import login_required, current_user
+import bleach
 
 api = Blueprint("api", __name__)
+from typing import Tuple
 
 UPLOAD_FOLDER = "app/static/uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+
+# ===================================================================
+# HELPER FUNCTIONS
+# ===================================================================
+
+def validate_comment_text(texto: str) -> Tuple[bool, str]:
+    """Valida texto do comentário. Retorna (é_válido, mensagem_erro)."""
+    texto = texto.strip()
+    
+    if not texto:
+        return False, "O comentário não pode estar vazio"
+    
+    if len(texto) > 500:
+        return False, "O comentário não pode ter mais de 500 caracteres"
+    
+    return True, ""
+
 
 
 @api.route("/api/noticias", methods=["POST"])
@@ -209,5 +230,107 @@ def api_usuarios():
             for u in users
         ]
     }
+
+
+# ===================================================================
+# API DE COMENTÁRIOS (COM SEGURANÇA XSS E RATE LIMIT)
+# ===================================================================
+
+@api.route("/api/materiais/<int:material_id>/comentarios", methods=["GET"])
+def listar_comentarios(material_id: int):
+    """Lista todos os comentários de um material (ordenados do mais recente)."""
+    try:
+        material = Material.query.get_or_404(material_id)
+        comentarios = (Comentario.query
+                      .filter_by(material_id=material_id)
+                      .order_by(Comentario.data_criacao.desc())
+                      .all())
+        
+        resultado = []
+        for c in comentarios:
+            resultado.append({
+                "id": c.id,
+                "texto": c.texto,
+                "data_criacao": c.data_criacao.isoformat(),
+                "autor": {
+                    "id": c.autor.id,
+                    "name": c.autor.name or "Usuário",
+                    "foto_url": c.autor.foto_url or "/static/img/default-avatar.png"
+                }
+            })
+        
+        return jsonify(resultado), 200
+    
+    except Exception as e:
+        return jsonify({"erro": f"Erro ao carregar comentários: {str(e)}"}), 500
+
+
+@api.route("/api/materiais/<int:material_id>/comentarios", methods=["POST"])
+@login_required
+def criar_comentario(material_id: int):
+    """
+    Cria um novo comentário em um material.
+    Segurança:
+    - Anti-XSS: Remove todas as tags HTML usando bleach
+    - Anti-Spam: Bloqueia se o último comentário foi há menos de 30 segundos
+    """
+    try:
+        # Validação do material
+        material = Material.query.get_or_404(material_id)
+        
+        # Pega o texto do comentário
+        data = request.get_json()
+        if not data:
+            return jsonify({"erro": "Nenhum dado fornecido"}), 400
+        
+        texto = data.get("texto", "").strip()
+        
+        # Validação de conteúdo usando helper
+        valido, mensagem_erro = validate_comment_text(texto)
+        if not valido:
+            return jsonify({"erro": mensagem_erro}), 400
+        
+        # Anti-spam: rate limit manual
+        ultimo_comentario = (Comentario.query
+                            .filter_by(autor_id=current_user.id)
+                            .order_by(Comentario.data_criacao.desc())
+                            .first())
+        
+        if ultimo_comentario:
+            tempo_decorrido = (datetime.now(timezone.utc) - ultimo_comentario.data_criacao).total_seconds()
+            if tempo_decorrido < 30:
+                tempo_restante = int(30 - tempo_decorrido)
+                return jsonify({
+                    "erro": f"Aguarde {tempo_restante} segundos antes de comentar novamente"
+                }), 429
+        
+        # Anti-XSS: sanitização
+        texto_limpo = bleach.clean(texto, tags=[], strip=True)
+        
+        # Cria o comentário
+        novo_comentario = Comentario(
+            texto=texto_limpo,
+            autor_id=current_user.id,
+            material_id=material_id
+        )
+        
+        db.session.add(novo_comentario)
+        db.session.commit()
+        
+        # Retorna o comentário criado
+        return jsonify({
+            "id": novo_comentario.id,
+            "texto": novo_comentario.texto,
+            "data_criacao": novo_comentario.data_criacao.isoformat(),
+            "autor": {
+                "id": current_user.id,
+                "name": current_user.name or "Usuário",
+                "foto_url": current_user.foto_url or "/static/img/default-avatar.png"
+            }
+        }), 201
+    
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"erro": f"Erro ao criar comentário: {str(e)}"}), 500
 
 

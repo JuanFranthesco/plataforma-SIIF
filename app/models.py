@@ -377,6 +377,25 @@ class Tag(db.Model):
         return f'<Tag {self.nome}>'
 
 
+class Comentario(db.Model):
+    __tablename__ = 'comentario'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    texto = db.Column(db.String(500), nullable=False)
+    data_criacao = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    
+    # Relacionamentos
+    autor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    material_id = db.Column(db.Integer, db.ForeignKey('material.id'), nullable=False)
+    
+    # Backref para facilitar acesso
+    autor = db.relationship('User', backref='comentarios')
+    material = db.relationship('Material', backref=db.backref('comentarios', lazy=True, cascade="all, delete-orphan"))
+    
+    def __repr__(self):
+        return f'<Comentario {self.id} por User {self.autor_id}>'
+
+
 # ===================================================================
 # SUPORTE (MANTIDOS DO ORIGINAL)
 # ===================================================================
