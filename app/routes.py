@@ -907,67 +907,6 @@ def excluir_denuncia(denuncia_id):
         flash(f'Erro: {e}', 'danger')
 
     return redirect(url_for('main.tela_denuncias'))
-
-
-@main_bp.route('/materiais')
-@login_required
-def tela_materiais():
-    """Exibe a biblioteca de materiais com filtros, pesquisa e ordenação."""
-    # Parâmetros da URL
-    categoria_filtro = request.args.get('categoria')
-    termo_pesquisa = request.args.get('q', '').strip()
-    ordenar_por = request.args.get('ordenarPor', 'recente')
-    filtro = request.args.get('filtro')
-    
-    filtro_favoritos = (filtro == 'favoritos')
-    filtro_meus = (filtro == 'meus')
-
-    # Otimização: Usar joinedload para evitar N+1 queries nas tags
-    from sqlalchemy.orm import joinedload
-    query_base = Material.query.options(joinedload(Material.tags), joinedload(Material.autor))
-
-    # Estatísticas (apenas para 'Meus Materiais')
-    total_downloads = 0
-    total_favoritos = 0
-
-    # Aplicar filtros
-    if filtro_favoritos:
-        query_base = query_base.filter(Material.favoritado_por.any(id=current_user.id))
-    elif filtro_meus:
-        query_base = query_base.filter(Material.autor_id == current_user.id)
-        
-        # Calcular estatísticas
-        total_downloads = db.session.query(func.sum(Material.download_count))\
-            .filter(Material.autor_id == current_user.id).scalar() or 0
-        
-        total_favoritos = db.session.query(func.count(material_favoritos.c.user_id))\
-            .join(Material, material_favoritos.c.material_id == Material.id)\
-            .filter(Material.autor_id == current_user.id).scalar() or 0
-
-    if categoria_filtro and categoria_filtro != 'Todas':
-        query_base = query_base.filter(Material.categoria == categoria_filtro)
-
-    # Ordenação
-    if ordenar_por == 'baixados':
-        query_base = query_base.order_by(Material.download_count.desc())
-    elif ordenar_por == 'antigos':
-        query_base = query_base.order_by(Material.data_upload.asc())
-    else:
-        query_base = query_base.order_by(Material.download_count.desc())
-
-    materiais_query = query_base.all()
-
-    # Pesquisa fuzzy (se houver termo)
-    if termo_pesquisa:
-        resultados_fuzzy = []
-        for material in materiais_query:
-            texto_completo = f"{material.titulo} {material.descricao or ''} {material.autor.name}"
-            score = fuzz.partial_ratio(termo_pesquisa.lower(), texto_completo.lower())
-            if score > 60:
-                resultados_fuzzy.append((material, score))
-        resultados_fuzzy.sort(key=lambda x: x[1], reverse=True)
-        materiais_query = [material for material, score in resultados_fuzzy]
-
     # Agrupamento por categoria
     materiais_agrupados = {}
     for material in materiais_query:
