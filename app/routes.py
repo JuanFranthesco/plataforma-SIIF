@@ -917,7 +917,8 @@ def tela_materiais():
     categoria_filtro = request.args.get('categoria')
     termo_pesquisa = request.args.get('q')
     ordenar_por = request.args.get('ordenarPor', 'recente')  # recente, baixados, antigos
-    filtro_favoritos = request.args.get('filtro') == 'favoritos'  # Novo filtro
+    filtro_favoritos = request.args.get('filtro') == 'favoritos'
+    filtro_meus = request.args.get('filtro') == 'meus'
 
     query_base = Material.query
 
@@ -928,6 +929,16 @@ def tela_materiais():
     # Aplicar filtros
     if filtro_favoritos:
         query_base = query_base.filter(Material.favoritado_por.any(id=current_user.id))
+    elif filtro_meus:
+        query_base = query_base.filter(Material.autor_id == current_user.id)
+        
+        # Calcular estatísticas
+        total_downloads = db.session.query(func.sum(Material.download_count))\
+            .filter(Material.autor_id == current_user.id).scalar() or 0
+        
+        total_favoritos = db.session.query(func.count(material_favoritos.c.user_id))\
+            .join(Material, material_favoritos.c.material_id == Material.id)\
+            .filter(Material.autor_id == current_user.id).scalar() or 0
 
     if categoria_filtro and categoria_filtro != 'Todas':
         query_base = query_base.filter(Material.categoria == categoria_filtro)
