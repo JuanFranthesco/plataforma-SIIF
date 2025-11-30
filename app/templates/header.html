@@ -84,7 +84,7 @@
                             <div class="text-white-50" style="font-size: 0.75rem;">Online</div>
                         </div>
                         <div class="profile-pic-header">
-                            <img src="{{ current_user.foto_url or url_for('static', filename='img/image.png') }}"
+                            <img src="{{ 'static/fotos_perfil/' + current_user.foto_url or url_for('static', filename='img/image.png') }}"
                                 alt="Foto de {{ current_user.name }}">
                         </div>
                     </a>

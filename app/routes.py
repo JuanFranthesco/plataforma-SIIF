@@ -8,7 +8,6 @@ import secrets
 from PIL import Image
 from thefuzz import fuzz
 import bleach
-
 # --- CONFIGURAÇÕES DE SEGURANÇA E CONSTANTES ---
 ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'jpg', 'jpeg', 'png', 'mp4'}
 
@@ -806,7 +805,34 @@ def tela_divulgacao():
 def tela_mapa():
     return render_template('tela_mapa.html')
 
+def salvar_imagem_perfil(imagem_enviada):
+    """Salva a imagem com código aleatório e retorna o nome do arquivo."""
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(imagem_enviada.filename)
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join(current_app.root_path, 'static/fotos_perfil', picture_fn)
 
+    # Redimensionar (opcional, mas bom para performance)
+    output_size = (300, 300) # Você pode ajustar ou remover isso para o banner
+    i = Image.open(imagem_enviada)
+    # Se for banner, talvez não queira redimensionar tanto ou fazer crop diferente
+    # i.thumbnail(output_size) 
+    
+    i.save(picture_path)
+    return picture_fn
+
+def deletar_imagem_antiga(nome_arquivo):
+    """Remove o arquivo físico antigo, se não for o padrão."""
+    # Lista de arquivos que NUNCA devem ser apagados
+    imagens_padrao = ['default_profile.png', 'default_banner.jpg', 'default.png']
+    
+    if nome_arquivo and nome_arquivo not in imagens_padrao:
+        caminho_arquivo = os.path.join(current_app.root_path, 'static/fotos_perfil', nome_arquivo)
+        if os.path.exists(caminho_arquivo):
+            try:
+                os.remove(caminho_arquivo)
+            except Exception as e:
+                print(f"Erro ao excluir imagem antiga: {e}")
 @main_bp.route('/perfil', methods=['GET', 'POST'])
 @login_required
 def tela_perfil():
