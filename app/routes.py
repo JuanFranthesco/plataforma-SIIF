@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, url_for, flash, current_app, send_from_directory, Blueprint
 from flask_login import login_required, current_user
-from sqlalchemy import or_, desc, func, text
+from sqlalchemy import or_, desc, func, text        
 from werkzeug.utils import secure_filename
 import os
 import datetime
@@ -1226,5 +1226,16 @@ def tela_admin():
         # Pega a quantidade exata de usuarios cadastrados
         users_count = User.query.count()
 
-        return render_template('tela_admin.html', users_count=users_count)
+        usuarios = User.query.filter_by(is_admin=False).all()
+
+        denuncias_abertas = Denuncia.query.filter_by(status='Recebida').order_by(Denuncia.data_envio.desc()).all()
+        total_abertas = len(denuncias_abertas)
+        total_resolvidas = Denuncia.query.filter_by(status='Resolvida').count()
+        total_denuncias = total_abertas + total_resolvidas
+
+        return render_template('tela_admin.html', users_count=users_count, usuarios=usuarios, denuncias=denuncias_abertas,
+        total_abertas=total_abertas,
+        total_resolvidas=total_resolvidas,
+        total_denuncias=total_denuncias)
+    
     return redirect(request.referrer)

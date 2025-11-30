@@ -219,13 +219,15 @@ def excluir_evento(evento_id):
 @api.route("/api/usuarios")
 def api_usuarios():
     # retorna usuários ordenados pela matrícula
-    users = User.query.order_by(User.matricula.asc()).all()
+    users = User.query.filter_by(is_admin=False).order_by(User.matricula.asc()).all()
 
     return {
         "usuarios": [
             {
                 "name": u.name if hasattr(u, "name") else "",
-                "matricula": u.matricula
+                "matricula": u.matricula,
+                "is_suspenso": u.is_suspenso(),
+                "suspenso_ate": u.suspenso_ate.strftime("%d/%m/%Y %H:%M") if u.suspenso_ate else None
             }
             for u in users
         ]

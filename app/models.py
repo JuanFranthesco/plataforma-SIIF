@@ -1,5 +1,5 @@
 # app/models.py
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from .extensions import db, login_manager
@@ -79,6 +79,42 @@ class User(db.Model,UserMixin):
     # NOVA RELAÇÃO: Solicitações de entrada em grupos privados
     solicitacoes = db.relationship('SolicitacaoParticipacao', backref='usuario', lazy=True)
 
+
+    ## Coisas da Suspensão
+    # Até quando o caba está suspenso
+    suspenso_ate = db.Column(db.DateTime, nullable=True)
+    # O motivo
+    motivo_suspensao = db.Column(db.String(255), nullable=True)
+
+
+    ## Coisas da Suspensão
+    def is_suspenso(self):
+        if not self.suspenso_ate:
+            return False
+        return datetime.now(timezone.utc) < self.suspenso_ate
+
+    def suspender(self, quantidade, unidade, motivo=""):
+        agora = datetime.now(timezone.utc)
+
+        if unidade == "horas":
+            delta = timedelta(hours=quantidade)
+        elif unidade == "dias":
+            delta = timedelta(days=quantidade)
+        elif unidade == "semanas":
+            delta = timedelta(weeks=quantidade)
+        else:
+            raise ValueError("Unidade inválida")
+
+        self.suspenso_ate = agora + delta
+        self.motivo_suspensao = motivo
+
+    def remover_suspensao(self):
+        self.suspenso_ate = None
+        self.motivo_suspensao = None
+
+
+
+    # Senha
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
@@ -435,6 +471,7 @@ class Denuncia(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     tipo_denuncia = db.Column(db.String(50), nullable=False)
+    #titulo = db.Column(db.Text, nullable=False)
     descricao = db.Column(db.Text, nullable=False)
     data_envio = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     status = db.Column(db.String(50), default='Recebida')

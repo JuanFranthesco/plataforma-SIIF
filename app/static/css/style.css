@@ -1594,6 +1594,93 @@ ESTILOS ADICIONAIS PARA A PÁGINA DE DENÚNCIAS (tela_denuncias.html)
   }
 }
 
+/* Caixa principal da pesquisa */
+.denuncia-page .box {
+    background: #386641; /* Verde padrão da página */
+    padding: 26px;
+    border-radius: 22px;
+    color: #fff;
+    width: 100%;
+}
+
+/* Título da caixa */
+.denuncia-page .box h2 {
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+/* Input de pesquisa */
+.denuncia-page .pesquisa-container input {
+    width: 100%;
+    padding: 12px 18px;
+    border-radius: 12px;
+    border: none;
+    background: #E7E7E4; /* Cinza claro */
+    font-size: 1rem;
+    outline: none;
+    transition: box-shadow .2s, background .2s;
+}
+
+.denuncia-page .pesquisa-container input:focus {
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(231, 231, 228, 0.7);
+}
+
+/* Lista de resultados */
+.denuncia-page .lista-resultado {
+    margin-top: 12px;
+    list-style: none;
+    padding: 0;
+    background: #E7E7E4; /* Cinza claro */
+    border-radius: 16px;
+    max-height: 340px;
+    overflow-y: auto;
+    border: 2px solid #ccc;
+}
+
+/* Item da lista */
+.denuncia-page .lista-resultado li {
+    padding: 10px 14px;
+    border-bottom: 1px solid #dcdcd8;
+    font-weight: 600;
+    color: #386641; /* Verde padrão */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Último item sem borda */
+.denuncia-page .lista-resultado li:last-child {
+    border-bottom: none;
+}
+
+/* Quando o usuário está suspenso */
+.denuncia-page .lista-resultado li.suspenso {
+    background-color: #b3261e; /* Vermelho leve */
+    color: #fff;
+    font-weight: 700;
+}
+
+/* Texto extra "até data" */
+.denuncia-page .suspenso-info {
+    font-size: 0.85rem;
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+/* Hover nos itens normais */
+.denuncia-page .lista-resultado li:hover {
+    background: #fff;
+    cursor: pointer;
+}
+
+/* Hover quando suspenso */
+.denuncia-page .lista-resultado li.suspenso:hover {
+    background: #8e1d18;
+}
+
 /* ---
 ============================================================
 ESTILOS ADICIONAIS PARA A PÁGINA DE DIVULGAÇÃO (tela_divulgação.html)
@@ -3302,5 +3389,7 @@ body.high-contrast .profile-banner {
     max-height: 100px; /* Altura máxima para exibição */
     opacity: 1;
 }
- 
- 
+
+#main-content{
+  margin-top: 50px;
+}

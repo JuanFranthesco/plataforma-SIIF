@@ -34,4 +34,3 @@ WTForms==3.2.1
 bleach==6.3.0
 better_profanity==0.7.0
 Flask-Limiter==3.5.0
-

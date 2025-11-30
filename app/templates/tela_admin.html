@@ -8,278 +8,311 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <title>Dashboard Admin</title>
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        /* SIDEBAR */
-        .sidebar {
-            width: 230px;
-            height: 100vh;
-            background: #111827;
-            color: #fff;
-            position: fixed;
-            padding: 20px;
-        }
-
-        .sidebar .logo {
-            font-size: 22px;
-            margin-bottom: 25px;
-            text-align: center;
-        }
-
-        .sidebar ul {
-            list-style: none;
-        }
-
-        .sidebar ul li {
-            margin: 15px 0;
-        }
-
-        .sidebar ul li a {
-            text-decoration: none;
-            color: #cbd5e1;
-            font-size: 16px;
-            padding: 10px;
-            display: block;
-            border-radius: 8px;
-            transition: .3s;
-        }
-
-        .sidebar ul li.active a,
-        .sidebar ul li a:hover {
-            background: #1e293b;
-            color: #fff;
-        }
-
-        /* MAIN AREA */
-        .main {
-            margin-left: 230px;
-            padding: 20px;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
-        header .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        header img {
-            width: 40px;
-            border-radius: 50%;
-        }
-
-        /* CARDS */
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .card {
-            background: #f1f5f9;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            font-weight: bold;
-            box-shadow: 2px 2px 10px #0001;
-        }
-
-        .card p {
-            font-size: 26px;
-            margin-top: 10px;
-        }
-
-        /* CONTENT BOXES */
-        .content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-        }
-
-        .box {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 2px 2px 10px #0001;
-        }
-
-        .fake-chart {
-            width: 100%;
-            height: 200px;
-            background: linear-gradient(135deg, #4ade80, #60a5fa);
-            border-radius: 8px;
-            margin-top: 15px;
-        }
-
-        /* RESPONSIVE */
-        @media (max-width: 900px) {
-            .content {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .sidebar {
-                width: 180px;
-            }
-            .main {
-                margin-left: 180px;
-            }
-        }
-
-
-
-        .pesquisa-container {
-        position: relative;
-        width: 350px;
-    }
-
-    #barraPesquisa {
-        width: 100%;
-        padding: 10px;
-        font-size: 16px;
-    }
-
-    .lista-resultado {
-        list-style: none;      /* remove os pontos (•) */
-        padding-left: 0;       /* impede recuo padrão */
-        margin: 0;             /* remove margens externas */
-    }
-
-    .lista-resultado li {
-        padding: 8px 0;
-        border-bottom: 1px solid rgba(255,255,255,0.4); /* opcional */
-    }
-
-    .lista-resultado li:hover {
-        background: #f1f1f1;
-    }
-
-    </style>
-
+    <title>Painel de Administração</title>
 </head>
-<body class="role-user">
-  <div class="page-container">
+<body>
     {% include 'header.html' %}
 
-    <main class="home-dashboard">
-        <section class="cards">
-                <div class="card">
-                    <h3>Usuários</h3>
-                    <p>{{ users_count }}</p>
+    
+    <main class="denuncia-page">
+      
+      <div class="header-row">
+        <h1 class="title">Painel de Administração</h1>
+      </div>
+      
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" style="margin: 0 20px 20px 20px;">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+    <section class="main-content">
+        <div>
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-number" id="openCount">{{ users_count }}</div>
+                    <div class="stat-sub">Usuários</div>
                 </div>
-            </section>
 
-            <section class="content">
+                <div class="stat-card">
+                    <div class="stat-number" id="openCount">{{ total_abertas }}</div>
+                    <div class="stat-sub">denúncias em aberto</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-number" id="resolvedCount">{{ total_resolvidas }}/{{ total_denuncias }}</div>
+                    <div class="stat-sub">das denúncias resolvidas</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="grid" id="main-content">
+        <div>
+          <h2 class="section-title mb-3">Pesquisa Por Usuários</h2>
+          <div class="stats-container">
                 <div class="box">
-                    <h2>Gráfico Simples</h2>
-                    <div class="fake-chart">
-
-
-                        <div class="pesquisa-container">
-                            <input type="text" id="barraPesquisa" placeholder="Pesquisar matrícula...">
-
-                            <ul id="resultadoPesquisa" class="lista-resultado"></ul>
-                        </div>
-
-
+                    <div class="pesquisa-container">
+                        <input type="text" id="barraPesquisa" placeholder="Pesquisar matrícula...">
+                        <ul id="resultadoPesquisa" class="lista-resultado"></ul>
                     </div>
                 </div>
+          </div>
+          
+        </div>
 
-                <div class="box">
-                    <h2>Atividades Recentes</h2>
-                    <ul class="activity-list">
-                        <li>+ Novo usuário cadastrado</li>
-                        <li>+ Visita registrada no museu</li>
-                        <li>+ Novo agendamento realizado</li>
-                        <li>- Agendamento cancelado</li>
-                    </ul>
+        <div class="right-col">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h2 class="section-title">Denúncias Recebidas (Em Aberto)</h2>
+            </div>
+
+          <div class="list" id="reportList" role="list" aria-label="Denúncias em aberto">
+            
+            {% for denuncia in denuncias %}
+              <div class="item" role="listitem">
+                <div class="label">
+                  <strong>{% if denuncia.denunciante %}{{ denuncia.denunciante.name }}{% else %}Anônimo{% endif %}</strong> 
+                  ({{ denuncia.tipo_denuncia }})
+                  <span class="text-muted">• {{ denuncia.data_envio.strftime('%d/%m/%Y') }}</span>
+                  <p class="mb-0">{{ denuncia.descricao | truncate(200) }}</p>
                 </div>
-            </section>
-    </div>
-    </main>
-</div>
 
+                <div class="controls">
+                  
+                  <form action="{{ url_for('main.resolver_denuncia', denuncia_id=denuncia.id) }}" method="POST" class="d-inline">
+                    <button class="icon" title="Marcar como resolvida">✓</button>
+                  </form>
+                  
+                  <form action="{{ url_for('main.excluir_denuncia', denuncia_id=denuncia.id) }}" method="POST" class="d-inline">
+                    <button class="icon" title="Remover">✕</button>
+                  </form>
+
+                </div>
+              </div>
+            {% else %}
+              <div class="item">
+                <div class="label">Nenhuma denúncia em aberto no momento.</div>
+              </div>
+            {% endfor %}
+
+          </div>
+          
+          <div class="d-flex justify-content-center">
+            <a class="view-all" href="#">Ver Todas (incluindo resolvidas)</a>
+          </div>
+
+        </div>
+      </div>
+</main>
+        {% include 'footer.html' %}
 
 <script>
+/* --------------- util: normaliza string (remove acento e deixa em minúsculas) --------------- */
+function normalizeString(str) {
+    if (!str) return "";
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+/* --------------- carregar usuários e preparar dados --------------- */
 let usuarios = [];
 
 function carregarUsuarios() {
     fetch("/api/usuarios")
         .then(res => res.json())
         .then(data => {
-            usuarios = data.usuarios;
+            // Assumimos que data.usuarios é array de objetos com { id, name ou nome, matricula, is_suspenso, suspenso_ate }
+            usuarios = (data.usuarios || []).map(u => {
+                // normalize field names: some APIs usam 'name' e outras 'nome'
+                const nome = u.name ?? u.nome ?? "";
+                return {
+                    ...u,
+                    name: nome,
+                    name_normalized: normalizeString(nome),
+                    // garantindo que matricula seja string
+                    matricula: (u.matricula || "").toString(),
+                    // se suspenso_ate vier como ISO, você pode formatar depois
+                    suspenso_ate: u.suspenso_ate || null
+                };
+            });
         })
         .catch(err => console.error("Erro ao carregar usuários:", err));
 }
 
-// Carrega ao abrir a página
+// carrega ao abrir a página
 carregarUsuarios();
 
-// Atualiza em real-time a cada 5 segundos
-setInterval(carregarUsuarios, 5000);
-
-
+/* --------------- seleção de elementos --------------- */
 const barra = document.getElementById("barraPesquisa");
 const lista = document.getElementById("resultadoPesquisa");
 
-// Quando focar → exibe os 8 primeiros
+/* --------------- exibir 8 primeiros ou filtrados --------------- */
+function exibirResultados(listaUsuarios) {
+    lista.innerHTML = "";
+
+    // limita a 8 resultados
+    listaUsuarios.slice(0, 8).forEach(u => {
+        const item = document.createElement("li");
+        item.className = "resultado-item";
+
+        // Formata tempo de suspensão (se houver)
+        let suspensoTexto = "";
+        if (u.is_suspenso || u.isSuspenso || u.is_suspenso === true) {
+            // se vier em ISO string, tenta formatar; se já vier formatado, usa direto
+            if (u.suspenso_ate) {
+                try {
+                    const d = new Date(u.suspenso_ate);
+                    if (!isNaN(d)) {
+                        const dia = String(d.getDate()).padStart(2, "0");
+                        const mes = String(d.getMonth() + 1).padStart(2, "0");
+                        const ano = d.getFullYear();
+                        const hh = String(d.getHours()).padStart(2, "0");
+                        const mm = String(d.getMinutes()).padStart(2, "0");
+                        suspensoTexto = ` <strong>(até ${dia}/${mes}/${ano} ${hh}:${mm})</strong>`;
+                    } else {
+                        suspensoTexto = ` <strong>(até ${u.suspenso_ate})</strong>`;
+                    }
+                } catch (e) {
+                    suspensoTexto = ` <strong>(até ${u.suspenso_ate})</strong>`;
+                }
+            } else {
+                suspensoTexto = " <strong>(suspenso)</strong>";
+            }
+            item.style.color = "red";
+        }
+
+        // escape simples (evita HTML injection); aqui você pode melhorar se quiser
+        const safeName = String(u.name).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        const safeMatricula = String(u.matricula).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+        item.innerHTML = `${safeName} — ${safeMatricula}${suspensoTexto}`;
+
+        lista.appendChild(item);
+    });
+
+    // se não houver resultados, mostra mensagem
+    if (listaUsuarios.length === 0) {
+        const li = document.createElement("li");
+        li.className = "resultado-item vazio";
+        li.textContent = "Nenhum usuário encontrado.";
+        lista.appendChild(li);
+    }
+}
+
+/* --------------- comportamento do input --------------- */
+
+// mostrar quando focar (mostra os 8 primeiros)
 barra.addEventListener("focus", () => {
     exibirResultados(usuarios);
     lista.style.display = "block";
 });
 
-// Quando digitar
+// quando digitar, filtra por matrícula OU por nome (ignorando acentos e caixa)
 barra.addEventListener("input", () => {
     const termo = barra.value.trim();
 
     let filtrados = usuarios;
 
-    // Se digitou algo, filtra
     if (termo !== "") {
-        filtrados = usuarios.filter(u =>
-            u.matricula.startsWith(termo)
-        );
+        const termoNormalizado = normalizeString(termo);
+
+        filtrados = usuarios.filter(u => {
+            // matrícula começa com termo (mantemos case-sensitive como string start)
+            if (u.matricula && u.matricula.startsWith(termo)) return true;
+
+            // nome contém termo (normalizado)
+            if (u.name_normalized && u.name_normalized.includes(termoNormalizado)) return true;
+
+            return false;
+        });
     }
 
     exibirResultados(filtrados);
     lista.style.display = "block";
 });
 
-// Quando perder o foco → esconde a lista
+// quando perder o foco → esconde a lista (delay para permitir clique)
 barra.addEventListener("blur", () => {
     setTimeout(() => {
         lista.style.display = "none";
-    }, 150); 
+    }, 150);
 });
+</script>
 
-// Exibir resultados
-function exibirResultados(listaUsuarios) {
-    lista.innerHTML = "";
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    // limitar a 8 resultados
-    listaUsuarios.slice(0, 8).forEach(u => {
-        const item = document.createElement("li");
-        item.textContent = `${u.name} — ${u.matricula}`;
-        lista.appendChild(item);
-    });
+<div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper><div class="vw-plugin-top-wrapper"></div></div>
+</div>
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
+
+<script>
+function toggleAccessMenu() { document.getElementById('access-menu').classList.toggle('show'); }
+
+function toggleContrast() {
+    document.body.classList.toggle('high-contrast');
+    if (document.body.classList.contains('high-contrast')) 
+        localStorage.setItem('contrast', 'true');
+    else 
+        localStorage.removeItem('contrast');
+}
+
+if (localStorage.getItem('contrast') === 'true') {
+    document.body.classList.add('high-contrast');
+}
+
+let currentFontSize = 100;
+function increaseFont() { 
+    if (currentFontSize < 150) {
+        currentFontSize += 10;
+        document.body.style.fontSize = currentFontSize + '%';
+    }
+}
+function decreaseFont() {
+    if (currentFontSize > 80) {
+        currentFontSize -= 10;
+        document.body.style.fontSize = currentFontSize + '%';
+    }
+}
+function resetAccess() {
+    currentFontSize = 100;
+    document.body.style.fontSize = '100%';
+    document.body.classList.remove('high-contrast');
+    localStorage.removeItem('contrast');
 }
 </script>
+
+<!-- MENU FLOATING (SE EXISTIR) -->
+<button class="btn-access-float" onclick="toggleAccessMenu()"><i class="bi bi-universal-access"></i></button>
+
+<div id="access-menu" class="access-menu-container">
+    <h6 class="mb-3 border-bottom pb-2">Acessibilidade</h6>
+    <div class="d-grid gap-2">
+        <button class="btn btn-sm btn-outline-dark d-flex justify-content-between"
+            onclick="toggleContrast()">
+            <span>Alto Contraste</span> <i class="bi bi-circle-half"></i>
+        </button>
+
+        <div class="btn-group">
+            <button class="btn btn-sm btn-outline-dark" onclick="increaseFont()">
+                <i class="bi bi-zoom-in"></i> +
+            </button>
+            <button class="btn btn-sm btn-outline-dark" onclick="decreaseFont()">
+                <i class="bi bi-zoom-out"></i> -
+            </button>
+        </div>
+
+        <button class="btn btn-sm btn-outline-danger" onclick="resetAccess()">
+            Resetar
+        </button>
+    </div>
+</div>
 
 
 </body>
