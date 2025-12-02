@@ -9,6 +9,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <title>Painel de Administração</title>
+    <!-- Só pra garantir que o resultado da pesquisa começe vazio -->
+    <style>
+        #resultadoPesquisa {
+        display: none;
+    }
 </head>
 <body>
     {% include 'header.html' %}
