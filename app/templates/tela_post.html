@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ topico.titulo }} - SIIF</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body { background-color: #f0f2f5; }
+        
+        /* Estilos do Post Principal */
+        .main-post-card {
+            border: none;
+            border-radius: 0; /* No mobile fica full */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        @media(min-width: 768px) {
+            .main-post-card { border-radius: 16px; margin-top: 20px; }
+        }
+
+        /* Estilo da Enquete (Igual da Comunidade) */
+        .poll-option-container {
+            position: relative;
+            margin-bottom: 10px;
+            height: 45px;
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        .poll-progress-bar {
+            position: absolute; top: 0; left: 0; height: 100%;
+            background-color: rgba(56, 102, 65, 0.15); z-index: 1;
+        }
+        .poll-content {
+            position: relative; z-index: 2; display: flex;
+            justify-content: space-between; align-items: center;
+            height: 100%; padding: 0 15px; font-weight: 600; color: #333;
+        }
+
+        /* Estilos de Comentários (Escadinha) */
+        .comment-tree { margin-top: 20px; }
+        
+        .comment-item {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        
+        /* Linha conectora da escadinha */
+        .nested-comments {
+            margin-left: 35px; /* Indentação */
+            padding-left: 15px;
+            border-left: 2px solid #e0e0e0; /* A linha cinza vertical */
+        }
+        .nested-comments:hover { border-left-color: #386641; } /* Fica verde ao passar o mouse */
+
+        .comment-bubble {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 12px 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: inline-block;
+            min-width: 200px;
+            max-width: 100%;
+        }
+        
+        /* Destaque para o Autor do Post (OP) nos comentários */
+        .badge-op {
+            font-size: 0.65rem;
+            background-color: #386641;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+
+        /* Badge de resposta */
+        .replying-badge {
+            background-color: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    {% include 'header.html' %}
+
+    {% macro render_comment(resposta) %}
+    <div class="comment-item" id="comment-{{ resposta.id }}">
+        <div class="d-flex gap-2">
+            <img src="{{ url_for('static', filename='fotos_perfil/' + resposta.autor.foto_url) if resposta.autor.foto_url else url_for('static', filename='img/image.png') }}" 
+                 class="rounded-circle" width="32" height="32" style="object-fit: cover;">
+            
+            <div class="w-100">
+                <div class="comment-bubble">
+                    <div class="d-flex align-items-center mb-1">
+                        <span class="fw-bold small">{{ resposta.autor.name }}</span>
+                        
+                        {% if resposta.autor_id == topico.autor_id %}
+                            <span class="badge-op" title="Autor do Post">AUTOR</span>
+                        {% endif %}
+                        
+                        {% if topico.comunidade and resposta.autor in topico.comunidade.moderadores %}
+                            <i class="bi bi-shield-check text-success ms-1" title="Moderador"></i>
+                        {% endif %}
+                    </div>
+                    
+                    <p class="mb-1 text-dark" style="white-space: pre-line; font-size: 0.95rem;">{{ resposta.conteudo }}</p>
+                    
+                    {% if resposta.imagem_resposta %}
+                        <a href="{{ resposta.imagem_resposta }}" target="_blank">
+                            <img src="{{ resposta.imagem_resposta }}" class="rounded mt-2 border" style="max-height: 200px; max-width: 100%;">
+                        </a>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex gap-3 mt-1 ms-2 small text-muted align-items-center">
+                    <span>{{ resposta.criado_em | format_data_br }}</span>
+                    
+                    <form action="{{ url_for('main.like_comentario', resposta_id=resposta.id) }}" method="POST" class="d-inline">
+                        <button class="btn btn-link p-0 text-decoration-none text-muted fw-bold" style="font-size: 0.8rem;">
+                            <i class="bi {% if resposta.id in likes_respostas_usuario %}bi-heart-fill text-danger{% else %}bi-heart{% endif %}"></i> 
+                            {% if resposta.likes|length > 0 %}{{ resposta.likes|length }}{% endif %}
+                        </button>
+                    </form>
+
+                    <a href="javascript:void(0)" onclick="responderComentario('{{ resposta.autor.name }}', '{{ resposta.id }}')" class="text-decoration-none fw-bold text-muted hover-underline">Responder</a>
+                </div>
+            </div>
+        </div>
+
+        {% if resposta.filhos %}
+            <div class="nested-comments">
+                {% for filho in resposta.filhos %}
+                    {{ render_comment(filho) }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+    {% endmacro %}
+
+
+    <div class="container pb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                
+                <div class="mt-3 mb-2">
+                    <a href="javascript:history.back()" class="text-decoration-none text-secondary fw-bold small">
+                        <i class="bi bi-arrow-left"></i> VOLTAR
+                    </a>
+                </div>
+
+                <div class="card main-post-card bg-white mb-4">
+                    <div class="card-body p-4">
+                        
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <img src="{{ url_for('static', filename='fotos_perfil/' + topico.autor.foto_url) if topico.autor.foto_url else url_for('static', filename='img/image.png') }}" class="rounded-circle border" width="48" height="48">
+                            <div>
+                                <h6 class="mb-0 fw-bold">{{ topico.autor.name }}</h6>
+                                <div class="text-muted small">
+                                    {% if topico.comunidade %}
+                                        <a href="{{ url_for('main.ver_comunidade', comunidade_id=topico.comunidade.id) }}" class="text-decoration-none fw-bold text-success">c/{{ topico.comunidade.nome }}</a> • 
+                                    {% endif %}
+                                    {{ topico.criado_em | format_data_br }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4 class="fw-bold mb-3">{{ topico.titulo }}</h4>
+                        
+                        {% if topico.conteudo %}
+                            <p class="fs-6 text-dark" style="white-space: pre-line;">{{ topico.conteudo }}</p>
+                        {% endif %}
+
+                        {% if topico.imagem_post %}
+                            <div class="mt-3">
+                                {% if topico.imagem_post.endswith('.mp4') or topico.imagem_post.endswith('.webm') %}
+                                    <video controls class="w-100 rounded-3 border"><source src="{{ topico.imagem_post }}" type="video/mp4"></video>
+                                {% else %}
+                                    <img src="{{ topico.imagem_post }}" class="w-100 rounded-3 border shadow-sm">
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                        {% if topico.tipo_post == 'link' %}
+                            <a href="{{ topico.link_url }}" target="_blank" class="text-decoration-none">
+                                <div class="card bg-light border-0 p-3 mt-3 hover-shadow">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="bg-white p-2 rounded text-primary"><i class="bi bi-link-45deg fs-3"></i></div>
+                                        <div class="text-truncate fw-bold text-dark">{{ topico.link_url }}</div>
+                                    </div>
+                                </div>
+                            </a>
+                        {% endif %}
+
+                        {% if topico.tipo_post == 'enquete' %}
+                            <div class="mt-3">
+                                {% set enquete = namespace(total=0, votou=false) %}
+                                {% for opcao in topico.enquete_opcoes %}
+                                    {% set enquete.total = enquete.total + opcao.votos|length %}
+                                    {% if votos_usuario and opcao.id in votos_usuario %}{% set enquete.votou = true %}{% endif %}
+                                {% endfor %}
+
+                                {% for opcao in topico.enquete_opcoes %}
+                                    {% set percent = 0 %}
+                                    {% if enquete.total > 0 %}{% set percent = (opcao.votos|length / enquete.total * 100) | round(1) %}{% endif %}
+                                    
+                                    <div class="position-relative mb-2">
+                                        {% if enquete.votou %}
+                                            {% set eh_minha = (votos_usuario and opcao.id in votos_usuario) %}
+                                            <div class="poll-option-container {% if eh_minha %}voted{% endif %}" style="cursor: default;">
+                                                <div class="poll-progress-bar" style="width: {{ percent }}%;"></div>
+                                                <div class="poll-content">
+                                                    <span>{{ opcao.texto }} {% if eh_minha %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</span>
+                                                    <span>{{ percent }}%</span>
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <form action="{{ url_for('main.votar_enquete', opcao_id=opcao.id) }}" method="POST">
+                                                <button class="poll-option-container w-100 text-start">
+                                                    <div class="poll-content justify-content-start">{{ opcao.texto }}</div>
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                                <div class="text-muted small ms-1">{{ enquete.total }} votos</div>
+                            </div>
+                        {% endif %}
+
+                        <div class="d-flex gap-3 mt-4 pt-3 border-top">
+                            <form action="{{ url_for('main.like_post', topico_id=topico.id) }}" method="POST">
+                                <button class="btn btn-light rounded-pill px-3 fw-bold {% if topico.id in likes_usuario %}text-success bg-success bg-opacity-10{% endif %}">
+                                    <i class="bi bi-arrow-up-circle{% if topico.id in likes_usuario %}-fill{% endif %}"></i> {{ topico.likes|length }} Curtidas
+                                </button>
+                            </form>
+                            <button class="btn btn-light rounded-pill px-3 fw-bold text-secondary" onclick="document.getElementById('input-comentario').focus()">
+                                <i class="bi bi-chat"></i> {{ topico.respostas|length }} Comentários
+                            </button>
+                            <button class="btn btn-light rounded-circle ms-auto" onclick="copiarLink()"><i class="bi bi-share"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-3">
+                        <form action="{{ url_for('main.comentar_post', topico_id=topico.id) }}" method="POST" enctype="multipart/form-data">
+                            <input type="hidden" name="parent_id" id="parent-id">
+                            
+                            <div id="badge-resposta" class="replying-badge d-none">
+                                <i class="bi bi-arrow-return-right"></i> Respondendo a <b id="nome-resposta">Alguém</b>
+                                <i class="bi bi-x-circle-fill ms-2 cursor-pointer" onclick="cancelarResposta()"></i>
+                            </div>
+
+                            <div class="d-flex gap-3">
+                                <img src="{{ url_for('static', filename='fotos_perfil/' + current_user.foto_url) if current_user.foto_url else url_for('static', filename='img/image.png') }}" class="rounded-circle" width="40" height="40">
+                                <div class="flex-grow-1">
+                                    <textarea name="conteudo_comentario" id="input-comentario" class="form-control border-0 bg-light rounded-3 p-3 mb-2" rows="2" placeholder="Escreva seu comentário..." required></textarea>
+                                    
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="input-group w-auto">
+                                            <label class="btn btn-light text-secondary rounded-pill" title="Adicionar imagem">
+                                                <i class="bi bi-image"></i>
+                                                <input type="file" name="midia_comentario" class="d-none" onchange="mostrarPreview(this)">
+                                            </label>
+                                            <span id="file-name" class="ms-2 small text-muted align-self-center"></span>
+                                        </div>
+                                        
+                                        <button class="btn btn-success rounded-pill px-4 fw-bold">Comentar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="comment-tree">
+                    {% for resposta in topico.respostas %}
+                        {% if not resposta.parent_id %}
+                            {{ render_comment(resposta) }}
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-5 text-muted">
+                            <i class="bi bi-chat-square-text display-4 mb-3 d-block opacity-25"></i>
+                            <p>Seja o primeiro a comentar!</p>
+                        </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function responderComentario(nome, id) {
+            document.getElementById('parent-id').value = id;
+            document.getElementById('nome-resposta').innerText = nome;
+            document.getElementById('badge-resposta').classList.remove('d-none');
+            const input = document.getElementById('input-comentario');
+            input.focus();
+            input.scrollIntoView({behavior: 'smooth', block: 'center'});
+        }
+
+        function cancelarResposta() {
+            document.getElementById('parent-id').value = '';
+            document.getElementById('badge-resposta').classList.add('d-none');
+        }
+
+        function mostrarPreview(input) {
+            const fileNameSpan = document.getElementById('file-name');
+            if (input.files && input.files[0]) {
+                fileNameSpan.innerText = input.files[0].name;
+            } else {
+                fileNameSpan.innerText = '';
+            }
+        }
+
+        function copiarLink() {
+            navigator.clipboard.writeText(window.location.href);
+            alert("Link copiado!");
+        }
+    </script>
+</body>
+</html>
