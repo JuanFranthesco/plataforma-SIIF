@@ -229,58 +229,67 @@ class Comunidade(db.Model):
 # FÓRUM (ATUALIZADO COM IMAGENS, HIERARQUIA E LIKES)
 # ===================================================================
 
+class EnqueteOpcao(db.Model):
+    __tablename__ = 'enquete_opcao'
+    id = db.Column(db.Integer, primary_key=True)
+    texto = db.Column(db.String(200), nullable=False)
+    topico_id = db.Column(db.Integer, db.ForeignKey('topico.id'), nullable=False)
+    
+    # Relacionamento com os votos
+    votos = db.relationship('EnqueteVoto', backref='opcao', lazy=True, cascade="all, delete-orphan")
+
+class EnqueteVoto(db.Model):
+    __tablename__ = 'enquete_voto'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    opcao_id = db.Column(db.Integer, db.ForeignKey('enquete_opcao.id'), nullable=False)
+
+    # Garante que um usuário só vota uma vez por opção (logica extra no backend garante 1 por enquete)
+    __table_args__ = (db.UniqueConstraint('user_id', 'opcao_id', name='_user_opcao_voto_uc'),)
+
+
 class Topico(db.Model):
     __tablename__ = 'topico'
 
     id = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String(200), nullable=False)
-    conteudo = db.Column(db.Text, nullable=False)
+    conteudo = db.Column(db.Text, nullable=True) # Agora pode ser Null se for só um link/video
+    fixado = db.Column(db.Boolean, default=False)
+    # TIPO DE POSTAGEM
+    # 'geral' (texto/img), 'link', 'video', 'enquete', 'noticia', 'material'
+    tipo_post = db.Column(db.String(50), default='geral') 
     
-    # CAMPO NOVO: Imagem no Post
     imagem_post = db.Column(db.String(300), nullable=True) 
+    
+    # CAMPOS NOVOS PARA OS TIPOS ESPECÍFICOS
+    link_url = db.Column(db.String(500), nullable=True) # Para tipo 'link' ou 'video' (youtube)
+    
+    # Chaves Estrangeiras para conectar com conteúdos do site
+    noticia_id = db.Column(db.Integer, db.ForeignKey('noticia.id'), nullable=True)
+    material_id = db.Column(db.Integer, db.ForeignKey('material.id'), nullable=True)
     
     criado_em = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     autor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    
-    # CAMPO NOVO: Link com Comunidade
     comunidade_id = db.Column(db.Integer, db.ForeignKey('comunidade.id'), nullable=True)
     
-    # Relacionamentos (Cascade para deletar tudo se o tópico for apagado)
+    # Relacionamentos
     respostas = db.relationship('Resposta', backref='topico', lazy=True, cascade="all, delete-orphan")
     likes = db.relationship('PostLike', backref='topico', lazy=True, cascade="all, delete-orphan")
     salvos = db.relationship('PostSalvo', backref='topico', lazy=True, cascade="all, delete-orphan")
+    
+    # Relacionamento novo para Enquete
+    enquete_opcoes = db.relationship('EnqueteOpcao', backref='topico', lazy=True, cascade="all, delete-orphan")
+    
+    # Relacionamentos virtuais para acessar o objeto Noticia e Material direto
+    noticia_ref = db.relationship('Noticia', foreign_keys=[noticia_id], lazy=True)
+    material_ref = db.relationship('Material', foreign_keys=[material_id], lazy=True)
+    # Tag
+    tag_id = db.Column(db.Integer, db.ForeignKey('comunidade_tag.id'), nullable=True)
+    tag = db.relationship('ComunidadeTag', foreign_keys=[tag_id], lazy=True)
 
     def __repr__(self):
         return f'<Topico {self.titulo}>'
 
-
-class Resposta(db.Model):
-    __tablename__ = 'resposta'
-
-    id = db.Column(db.Integer, primary_key=True)
-    conteudo = db.Column(db.Text, nullable=False)
-    
-    # CAMPO NOVO: Imagem no Comentário
-    imagem_resposta = db.Column(db.String(300), nullable=True)
-    
-    criado_em = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
-    
-    topico_id = db.Column(db.Integer, db.ForeignKey('topico.id'), nullable=False)
-    autor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    
-    # --- O SEGREDO DA ESCADINHA (HIERARQUIA) ---
-    parent_id = db.Column(db.Integer, db.ForeignKey('resposta.id'), nullable=True)
-    
-    filhos = db.relationship('Resposta', 
-                             backref=db.backref('pai', remote_side=[id]), 
-                             lazy=True, 
-                             cascade="all, delete-orphan")
-
-    # NOVO: Likes nos comentários
-    likes = db.relationship('RespostaLike', backref='resposta', lazy=True, cascade="all, delete-orphan")
-
-    def __repr__(self):
-        return f'<Resposta {self.id}>'
 
 
 # ===================================================================
@@ -299,6 +308,31 @@ class PostLike(db.Model):
     def __repr__(self):
         return f'<Like do User {self.user_id} no Tópico {self.topico_id}>'
 
+
+# No arquivo app/models.py
+
+class Resposta(db.Model):
+    __tablename__ = 'resposta'
+    id = db.Column(db.Integer, primary_key=True)
+    conteudo = db.Column(db.Text, nullable=False)
+    
+    # Campo de Imagem (Adicionado na atualização recente)
+    imagem_resposta = db.Column(db.String(300), nullable=True)
+    
+    criado_em = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    
+    topico_id = db.Column(db.Integer, db.ForeignKey('topico.id'), nullable=False)
+    autor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    
+    # Hierarquia (Comentário respondendo comentário)
+    parent_id = db.Column(db.Integer, db.ForeignKey('resposta.id'), nullable=True)
+    filhos = db.relationship('Resposta', backref=db.backref('pai', remote_side=[id]), lazy=True, cascade="all, delete-orphan")
+    
+    # Likes
+    likes = db.relationship('RespostaLike', backref='resposta', lazy=True, cascade="all, delete-orphan")
+
+    def __repr__(self):
+        return f'<Resposta {self.id}>'
 
 class RespostaLike(db.Model):
     __tablename__ = 'resposta_like'
