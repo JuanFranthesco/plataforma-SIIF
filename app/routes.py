@@ -8,6 +8,10 @@ import secrets
 from PIL import Image
 from thefuzz import fuzz
 import bleach
+# app/routes.py (Topo do arquivo)
+
+
+
 # --- CONFIGURAÇÕES DE SEGURANÇA E CONSTANTES ---
 ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'jpg', 'jpeg', 'png', 'mp4'}
 
@@ -40,8 +44,16 @@ from app.models import (
     Material, User, FAQ, Denuncia, Noticia, Evento, Perfil,
     Topico, Resposta, PostSalvo, PostLike, Notificacao,
     Comunidade, SolicitacaoParticipacao, RespostaLike, Tag, ComunidadeTag, AuditLog,
-    material_favoritos
+    EnqueteOpcao, EnqueteVoto, RelatoSuporte  # <--- CONFIRA SE ESTES NOMES ESTÃO AQUI
 )
+
+# app/routes.py (Topo)
+from app.models import (
+    # ... outros modelos ...
+    Tag, ComunidadeTag, AuditLog,
+    EnqueteOpcao, EnqueteVoto  # <--- ADICIONE AQUI
+)
+
 from app.extensions import db, limiter
 from app.forms import ProfileForm
 
@@ -275,42 +287,59 @@ def participar_comunidade(comunidade_id):
 def ver_comunidade(comunidade_id):
     comunidade = Comunidade.query.get_or_404(comunidade_id)
     
+    # Filtro vindo da URL (ex: ?tipo=material)
+    filtro_tipo = request.args.get('tipo')
+    
     tem_acesso = True
     if comunidade.tipo_acesso == 'Restrito' and current_user not in comunidade.membros:
         tem_acesso = False
         topicos = []
     else:
-        topicos = Topico.query.filter_by(comunidade_id=comunidade.id).order_by(desc(Topico.criado_em)).all()
+        # Query Base
+        query = Topico.query.filter_by(comunidade_id=comunidade.id)
+        
+        # Aplica Filtros
+        if filtro_tipo == 'enquete':
+            query = query.filter(Topico.tipo_post == 'enquete')
+        elif filtro_tipo == 'material':
+            # Pega tipo 'material' OU posts que tenham anexo de material
+            query = query.filter(or_(Topico.tipo_post == 'material', Topico.material_id != None))
+        elif filtro_tipo == 'midia':
+            # Pega posts com imagem/video ou tipo 'geral' com imagem
+            query = query.filter(Topico.imagem_post != None)
+            
+        # Ordenação: FIXADOS PRIMEIRO, depois os mais recentes
+        topicos = query.order_by(desc(Topico.fixado), desc(Topico.criado_em)).all()
     
+    # ... (O RESTO DA FUNÇÃO CONTINUA IGUAL: likes, salvos, etc...)
     likes_usuario = [l.topico_id for l in PostLike.query.filter_by(user_id=current_user.id).all()]
     salvos_usuario = [s.topico_id for s in PostSalvo.query.filter_by(user_id=current_user.id).all()]
     likes_respostas_usuario = [l.resposta_id for l in RespostaLike.query.filter_by(user_id=current_user.id).all()]
     
+    votos_usuario = []
+    if tem_acesso:
+        ids_opcoes_votadas = db.session.query(EnqueteVoto.opcao_id).filter(EnqueteVoto.user_id == current_user.id).all()
+        votos_usuario = [v[0] for v in ids_opcoes_votadas]
+
     solicitacao_pendente = False
     if not tem_acesso:
-        sol = SolicitacaoParticipacao.query.filter_by(user_id=current_user.id, comunidade_id=comunidade.id).first()
-        if sol: solicitacao_pendente = True
+        if SolicitacaoParticipacao.query.filter_by(user_id=current_user.id, comunidade_id=comunidade.id).first():
+            solicitacao_pendente = True
 
-    sugestoes = Comunidade.query.filter(
-        Comunidade.categoria == comunidade.categoria,
-        Comunidade.id != comunidade.id
-    ).limit(3).all()
-    
-    if not sugestoes:
-        sugestoes = Comunidade.query.filter(Comunidade.id != comunidade.id).limit(3).all()
+    sugestoes = Comunidade.query.filter(Comunidade.id != comunidade.id).limit(3).all()
+    recent_noticias = Noticia.query.order_by(desc(Noticia.data_postagem)).limit(10).all()
+    recent_materiais = Material.query.order_by(desc(Material.data_upload)).limit(10).all()
 
-    return render_template(
-        'tela_comunidade_detalhe.html', 
-        comunidade=comunidade, 
-        topicos=topicos,
-        likes_usuario=likes_usuario,
-        salvos_usuario=salvos_usuario,
-        likes_respostas_usuario=likes_respostas_usuario,
-        tem_acesso=tem_acesso,
-        solicitacao_pendente=solicitacao_pendente,
-        sugestoes=sugestoes
+    return render_template('tela_comunidade_detalhe.html', 
+        comunidade=comunidade, topicos=topicos, likes_usuario=likes_usuario, 
+        salvos_usuario=salvos_usuario, likes_respostas_usuario=likes_respostas_usuario, 
+        tem_acesso=tem_acesso, solicitacao_pendente=solicitacao_pendente, 
+        sugestoes=sugestoes, votos_usuario=votos_usuario, 
+        lista_noticias=recent_noticias, lista_materiais=recent_materiais,
+        filtro_atual=filtro_tipo # Passamos o filtro para o template saber qual botão pintar
     )
 
+    
 
 # ===================================================================
 # GESTÃO E MODERAÇÃO (DASHBOARD)
@@ -461,16 +490,26 @@ def gerenciar_solicitacao(comunidade_id, sol_id, acao):
 @main_bp.route('/forum')
 @login_required
 def tela_foruns():
-    """
-    Exibe o feed principal com lógica de PESQUISA, FILTRO e ORDENAÇÃO.
-    """
     termo_pesquisa = request.args.get('q')
     ordenar_por = request.args.get('ordenarPor')
     filtro = request.args.get('filtro')
 
-    query = Topico.query
+    # Query Base: Tópicos + Join com Comunidade
+    query = Topico.query.outerjoin(Comunidade)
+    
+    # --- FILTROS DE PRIVACIDADE E TIPO ---
+    query = query.filter(
+        # 1. Privacidade: Mostra posts Globais (sem comunidade) OU de Comunidades Públicas
+        or_(
+            Topico.comunidade_id == None,
+            Comunidade.tipo_acesso != 'Restrito'
+        )
+    ).filter(
+        # 2. Tipo: NÃO MOSTRAR Enquetes no feed global (Regra de Negócio)
+        Topico.tipo_post != 'enquete'
+    )
 
-    # Filtro de Pesquisa
+    # Filtros de Pesquisa
     if termo_pesquisa:
         query = query.filter(or_(
             Topico.titulo.ilike(f'%{termo_pesquisa}%'),
@@ -485,29 +524,25 @@ def tela_foruns():
     if ordenar_por == 'relevancia':
         query = query.outerjoin(PostLike).group_by(Topico.id).order_by(desc(func.count(PostLike.id)))
     else:
-        # Padrão: mais recente
         query = query.order_by(desc(Topico.criado_em))
 
     topicos = query.all()
 
     likes_usuario = [l.topico_id for l in PostLike.query.filter_by(user_id=current_user.id).all()]
     salvos_usuario = [s.topico_id for s in PostSalvo.query.filter_by(user_id=current_user.id).all()]
+    
+    # Carrega notificações
+    notificacoes = Notificacao.query.filter_by(usuario_id=current_user.id, lida=False).order_by(desc(Notificacao.data_criacao)).limit(30).all()
 
-    # Fetch notifications for current user
-    notificacoes = Notificacao.query.filter_by(usuario_id=current_user.id, lida=False).order_by(
-        desc(Notificacao.data_criacao)).limit(30).all()
-
+    # Passamos 'votos_usuario' vazio pois não mostramos enquetes aqui, evita erro no template se ele tentar ler
     return render_template(
-        'tela_foruns.html',
-        topicos=topicos,
-        likes_usuario=likes_usuario,
-        salvos_usuario=salvos_usuario,
-        termo_pesquisado=termo_pesquisa,
-        ordenacao_selecionada=ordenar_por,
-        filtro_selecionado=filtro,
-        notificacoes=notificacoes
+        'tela_foruns.html', 
+        topicos=topicos, 
+        likes_usuario=likes_usuario, 
+        salvos_usuario=salvos_usuario, 
+        notificacoes=notificacoes,
+        votos_usuario=[] 
     )
-
 
 @main_bp.route('/forum/notificacoes/mark_all_seen', methods=['POST'])
 @login_required
@@ -535,73 +570,97 @@ def marcar_todas_notificacoes_lidas():
     return redirect(url_for('main.tela_foruns'))
 
 
+# app/routes.py (Função criar_post)
+
 @main_bp.route('/forum/postar', methods=['POST'])
 @login_required
 def criar_post():
-    """
-    Cria um novo post (COM UPLOAD DE IMAGEM).
-    """
-    conteudo = request.form.get('conteudo_post')
-    comunidade_id = request.form.get('comunidade_id')  # ID da comunidade
-    imagem = request.files.get('midia_post')  # Arquivo de imagem
+    comunidade_id = request.form.get('comunidade_id')
+    tag_id = request.form.get('tag_id')
+    tipo_selecionado = request.form.get('tipo_post_selecionado', 'geral') 
+    
+    titulo = ""
+    conteudo = ""
+    link_url = None
+    noticia_id = None
+    material_id = None
+    imagem_path = None
+    
+    # 1. PEGAR DADOS DEPENDENDO DA ABA SELECIONADA
+    if tipo_selecionado == 'enquete':
+        titulo = request.form.get('titulo_enquete_fake', '').strip()
+        conteudo = request.form.get('descricao_enquete', '')
 
-    if not conteudo and not imagem:
-        flash('O post não pode ficar vazio.', 'warning')
-        return redirect(request.referrer or url_for('main.tela_foruns'))
+    elif tipo_selecionado == 'link':
+        link_url = request.form.get('link_url')
+        conteudo = request.form.get('descricao_link', '')
+        # Se o usuário não digitou título, usa a descrição ou um padrão
+        input_titulo = request.form.get('descricao_link', '').strip()
+        titulo = input_titulo if input_titulo else "Link Compartilhado"
+        
+        if not link_url:
+            flash('Insira a URL.', 'danger')
+            return redirect(request.referrer)
 
-    # Define um título baseado na primeira linha
-    linhas = conteudo.split('\n', 1) if conteudo else ["Nova Imagem"]
-    titulo = linhas[0].strip()[:150] if conteudo else "Imagem"
+    elif tipo_selecionado == 'noticia':
+        noticia_id = request.form.get('noticia_selecionada')
+        if noticia_id:
+            n = Noticia.query.get(noticia_id)
+            if n: titulo = f"Compartilhou: {n.titulo}"
+
+    elif tipo_selecionado == 'material':
+        material_id = request.form.get('material_selecionado')
+        if material_id:
+            m = Material.query.get(material_id)
+            if m: titulo = f"Compartilhou: {m.titulo}"
+
+    else: # Caso 'geral' ou 'media'
+        titulo = request.form.get('titulo_post', '').strip()
+        conteudo = request.form.get('conteudo_post', '')
+        imagem = request.files.get('midia_post')
+        
+        if imagem and imagem.filename:
+            fname = secure_filename(imagem.filename)
+            ts = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+            filename = f"post_{ts}_{fname}"
+            path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            imagem.save(path)
+            imagem_path = f"/static/uploads/{filename}"
+            # Se tem imagem mas não tem título
+            if not titulo: titulo = "Compartilhou uma mídia"
+
+    # Fallback final
     if not titulo:
-        titulo = "Novo Post"
+        titulo = "Nova Publicação"
 
-    # Converte comunidade_id para inteiro se existir
-    com_id = int(comunidade_id) if comunidade_id else None
-
+    # 2. SALVAR NO BANCO
     novo_topico = Topico(
         titulo=titulo,
-        conteudo=conteudo if conteudo else "",
+        conteudo=conteudo,
+        tipo_post=tipo_selecionado,
+        imagem_post=imagem_path,
+        link_url=link_url,
+        noticia_id=noticia_id,
+        material_id=material_id,
         autor_id=current_user.id,
-        comunidade_id=com_id
+        comunidade_id=comunidade_id,
+        tag_id=tag_id if tag_id else None
     )
-
-    # Salvar imagem se houver
-    if imagem and imagem.filename:
-        filename = secure_filename(imagem.filename)
-        ts = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-        filename = f"post_{ts}_{filename}"
-        path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-
-        try:
-            imagem.save(path)
-            novo_topico.imagem_post = f"/static/uploads/{filename}"
-        except Exception as e:
-            flash(f'Erro ao salvar imagem: {e}', 'danger')
 
     db.session.add(novo_topico)
     db.session.commit()
 
-    # Create notifications for community members about the new post (excluding author)
-    if com_id:
-        comunidade = Comunidade.query.get(com_id)
-        membros_ids = [membro.id for membro in comunidade.membros if membro.id != current_user.id]
-        try:
-            for usuario_id in membros_ids:
-                mensagem = f"Novo post na comunidade {comunidade.nome}: {titulo}"
-                link = url_for('main.ver_comunidade', comunidade_id=com_id)
-                notificacao = Notificacao(mensagem=mensagem, link_url=link, usuario_id=usuario_id)
-                db.session.add(notificacao)
-            db.session.commit()
-        except Exception as e:
-            db.session.rollback()
-            flash(f'Erro ao criar notificações: {e}', 'danger')
+    # 3. SALVAR OPÇÕES DA ENQUETE
+    if tipo_selecionado == 'enquete':
+        opcoes_texto = request.form.getlist('opcao_enquete[]')
+        for texto_opt in opcoes_texto:
+            if texto_opt.strip():
+                nova_opcao = EnqueteOpcao(texto=texto_opt.strip(), topico_id=novo_topico.id)
+                db.session.add(nova_opcao)
+        db.session.commit()
 
-    flash('Post criado com sucesso!', 'success')
-
-    if com_id:
-        return redirect(url_for('main.ver_comunidade', comunidade_id=com_id))
-
-    return redirect(url_for('main.tela_foruns'))
+    flash('Publicação criada com sucesso!', 'success')
+    return redirect(url_for('main.ver_comunidade', comunidade_id=comunidade_id))
 
 
 @main_bp.route('/forum/<int:topico_id>/comentar', methods=['POST'])
@@ -1265,3 +1324,71 @@ def tela_admin():
         total_denuncias=total_denuncias)
     
     return redirect(request.referrer)
+
+@main_bp.route('/enquete/votar/<int:opcao_id>', methods=['POST'])
+@login_required
+def votar_enquete(opcao_id):
+    opcao = EnqueteOpcao.query.get_or_404(opcao_id)
+    topico = opcao.topico
+    
+    # Verifica se usuário já votou NESTE tópico (qualquer opção dele)
+    voto_existente = EnqueteVoto.query.join(EnqueteOpcao).filter(
+        EnqueteVoto.user_id == current_user.id,
+        EnqueteOpcao.topico_id == topico.id
+    ).first()
+    
+    if voto_existente:
+        flash('Você já votou nesta enquete.', 'warning')
+    else:
+        novo_voto = EnqueteVoto(user_id=current_user.id, opcao_id=opcao.id)
+        db.session.add(novo_voto)
+        db.session.commit()
+        flash('Voto computado!', 'success')
+        
+    return redirect(request.referrer)
+
+@main_bp.route('/forum/<int:topico_id>/fixar', methods=['POST'])
+@login_required
+def fixar_post(topico_id):
+    topico = Topico.query.get_or_404(topico_id)
+    
+    # Apenas moderadores ou dono da comunidade podem fixar
+    if not topico.comunidade or (current_user not in topico.comunidade.moderadores and current_user.id != topico.comunidade.criador_id):
+        flash('Sem permissão.', 'danger')
+        return redirect(request.referrer)
+    
+    # Inverte o status (se ta fixado, desafixa e vice-versa)
+    topico.fixado = not topico.fixado
+    db.session.commit()
+    
+    msg = 'Tópico fixado no topo!' if topico.fixado else 'Tópico desafixado.'
+    flash(msg, 'success')
+    return redirect(request.referrer)
+
+# No final de app/routes.py, ou junto com as outras rotas de fórum
+
+@main_bp.route('/post/<int:topico_id>')
+@login_required
+def ver_post_individual(topico_id):
+    topico = Topico.query.get_or_404(topico_id)
+    
+    # Verifica acesso se for comunidade restrita
+    if topico.comunidade and topico.comunidade.tipo_acesso == 'Restrito':
+        if current_user not in topico.comunidade.membros:
+            flash('Este post é privado.', 'danger')
+            return redirect(url_for('main.tela_inicial'))
+
+    likes_usuario = [l.topico_id for l in PostLike.query.filter_by(user_id=current_user.id).all()]
+    likes_respostas_usuario = [l.resposta_id for l in RespostaLike.query.filter_by(user_id=current_user.id).all()]
+    
+    votos_usuario = []
+    ids = db.session.query(EnqueteVoto.opcao_id).filter(EnqueteVoto.user_id == current_user.id).all()
+    votos_usuario = [v[0] for v in ids]
+
+    return render_template(
+        'tela_post.html', 
+        topico=topico,
+        likes_usuario=likes_usuario,
+        likes_respostas_usuario=likes_respostas_usuario,
+        votos_usuario=votos_usuario
+    )
