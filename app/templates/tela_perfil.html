@@ -34,14 +34,14 @@
 
       <div class="profile-header-container">
         
-        {% set banner_img = 'fotos_perfil/' + current_user.banner_perfil if current_user and current_user.banner_perfil else 'img/default_banner.jpg' %}
+        {% set banner_img = 'fotos_perfil/' + current_user.banner_perfil if current_user.banner_perfil else 'img/default_banner.jpg' %}
         
         <div class="profile-banner" style="background-image: url('{{ url_for('static', filename=banner_img) }}');">
         </div>
 
         <div class="profile-info-bar">
           
-          {% set avatar_img = 'fotos_perfil/' + current_user.foto_url if current_user and current_user.foto_url else 'fotos_perfil/default_profile.png' %}
+          {% set avatar_img = 'fotos_perfil/' + current_user.foto_perfil if current_user.foto_perfil else 'fotos_perfil/default_profile.png' %}
           
           <img src="{{ url_for('static', filename=avatar_img) }}" alt="Avatar do usuário" class="profile-avatar">
           
@@ -62,7 +62,9 @@
           
           <div class="profile-user-details">
             <h2 class="profile-name">{{ current_user.name }}</h2>
+            
             <p class="profile-bio">{{ current_user.bio or 'Sem bio definida. Edite seu perfil para adicionar uma.' }}</p>
+            
             <p class="profile-course">
               <i class="bi bi-mortarboard-fill"></i>
               {{ current_user.curso or 'Curso não informado' }} – {{ current_user.campus or 'Campus não informado' }}
@@ -93,31 +95,43 @@
 
         <div class="tab-content" id="profileTabContent">
           
-          <div class="tab-pane fade show active" id="posts-tab-pane" role="tabpanel" aria-labelledby="posts-tab" tabindex="0">
+          <div class="tab-pane fade show active" id="posts-tab-pane" role="tabpanel" tabindex="0">
             {% for post in posts %}
               <article class="post-card-profile">
                 <div class="post-card-header">
-                   {% set post_avatar = 'fotos_perfil/' + post.autor.perfil.foto_perfil if post.autor.perfil and post.autor.perfil.foto_perfil else 'img/default_profile.png' %}
+                   {% set post_avatar = 'fotos_perfil/' + post.autor.foto_perfil if post.autor.foto_perfil else 'fotos_perfil/default_profile.png' %}
                   <img src="{{ url_for('static', filename=post_avatar) }}" alt="Avatar" class="post-card-avatar">
                   
                   <div class="post-card-info">
                     <strong>{{ post.autor.name }}</strong>
                     <span class="text-muted">• {{ post.criado_em.strftime('%d/%m/%Y') }}</span>
                   </div>
+                  
+                  <div class="dropdown ms-auto">
+                    <button class="btn btn-light btn-sm btn-icon-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-trash-fill me-2"></i> Excluir Post</a></li>
+                    </ul>
                   </div>
+                </div>
+                
                 <div class="post-card-body">
                   <h5 class="post-card-title">{{ post.titulo }}</h5>
                   <p>{{ post.conteudo }}</p>
                 </div>
+                
                 <div class="post-card-footer">
-                    </div>
+                    <a href="#" class="post-interaction-btn"><i class="bi bi-chat-fill"></i> {{ post.respostas|length }}</a>
+                </div>
               </article>
             {% else %}
-                <p class="text-center text-muted p-5">Você ainda não criou nenhum post no feed.</p>
+                <p class="text-center text-muted p-5">Você ainda não criou nenhum post no fórum.</p>
             {% endfor %}
           </div>
 
-          <div class="tab-pane fade" id="materiais-tab-pane" role="tabpanel" aria-labelledby="materiais-tab" tabindex="0">
+          <div class="tab-pane fade" id="materiais-tab-pane" role="tabpanel" tabindex="0">
             <div class="list-group p-3">
               {% for mat in materiais %}
                 <a href="{{ url_for('main.download_material', material_id=mat.id) }}" class="list-group-item list-group-item-action">
@@ -134,12 +148,27 @@
             </div>
           </div>
 
-          <div class="tab-pane fade" id="salvos-tab-pane" role="tabpanel" aria-labelledby="salvos-tab" tabindex="0">
+          <div class="tab-pane fade" id="salvos-tab-pane" role="tabpanel" tabindex="0">
             {% for item_salvo in salvos %}
               {% set post = item_salvo.topico %}
               {% if post %} 
                 <article class="post-card-profile">
-                   </article>
+                  <div class="post-card-header">
+                    {% set saved_avatar = 'fotos_perfil/' + post.autor.foto_perfil if post.autor.foto_perfil else 'fotos_perfil/default_profile.png' %}
+                    <img src="{{ url_for('static', filename=saved_avatar) }}" alt="Avatar" class="post-card-avatar">
+                    <div class="post-card-info">
+                        <strong>{{ post.autor.name }}</strong>
+                        <span class="text-muted">• {{ post.criado_em.strftime('%d/%m/%Y') }}</span>
+                    </div>
+                  </div>
+                  <div class="post-card-body">
+                    <h5 class="post-card-title">{{ post.titulo }}</h5>
+                    <p>{{ post.conteudo | truncate(100) }}</p>
+                  </div>
+                  <div class="post-card-footer">
+                    <a href="#" class="btn btn-sm" style="background-color: #f0f0f0;">Ver no Fórum</a>
+                  </div>
+                </article>
               {% endif %}
             {% else %}
               <p class="text-center text-muted p-5">Você ainda não salvou nenhum item.</p>
@@ -176,6 +205,14 @@
             <div class="mb-3">
               {{ form.banner.label(class="form-label fw-bold") }}
               {{ form.banner(class="form-control", id="inputBanner") }}
+              
+              <div class="form-check mt-1">
+                {{ form.remover_banner(class="form-check-input", id="removeBannerCheck") }}
+                <label class="form-check-label text-muted small" for="removeBannerCheck">
+                  Remover banner atual
+                </label>
+              </div>
+
               {% for error in form.banner.errors %}
                 <span class="text-danger">{{ error }}</span>
               {% endfor %}
@@ -184,6 +221,14 @@
             <div class="mb-3">
               {{ form.foto.label(class="form-label fw-bold") }}
               {{ form.foto(class="form-control", id="inputFotoPerfil") }}
+              
+              <div class="form-check mt-1">
+                {{ form.remover_foto(class="form-check-input", id="removeFotoCheck") }}
+                <label class="form-check-label text-muted small" for="removeFotoCheck">
+                  Remover foto atual
+                </label>
+              </div>
+
               {% for error in form.foto.errors %}
                 <span class="text-danger">{{ error }}</span>
               {% endfor %}
