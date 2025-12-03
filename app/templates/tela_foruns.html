@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Fórum - SIIF{% endblock %}
+{% block title %}Feed - SIIF{% endblock %}
 
 {% block body_class %}{% if current_user.is_admin %}role-admin{% else %}role-user{% endif %}{% endblock %}
 
@@ -28,7 +28,7 @@
                         <div id="sidebar-content">
                             <div class="forum-left-sidebar card-custom bg-white shadow-sm">
                                 <div class="sidebar-header mb-2">
-                                    <h5 class="mb-0 fw-bold text-success">Menu Fórum</h5>
+                                    <h5 class="mb-0 fw-bold text-success">Menu Feed</h5>
                                 </div>
                                 <div class="sidebar-menu">
                                     <a href="{{ url_for('main.tela_foruns') }}" class="sidebar-link {% if not filtro_selecionado == 'salvos' %}active{% endif %}">
@@ -69,7 +69,7 @@
                             </button>
                             <form class="mb-0" method="GET" action="{{ url_for('main.tela_foruns') }}">
                                 <div class="input-group search-card-wrapper shadow-sm rounded-pill overflow-hidden bg-white">
-                                    <input type="text" class="form-control border-0 ps-4 py-3" placeholder="Buscar no fórum..." name="q" value="{{ termo_pesquisado or '' }}" aria-label="Buscar no fórum">
+                                    <input type="text" class="form-control border-0 ps-4 py-3" placeholder="Buscar no feed..." name="q" value="{{ termo_pesquisado or '' }}" aria-label="Buscar no feed">
                                     <button class="btn btn-white border-start text-success" type="button" data-bs-toggle="modal" data-bs-target="#modalFiltros" aria-controls="modalFiltros">
                                         <i class="bi bi-sliders"></i>
                                     </button>
@@ -173,6 +173,9 @@
                 </div>
             </div>
         </main>
+
+        {% include 'footer.html' %}
+
     </div>
 
     <a href="{{ url_for('main.suporte') }}" class="help-btn help-btn-user" title="Suporte">
