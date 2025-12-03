@@ -1,21 +1,12 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fórum - SIIF</title>
+{% extends "base.html" %}
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
+{% block title %}Fórum - SIIF{% endblock %}
 
-<body class="{% if current_user.is_admin %}role-admin{% else %}role-user{% endif %}">
+{% block body_class %}{% if current_user.is_admin %}role-admin{% else %}role-user{% endif %}{% endblock %}
 
-    <div class="page-container">
-        {% include 'header.html' %}
-        <main class="forum-dashboard container-fluid py-4">
+{% block content %}
+<div class="page-container">
+    <main class="forum-dashboard container-fluid py-4">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
@@ -85,11 +76,6 @@
                                     <button class="btn btn-success px-4" type="submit"><i class="bi bi-search"></i></button>
                                 </div>
                             </form>
-                        </div>
-                        <div class="d-none d-md-block">
-                            <button class="btn btn-success rounded-pill" data-bs-toggle="modal" data-bs-target="#modalPostar">
-                                <i class="bi bi-plus-lg me-1"></i> Novo Post
-                            </button>
                         </div>
                     </div>
                     {% for topico in topicos %}
@@ -187,50 +173,57 @@
                 </div>
             </div>
         </main>
-        {% include 'footer.html' %}
     </div>
 
-    <div class="modal fade" id="modalFiltros" tabindex="-1" aria-labelledby="modalFiltrosLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalFiltrosLabel">Opções de Filtro</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body d-flex flex-column">
-                    <form class="flex-grow-1 d-flex flex-column" method="GET" action="{{ url_for('main.tela_foruns') }}">
-                        {% if termo_pesquisado %}
-                        <input type="hidden" name="q" value="{{ termo_pesquisado }}">
-                        {% endif %}
-                        <div class="mb-4">
-                            <h5 class="sidebar-title">Ordenar por:</h5>
-                            <div class="form-check">
-                                <input class="form-check-input custom-checkbox" type="radio" name="ordenarPor" value="relevancia" id="check-relevancia-mobile" {% if ordenacao_selecionada == 'relevancia' %}checked{% endif %}>
-                                <label class="form-check-label" for="check-relevancia-mobile">Relevância</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input custom-checkbox" type="radio" name="ordenarPor" value="recente" id="check-recente-mobile" {% if not ordenacao_selecionada or ordenacao_selecionada == 'recente' %}checked{% endif %}>
-                                <label class="form-check-label" for="check-recente-mobile">Mais recente</label>
-                            </div>
+    <a href="{{ url_for('main.suporte') }}" class="help-btn help-btn-user" title="Suporte">
+        <i class="bi bi-headset"></i>
+    </a>
+    <a href="{{ url_for('main.tela_denuncias') }}" class="help-btn help-btn-admin" title="Denúncias (admin)">
+        <i class="bi bi-shield-check"></i>
+    </a>
+{% endblock %}
+
+{% block modals %}
+<div class="modal fade" id="modalFiltros" tabindex="-1" aria-labelledby="modalFiltrosLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalFiltrosLabel">Opções de Filtro</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-flex flex-column">
+                <form class="flex-grow-1 d-flex flex-column" method="GET" action="{{ url_for('main.tela_foruns') }}">
+                    {% if termo_pesquisado %}
+                    <input type="hidden" name="q" value="{{ termo_pesquisado }}">
+                    {% endif %}
+                    <div class="mb-4">
+                        <h5 class="sidebar-title">Ordenar por:</h5>
+                        <div class="form-check">
+                            <input class="form-check-input custom-checkbox" type="radio" name="ordenarPor" value="relevancia" id="check-relevancia-mobile" {% if ordenacao_selecionada == 'relevancia' %}checked{% endif %}>
+                            <label class="form-check-label" for="check-relevancia-mobile">Relevância</label>
                         </div>
-                        <div class="mb-4">
-                            <h5 class="sidebar-title">Exibir publicações:</h5>
-                            <div class="form-check">
-                                <input class="form-check-input custom-checkbox" type="checkbox" name="exibir[]" value="professores" id="check-prof-mobile">
-                                <label class="form-check-label" for="check-prof-mobile">Professores</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input custom-checkbox" type="checkbox" name="exibir[]" value="estudantes" id="check-estudantes-mobile">
-                                <label class="form-check-label" for="check-estudantes-mobile">Estudantes</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input custom-checkbox" type="checkbox" name="exibir[]" value="servidores" id="check-servidores-mobile">
-                                <label class="form-check-label" for="check-servidores-mobile">Servidores</label>
-                            </div>
+                        <div class="form-check">
+                            <input class="form-check-input custom-checkbox" type="radio" name="ordenarPor" value="recente" id="check-recente-mobile" {% if not ordenacao_selecionada or ordenacao_selecionada == 'recente' %}checked{% endif %}>
+                            <label class="form-check-label" for="check-recente-mobile">Mais recente</label>
                         </div>
-                        <button type="submit" class="btn btn-primary filter-btn w-100 mt-auto">Aplicar Filtros</button>
-                    </form>
-                </div>
+                    </div>
+                    <div class="mb-4">
+                        <h5 class="sidebar-title">Exibir publicações:</h5>
+                        <div class="form-check">
+                            <input class="form-check-input custom-checkbox" type="checkbox" name="exibir[]" value="professores" id="check-prof-mobile">
+                            <label class="form-check-label" for="check-prof-mobile">Professores</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input custom-checkbox" type="checkbox" name="exibir[]" value="estudantes" id="check-estudantes-mobile">
+                            <label class="form-check-label" for="check-estudantes-mobile">Estudantes</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input custom-checkbox" type="checkbox" name="exibir[]" value="servidores" id="check-servidores-mobile">
+                            <label class="form-check-label" for="check-servidores-mobile">Servidores</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary filter-btn w-100 mt-auto">Aplicar Filtros</button>
+                </form>
             </div>
         </div>
     </div>
@@ -325,208 +318,130 @@
             </form>
         </div>
     </div>
+{% endblock %}
 
-    <a href="{{ url_for('main.suporte') }}" class="help-btn help-btn-user" title="Suporte">
-        <i class="bi bi-headset"></i>
-    </a>
-    <a href="{{ url_for('main.tela_denuncias') }}" class="help-btn help-btn-admin" title="Denúncias (admin)">
-        <i class="bi bi-shield-check"></i>
-    </a>
+{% block scripts %}
+<script>
+    // ===== SIDEBAR HORIZONTAL (ESTILO REDDIT) =====
+    (function () {
+        const sidebar = document.getElementById("sidebar-wrapper");
+        const btn = document.getElementById("btn-collapse-horizontal");
+        const posts = document.querySelector(".posts-wrapper");
 
-    <div vw class="enabled">
-        <div vw-access-button class="active"></div>
-        <div vw-plugin-wrapper">
-            <div class="vw-plugin-top-wrapper"></div>
-        </div>
-    </div>
+        if (!sidebar || !btn || !posts) return;
 
-    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-    <script> new window.VLibras.Widget('https://vlibras.gov.br/app'); </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // ===== SIDEBAR HORIZONTAL (ESTILO REDDIT) =====
-        (function () {
-            const sidebar = document.getElementById("sidebar-wrapper");
-            const btn = document.getElementById("btn-collapse-horizontal");
-            const posts = document.querySelector(".posts-wrapper");
+        btn.addEventListener("click", () => {
+            const isCollapsed = sidebar.classList.contains("collapsed-horizontal");
+            const icon = btn.querySelector("i"); // pega o ícone dentro do botão
 
-            if (!sidebar || !btn || !posts) return;
+            if (isCollapsed) {
+                // EXPANDIR
+                posts.classList.add("posts-freeze");
+                sidebar.classList.remove("collapsed-horizontal");
 
-            btn.addEventListener("click", () => {
-                const isCollapsed = sidebar.classList.contains("collapsed-horizontal");
-                const icon = btn.querySelector("i"); // pega o ícone dentro do botão
+                // trocar ícone
+                if (icon) icon.classList.replace("bi-chevron-right", "bi-chevron-left");
 
-                if (isCollapsed) {
-                    // EXPANDIR
-                    posts.classList.add("posts-freeze");
-                    sidebar.classList.remove("collapsed-horizontal");
+                setTimeout(() => {
+                    posts.classList.remove("posts-freeze");
+                }, 260);
+            } else {
+                // RECOLHER
+                sidebar.classList.add("collapsed-horizontal");
 
-                    // trocar ícone
-                    if (icon) icon.classList.replace("bi-chevron-right", "bi-chevron-left");
+                // trocar ícone
+                if (icon) icon.classList.replace("bi-chevron-left", "bi-chevron-right");
+            }
+        });
+    })();
 
-                    setTimeout(() => {
-                        posts.classList.remove("posts-freeze");
-                    }, 260);
-                } else {
-                    // RECOLHER
-                    sidebar.classList.add("collapsed-horizontal");
-
-                    // trocar ícone
-                    if (icon) icon.classList.replace("bi-chevron-left", "bi-chevron-right");
+    (function () {
+        // Modal: Comentário dinamico
+        const modalComentar = document.getElementById('modalComentar');
+        if (modalComentar) {
+            const formComentario = document.getElementById('formComentario');
+            modalComentar.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                if (!button) return;
+                const topicoId = button.getAttribute('data-bs-topico-id');
+                if (topicoId && formComentario) {
+                    formComentario.setAttribute('action', `/forum/${topicoId}/comentar`);
                 }
             });
-        })();
+        }
 
-        (function () {
-            // Modal: Comentário dinamico
-            const modalComentar = document.getElementById('modalComentar');
-            if (modalComentar) {
-                const formComentario = document.getElementById('formComentario');
-                modalComentar.addEventListener('show.bs.modal', function (event) {
-                    const button = event.relatedTarget;
-                    if (!button) return;
-                    const topicoId = button.getAttribute('data-bs-topico-id');
-                    if (topicoId && formComentario) {
-                        formComentario.setAttribute('action', `/forum/${topicoId}/comentar`);
-                    }
-                });
-            }
-
-            // Modal: Denunciar dinamico (set action)
-            const modalDenunciar = document.getElementById('modalDenunciar');
-            if (modalDenunciar) {
-                const formDenuncia = document.getElementById('formDenuncia');
-                modalDenunciar.addEventListener('show.bs.modal', function (event) {
-                    const button = event.relatedTarget;
-                    if (!button) return;
-                    const topicoId = button.getAttribute('data-bs-topico-id');
-                    if (topicoId && formDenuncia) {
-                        formDenuncia.setAttribute('action', `/forum/${topicoId}/denunciar`);
-                    }
-                });
-            }
-
-            // Modal: Ver Perfil (dinâmico)
-            const modalVerPerfil = document.getElementById('modalVerPerfil');
-            if (modalVerPerfil) {
-                modalVerPerfil.addEventListener('show.bs.modal', function (event) {
-                    const button = event.relatedTarget;
-                    if (!button) return;
-                    const nome = button.getAttribute('data-user-name') || '';
-                    const bio = button.getAttribute('data-user-bio') || '';
-                    const curso = button.getAttribute('data-user-curso') || '';
-                    const campus = button.getAttribute('data-user-campus') || '';
-                    const modalTitle = modalVerPerfil.querySelector('.modal-body h4');
-                    const modalBio = modalVerPerfil.querySelector('.modal-body p');
-                    const modalImg = modalVerPerfil.querySelector('.modal-body img');
-                    if (modalTitle) modalTitle.textContent = nome;
-                    if (modalBio) modalBio.textContent = bio + (curso ? ' • ' + curso : '') + (campus ? ' • ' + campus : '');
-                    if (modalImg && nome) modalImg.src = `https://placehold.co/100x100/386641/fff?text=${encodeURIComponent(nome.charAt(0))}`;
-                });
-            }
-
-            // Copiar link (compartilhar)
-            window.copiarLink = function (botao, event) {
-                event.preventDefault();
-                const url = window.location.href;
-                if (!navigator.clipboard) {
-                    alert('API de clipboard não disponível');
-                    return;
+        // Modal: Denunciar dinamico (set action)
+        const modalDenunciar = document.getElementById('modalDenunciar');
+        if (modalDenunciar) {
+            const formDenuncia = document.getElementById('formDenuncia');
+            modalDenunciar.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                if (!button) return;
+                const topicoId = button.getAttribute('data-bs-topico-id');
+                if (topicoId && formDenuncia) {
+                    formDenuncia.setAttribute('action', `/forum/${topicoId}/denunciar`);
                 }
-                navigator.clipboard.writeText(url).then(function () {
-                    // feedback
-                    const original = botao.innerHTML;
-                    botao.innerHTML = '<i class="bi bi-check-lg"></i>';
-                    botao.classList.add('text-success');
-                    setTimeout(function () {
-                        botao.innerHTML = original;
-                        botao.classList.remove('text-success');
-                    }, 2000);
-                }).catch(function (err) {
-                    console.error('Erro ao copiar link: ', err);
-                });
-            };
-
-            // Accessibility menu
-            window.toggleAccessMenu = function () {
-                const menu = document.getElementById('access-menu');
-                if (!menu) return;
-                menu.classList.toggle('show');
-            };
-            window.toggleContrast = function () {
-                document.body.classList.toggle('high-contrast');
-                if (document.body.classList.contains('high-contrast')) {
-                    localStorage.setItem('contrast', 'true');
-                } else {
-                    localStorage.removeItem('contrast');
-                }
-            };
-            if (localStorage.getItem('contrast') === 'true') {
-                document.body.classList.add('high-contrast');
-            }
-            let currentFontSize = 100;
-            window.increaseFont = function () {
-                if (currentFontSize < 150) {
-                    currentFontSize += 10;
-                    document.body.style.fontSize = currentFontSize + '%';
-                }
-            };
-            window.decreaseFont = function () {
-                if (currentFontSize > 80) {
-                    currentFontSize -= 10;
-                    document.body.style.fontSize = currentFontSize + '%';
-                }
-            };
-            window.resetAccess = function () {
-                currentFontSize = 100;
-                document.body.style.fontSize = '100%';
-                document.body.classList.remove('high-contrast');
-                localStorage.removeItem('contrast');
-            };
-
-            // Close sidebar on escape (mobile)
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape') hideSidebarMobile();
             });
+        }
 
-            // Init: collapse sidebar wrapper on small screens
-            function initSidebarState() {
-                if (window.innerWidth <= 991) {
-                    sidebarWrapper && sidebarWrapper.classList.add('collapsed');
-                } else {
-                    sidebarWrapper && sidebarWrapper.classList.remove('collapsed');
-                    const backdrop = document.getElementById('sidebar-backdrop');
-                    if (backdrop) backdrop.style.display = 'none';
-                }
+        // Modal: Ver Perfil (dinâmico)
+        const modalVerPerfil = document.getElementById('modalVerPerfil');
+        if (modalVerPerfil) {
+            modalVerPerfil.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                if (!button) return;
+                const nome = button.getAttribute('data-user-name') || '';
+                const bio = button.getAttribute('data-user-bio') || '';
+                const curso = button.getAttribute('data-user-curso') || '';
+                const campus = button.getAttribute('data-user-campus') || '';
+                const modalTitle = modalVerPerfil.querySelector('.modal-body h4');
+                const modalBio = modalVerPerfil.querySelector('.modal-body p');
+                const modalImg = modalVerPerfil.querySelector('.modal-body img');
+                if (modalTitle) modalTitle.textContent = nome;
+                if (modalBio) modalBio.textContent = bio + (curso ? ' • ' + curso : '') + (campus ? ' • ' + campus : '');
+                if (modalImg && nome) modalImg.src = `https://placehold.co/100x100/386641/fff?text=${encodeURIComponent(nome.charAt(0))}`;
+            });
+        }
+
+        // Copiar link (compartilhar)
+        window.copiarLink = function (botao, event) {
+            event.preventDefault();
+            const url = window.location.href;
+            if (!navigator.clipboard) {
+                alert('API de clipboard não disponível');
+                return;
             }
-            initSidebarState();
-            window.addEventListener('resize', initSidebarState);
-        })();
-    </script>
+            navigator.clipboard.writeText(url).then(function () {
+                // feedback
+                const original = botao.innerHTML;
+                botao.innerHTML = '<i class="bi bi-check-lg"></i>';
+                botao.classList.add('text-success');
+                setTimeout(function () {
+                    botao.innerHTML = original;
+                    botao.classList.remove('text-success');
+                }, 2000);
+            }).catch(function (err) {
+                console.error('Erro ao copiar link: ', err);
+            });
+        };
 
-    <div id="access-menu" class="access-menu-container">
-        <h6 class="mb-3 border-bottom pb-2">Acessibilidade</h6>
-        <div class="d-grid gap-2">
-            <button class="btn btn-sm btn-outline-dark d-flex justify-content-between align-items-center" onclick="toggleContrast()">
-                <span>Alto Contraste</span>
-                <i class="bi bi-circle-half"></i>
-            </button>
-            <div class="btn-group" role="group">
-                <button class="btn btn-sm btn-outline-dark" onclick="increaseFont()">
-                    <i class="bi bi-zoom-in"></i> Aumentar
-                </button>
-                <button class="btn btn-sm btn-outline-dark" onclick="decreaseFont()">
-                    <i class="bi bi-zoom-out"></i> Diminuir
-                </button>
-            </div>
-            <button class="btn btn-sm btn-outline-danger" onclick="resetAccess()">
-                <i class="bi bi-arrow-counterclockwise"></i> Resetar
-            </button>
-        </div>
-    </div>
-    <button class="btn-access-float" onclick="toggleAccessMenu()" title="Opções de Acessibilidade">
-        <i class="bi bi-universal-access"></i>
-    </button>
+        // Close sidebar on escape (mobile)
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') hideSidebarMobile();
+        });
 
-</body>
-</html>
+        // Init: collapse sidebar wrapper on small screens
+        function initSidebarState() {
+            if (window.innerWidth <= 991) {
+                sidebarWrapper && sidebarWrapper.classList.add('collapsed');
+            } else {
+                sidebarWrapper && sidebarWrapper.classList.remove('collapsed');
+                const backdrop = document.getElementById('sidebar-backdrop');
+                if (backdrop) backdrop.style.display = 'none';
+            }
+        }
+        initSidebarState();
+        window.addEventListener('resize', initSidebarState);
+    })();
+</script>
+{% endblock %}
