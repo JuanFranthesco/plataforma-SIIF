@@ -899,17 +899,24 @@ def tela_perfil():
     form = ProfileForm(obj=current_user)
 
     if form.validate_on_submit():
-        # Lógica de Upload da Foto
+        if form.remover_foto.data:
+            deletar_imagem_antiga(current_user.foto_perfil)
+            current_user.foto_perfil = '' 
+
         if form.foto.data:
             nome_foto = salvar_imagem_perfil(form.foto.data)
-            deletar_imagem_antiga(current_user.foto_url)  # Deleta a antiga
-            current_user.foto_url = nome_foto
+            deletar_imagem_antiga(current_user.foto_perfil)
+            current_user.foto_perfil = nome_foto
 
-        # Lógica de Upload do Banner
+        if form.remover_banner.data:
+            deletar_imagem_antiga(current_user.banner_perfil)
+            current_user.banner_perfil = '' 
+
         if form.banner.data:
             nome_banner = salvar_imagem_perfil(form.banner.data)
-            deletar_imagem_antiga(current_user.banner_perfil)  # Deleta a antiga
+            deletar_imagem_antiga(current_user.banner_perfil)
             current_user.banner_perfil = nome_banner
+
 
         # Salva os textos
         current_user.bio = form.bio.data
