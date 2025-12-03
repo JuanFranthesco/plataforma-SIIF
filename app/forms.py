@@ -41,5 +41,7 @@ class ProfileForm(FlaskForm):
     curso = StringField('Curso')
     campus = StringField('Campus')
     foto = FileField('Alterar Foto de Perfil', validators=[FileAllowed(['jpg', 'png'])])
+    remover_foto = BooleanField('Remover foto atual')
     banner = FileField('Alterar Banner', validators=[FileAllowed(['jpg', 'png'])])
+    remover_banner = BooleanField('Remover banner atual')
     submit = SubmitField('Salvar Alterações')
