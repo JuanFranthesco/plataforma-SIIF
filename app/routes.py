@@ -8,6 +8,9 @@ import secrets
 from PIL import Image
 from thefuzz import fuzz
 import bleach
+from unidecode import unidecode  # <--- IMPORTANTE: Adicione isso
+from .lista_proibida import PALAVRAS_GLOBAIS
+import json
 # app/routes.py (Topo do arquivo)
 
 
@@ -102,16 +105,35 @@ def registrar_log(comunidade_id, acao, detalhes=None):
     db.session.add(log)
     db.session.commit()
 
-def verificar_automod(texto, comunidade):
-    """Retorna True se o texto contiver palavras proibidas."""
-    if not comunidade.palavras_proibidas: return False
-    proibidas = [p.strip().lower() for p in comunidade.palavras_proibidas.split(',')]
-    texto_lower = texto.lower()
-    for palavra in proibidas:
-        if palavra and palavra in texto_lower:
+def verificar_automod(texto: str, comunidade=None) -> bool:
+    """
+    Retorna True se o texto contiver palavras proibidas.
+    Usa unidecode para ignorar acentos (ex: detecta 'cocô' se 'coco' estiver na lista).
+    """
+    if not texto: return False
+    
+    
+    texto_limpo = unidecode(texto.lower())
+    
+    # 1. VERIFICAÇÃO GLOBAL (Obrigatória)
+    for palavra in PALAVRAS_GLOBAIS:
+        # Normaliza a palavra proibida também, por segurança
+        palavra_limpa = unidecode(palavra.lower())
+        
+    
+        if palavra_limpa in texto_limpo:
             return True
-    return False
 
+    # 2. VERIFICAÇÃO DA COMUNIDADE
+    if comunidade and comunidade.palavras_proibidas:
+        proibidas_comunidade = [p.strip() for p in comunidade.palavras_proibidas.split(',') if p.strip()]
+        
+        for palavra in proibidas_comunidade:
+            palavra_limpa_comm = unidecode(palavra.lower())
+            if palavra_limpa_comm in texto_limpo:
+                return True
+                
+    return False
 # ===================================================================
 # TELA INICIAL E REDIRECIONAMENTOS
 # ===================================================================
@@ -350,44 +372,77 @@ def ver_comunidade(comunidade_id):
 def configurar_comunidade(comunidade_id):
     comunidade = Comunidade.query.get_or_404(comunidade_id)
     
+    # 1. Verificação de Permissões (Dono, Mod ou Admin)
     eh_dono = (comunidade.criador_id == current_user.id)
     eh_mod = (current_user in comunidade.moderadores)
     
     if not eh_dono and not eh_mod and not current_user.is_admin:
-        flash('Sem permissão.', 'danger')
+        flash('Você não tem permissão para configurar esta comunidade.', 'danger')
         return redirect(url_for('main.ver_comunidade', comunidade_id=comunidade.id))
 
     if request.method == 'POST':
-        # Identidade e Segurança
-        comunidade.descricao = request.form.get('descricao')
-        comunidade.regras = request.form.get('regras')
-        comunidade.cor_tema = request.form.get('cor_tema')
-        comunidade.palavras_proibidas = request.form.get('palavras_proibidas')
-        comunidade.trancada = 'trancada' in request.form
         
-        # Imagens
-        imagem = request.files.get('imagem_comunidade')
-        banner = request.files.get('banner_comunidade')
-        
-        ts = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-        
-        if imagem and imagem.filename:
-            fname = secure_filename(imagem.filename)
-            path = os.path.join(current_app.config['UPLOAD_FOLDER'], f"logo_{ts}_{fname}")
-            imagem.save(path)
-            comunidade.imagem_url = f"/static/uploads/logo_{ts}_{fname}"
-            
-        if banner and banner.filename:
-            fname = secure_filename(banner.filename)
-            path = os.path.join(current_app.config['UPLOAD_FOLDER'], f"banner_{ts}_{fname}")
-            banner.save(path)
-            comunidade.banner_url = f"/static/uploads/banner_{ts}_{fname}"
+        # --- CENÁRIO A: FORMULÁRIO GERAL (Visual, Regras, Links) ---
+        # Verificamos se o campo 'descricao' existe para saber se veio da aba Geral
+        if 'descricao' in request.form:
+            comunidade.descricao = request.form.get('descricao')
+            comunidade.regras = request.form.get('regras')
+            comunidade.cor_tema = request.form.get('cor_tema')
+            comunidade.mensagem_boas_vindas = request.form.get('mensagem_boas_vindas') # Novo campo
 
-        registrar_log(comunidade.id, "Configurações atualizadas")
+            # Upload de Imagens (Logo e Banner)
+            imagem = request.files.get('imagem_comunidade')
+            banner = request.files.get('banner_comunidade')
+            ts = datetime.datetime.now().strftime("%Y%m%d%H%M%S") # Timestamp para evitar cache
+
+            if imagem and imagem.filename:
+                fname = secure_filename(imagem.filename)
+                # Salva no disco
+                path = os.path.join(current_app.config['UPLOAD_FOLDER'], f"logo_{ts}_{fname}")
+                imagem.save(path)
+                # Salva caminho no banco
+                comunidade.imagem_url = f"/static/uploads/logo_{ts}_{fname}"
+                
+            if banner and banner.filename:
+                fname = secure_filename(banner.filename)
+                path = os.path.join(current_app.config['UPLOAD_FOLDER'], f"banner_{ts}_{fname}")
+                banner.save(path)
+                comunidade.banner_url = f"/static/uploads/banner_{ts}_{fname}"
+
+            # --- [NOVO] SALVAR LINKS ÚTEIS (JSON) ---
+            nomes = request.form.getlist('link_nome[]')
+            urls = request.form.getlist('link_url[]')
+            
+            novos_links = []
+            for nome, url in zip(nomes, urls):
+                if nome.strip() and url.strip(): # Só salva se tiver texto
+                    novos_links.append({'nome': nome.strip(), 'url': url.strip()})
+            
+            # Converte lista para texto JSON ou define como None se vazio
+            comunidade.links_uteis = json.dumps(novos_links) if novos_links else None
+            
+            registrar_log(comunidade.id, "Atualizou identidade visual e links")
+            flash('Configurações visuais salvas!', 'success')
+
+        # --- CENÁRIO B: FORMULÁRIO DE SEGURANÇA ---
+        # Verificamos se 'palavras_proibidas' existe para saber se veio da aba Segurança
+        elif 'palavras_proibidas' in request.form:
+            comunidade.palavras_proibidas = request.form.get('palavras_proibidas')
+            
+            # Checkbox HTML não envia nada se desmarcado, então verificamos presença
+            comunidade.trancada = 'trancada' in request.form
+            
+            if 'tipo_acesso' in request.form:
+                comunidade.tipo_acesso = request.form.get('tipo_acesso')
+
+            registrar_log(comunidade.id, "Atualizou configurações de segurança")
+            flash('Configurações de segurança salvas!', 'success')
+
+        # Commit final no banco
         db.session.commit()
-        flash('Configurações salvas!', 'success')
         return redirect(url_for('main.configurar_comunidade', comunidade_id=comunidade.id))
     
+    # --- GET: Carregar dados para o Template ---
     solicitacoes = []
     if comunidade.tipo_acesso == 'Restrito':
         solicitacoes = SolicitacaoParticipacao.query.filter_by(comunidade_id=comunidade.id).all()
@@ -395,7 +450,6 @@ def configurar_comunidade(comunidade_id):
     tags = ComunidadeTag.query.filter_by(comunidade_id=comunidade.id).all()
     logs = AuditLog.query.filter_by(comunidade_id=comunidade.id).order_by(desc(AuditLog.data)).limit(20).all()
     
-    # Stats
     stats = {
         'membros': comunidade.membros.count(),
         'posts': len(comunidade.topicos)
@@ -406,8 +460,7 @@ def configurar_comunidade(comunidade_id):
                            solicitacoes=solicitacoes,
                            tags=tags, 
                            logs=logs,
-                           stats=stats,
-                           top_membros=[]) # (Pode adicionar lógica de top membros aqui depois)
+                           stats=stats)
 
 
 @main_bp.route('/c/<int:comunidade_id>/tags/criar', methods=['POST'])
@@ -633,7 +686,24 @@ def criar_post():
     if not titulo:
         titulo = "Nova Publicação"
 
-    # 2. SALVAR NO BANCO
+    # ==================================================================
+    # [BLOQUEIO DE SEGURANÇA] VERIFICAÇÃO DE PALAVRAS PROIBIDAS
+    # ==================================================================
+    # Busca a comunidade se houver (para aplicar regras locais + globais)
+    comunidade_alvo = None
+    if comunidade_id:
+        comunidade_alvo = Comunidade.query.get(comunidade_id)
+
+    # Junta título e conteúdo para verificar tudo de uma vez
+    texto_para_analise = f"{titulo} {conteudo}"
+
+    # Chama a função verificadora (Global + Comunidade)
+    if verificar_automod(texto_para_analise, comunidade_alvo):
+        flash('🚫 Postagem bloqueada: O texto contém palavras ofensivas ou proibidas nesta comunidade.', 'danger')
+        return redirect(request.referrer)
+    # ==================================================================
+
+    # 3. SALVAR NO BANCO (Só chega aqui se o AutoMod permitir)
     novo_topico = Topico(
         titulo=titulo,
         conteudo=conteudo,
@@ -650,11 +720,19 @@ def criar_post():
     db.session.add(novo_topico)
     db.session.commit()
 
-    # 3. SALVAR OPÇÕES DA ENQUETE
+    # 4. SALVAR OPÇÕES DA ENQUETE (Se for enquete)
     if tipo_selecionado == 'enquete':
         opcoes_texto = request.form.getlist('opcao_enquete[]')
         for texto_opt in opcoes_texto:
             if texto_opt.strip():
+                # Verifica também se as opções da enquete têm palavrão
+                if verificar_automod(texto_opt, comunidade_alvo):
+                    # Se tiver, apaga o tópico recém criado e avisa
+                    db.session.delete(novo_topico)
+                    db.session.commit()
+                    flash('🚫 Postagem bloqueada: Uma das opções da enquete contém palavras proibidas.', 'danger')
+                    return redirect(request.referrer)
+                
                 nova_opcao = EnqueteOpcao(texto=texto_opt.strip(), topico_id=novo_topico.id)
                 db.session.add(nova_opcao)
         db.session.commit()
@@ -662,18 +740,29 @@ def criar_post():
     flash('Publicação criada com sucesso!', 'success')
     return redirect(url_for('main.ver_comunidade', comunidade_id=comunidade_id))
 
-
 @main_bp.route('/forum/<int:topico_id>/comentar', methods=['POST'])
 @login_required
 def comentar_post(topico_id):
     """
-    Cria um comentário (COM UPLOAD E ANINHAMENTO).
+    Cria um comentário (COM UPLOAD, ANINHAMENTO E VERIFICAÇÃO DE AUTOMOD).
     """
     conteudo = request.form.get('conteudo_comentario')
     imagem = request.files.get('midia_comentario')
     parent_id = request.form.get('parent_id')  # ID do Pai
 
     topico = Topico.query.get_or_404(topico_id)
+
+    # ==================================================================
+    # [BLOQUEIO DE SEGURANÇA] VERIFICAÇÃO DE PALAVRAS PROIBIDAS
+    # ==================================================================
+    # Identifica a comunidade do tópico (se houver) para aplicar as regras dela
+    comunidade_alvo = topico.comunidade if topico.comunidade else None
+
+    # Verifica o conteúdo do comentário
+    if verificar_automod(conteudo, comunidade_alvo):
+        flash('🚫 Comentário bloqueado: O texto contém palavras ofensivas ou proibidas.', 'danger')
+        return redirect(request.referrer)
+    # ==================================================================
 
     if not conteudo and not imagem:
         flash('O comentário não pode ficar vazio.', 'warning')
@@ -703,11 +792,9 @@ def comentar_post(topico_id):
 
     db.session.add(nova_resposta)
 
-    # Notificação
+    # Notificação (Versão Otimizada)
     try:
-        link_destino = url_for('main.ver_comunidade',
-                               comunidade_id=topico.comunidade_id) if topico.comunidade_id else url_for(
-            'main.tela_foruns')
+        link_destino = url_for('main.ver_comunidade', comunidade_id=topico.comunidade_id) if topico.comunidade_id else url_for('main.tela_foruns')
 
         # Se for resposta a um comentário
         if pid:
@@ -719,25 +806,13 @@ def comentar_post(topico_id):
                     usuario_id=comentario_pai.autor_id
                 ))
 
-        # Se for comentário no post
+        # Se for comentário no post (apenas avisa o dono do post)
         elif topico.autor_id != current_user.id:
             db.session.add(Notificacao(
                 mensagem=f"{current_user.name} comentou no seu post.",
                 link_url=link_destino,
                 usuario_id=topico.autor_id
             ))
-
-        # Aqui: Notificar também os outros membros da comunidade (exceto autor do comentário e autor do post)
-        if topico.comunidade_id:
-            comunidade = Comunidade.query.get(topico.comunidade_id)
-            membros_notificar = [membro.id for membro in comunidade.membros if
-                                 membro.id not in (current_user.id, topico.autor_id)]
-            for usuario_id in membros_notificar:
-                db.session.add(Notificacao(
-                    mensagem=f"{current_user.name} comentou em um post da comunidade {comunidade.nome}.",
-                    link_url=link_destino,
-                    usuario_id=usuario_id
-                ))
 
         db.session.commit()
         flash('Comentário enviado!', 'success')
