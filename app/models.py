@@ -91,7 +91,9 @@ class User(db.Model,UserMixin):
     def is_suspenso(self):
         if not self.suspenso_ate:
             return False
-        return datetime.now(timezone.utc) < self.suspenso_ate
+
+        agora = datetime.now(timezone.utc).replace(tzinfo=None)
+        return agora < self.suspenso_ate
 
     def suspender(self, quantidade, unidade, motivo=""):
         agora = datetime.now(timezone.utc)
@@ -504,9 +506,8 @@ class Denuncia(db.Model):
     __tablename__ = 'denuncia'
 
     id = db.Column(db.Integer, primary_key=True)
-    tipo_denuncia = db.Column(db.String(50), nullable=False)
-    #titulo = db.Column(db.Text, nullable=False)
-    descricao = db.Column(db.Text, nullable=False)
+    titulo = db.Column(db.Text, nullable=False)  # título obrigatório
+    descricao = db.Column(db.Text, nullable=False)  # descrição obrigatória
     data_envio = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     status = db.Column(db.String(50), default='Recebida')
     denunciante_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)

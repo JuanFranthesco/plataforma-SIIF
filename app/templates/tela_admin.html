@@ -9,17 +9,110 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <title>Painel de Administração</title>
-    <!-- Só pra garantir que o resultado da pesquisa começe vazio -->
+
     <style>
-        #resultadoPesquisa {
-            display: none;
+        #resultadoPesquisa { display: none; }
+
+        .btn-selected {
+            background: #2d5f4d;
+            color: white;
+            border: 1px solid #2d5f4d;
+        }
+
+        .btn-unselected {
+            background: #eaeaea;
+            color: #2d5f4d;
+            border: 1px solid #2d5f4d;
+        }
+
+        .btn-unselected:hover {
+            background: #d5d5d5;
+        }
+
+        /* Paginação */
+        .page-selector {
+            padding: 6px 12px;
+            margin: 0 4px;
+            border: 1px solid #2d5f4d;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #2d5f4d;
+            font-weight: 600;
+        }
+
+        .page-selector.active,
+        .page-selector:hover {
+            background: #2d5f4d;
+            color: white;
+        }
+
+        .page-separator {
+            padding: 6px 8px;
+            color: #2d5f4d;
+        }
+
+
+        /* Denúncia resolvida */
+        .resolved-item {
+            opacity: 0.8;
+            border-left: 6px solid green;
+        }
+
+        .denuncia-card {
+            background: #2d5f4d;
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .btn-expandir {
+            background: #ffffff22;
+            color: white;
+        }
+
+        .btn-recolher {
+            background: white;
+            color: #2d5f4d;
+        }
+
+        .d-none {
+            display: none !important;
+        }
+
+        .item, .label {
+            white-space: normal !important;
+            overflow-wrap: break-word !important;
+            word-break: break-word !important;
+        }
+
+        .btn-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: none;
+            background: #ffffffcc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 18px;
+        }
+
+        .btn-icon:hover {
+            background: #ffffff;
+        }
+
+        .btn-icon i {
+            color: #2d5f4d;
+            font-size: 20px;
         }
     </style>
 </head>
 <body>
     {% include 'header.html' %}
 
-    
     <main class="denuncia-page">
       
       <div class="header-row">
@@ -41,80 +134,215 @@
         <div>
             <div class="stats-container">
                 <div class="stat-card">
-                    <div class="stat-number" id="openCount">{{ users_count }}</div>
+                    <div class="stat-number">{{ users_count }}</div>
                     <div class="stat-sub">Usuários</div>
                 </div>
 
                 <div class="stat-card">
-                    <div class="stat-number" id="openCount">{{ total_abertas }}</div>
+                    <div class="stat-number">{{ total_abertas }}</div>
                     <div class="stat-sub">denúncias em aberto</div>
                 </div>
 
                 <div class="stat-card">
-                    <div class="stat-number" id="resolvedCount">{{ total_resolvidas }}/{{ total_denuncias }}</div>
+                    <div class="stat-number">{{ total_resolvidas }}/{{ total_denuncias }}</div>
                     <div class="stat-sub">das denúncias resolvidas</div>
                 </div>
+
             </div>
         </div>
     </section>
 
     <div class="grid" id="main-content">
+
+        <!-- PESQUISA -->
         <div>
           <h2 class="section-title mb-3">Pesquisa Por Usuários</h2>
+
           <div class="stats-container">
-                <div class="box">
-                    <div class="pesquisa-container">
-                        <input type="text" id="barraPesquisa" placeholder="Pesquisar matrícula...">
-                        <ul id="resultadoPesquisa" class="lista-resultado"></ul>
-                    </div>
-                </div>
+              <div class="box">
+                  <div class="pesquisa-container">
+                      <input type="text" id="barraPesquisa" placeholder="Pesquisar matrícula ou nome...">
+                      <ul id="resultadoPesquisa" class="lista-resultado"></ul>
+                  </div>
+              </div>
           </div>
-          
         </div>
 
-        <div class="right-col">
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <h2 class="section-title">Denúncias Recebidas (Em Aberto)</h2>
-            </div>
+        <!-- DENÚNCIAS -->
+<div class="right-col">
 
-          <div class="list" id="reportList" role="list" aria-label="Denúncias em aberto">
-            
-            {% for denuncia in denuncias %}
-              <div class="item" role="listitem">
-                <div class="label">
-                  <strong>{% if denuncia.denunciante %}{{ denuncia.denunciante.name }}{% else %}Anônimo{% endif %}</strong> 
-                  ({{ denuncia.tipo_denuncia }})
-                  <span class="text-muted">• {{ denuncia.data_envio.strftime('%d/%m/%Y') }}</span>
-                  <p class="mb-0">{{ denuncia.descricao | truncate(200) }}</p>
-                </div>
+  <!-- Título + Filtros -->
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h2 class="section-title">Denúncias</h2>
 
-                <div class="controls">
-                  
-                  <form action="{{ url_for('main.resolver_denuncia', denuncia_id=denuncia.id) }}" method="POST" class="d-inline">
-                    <button class="icon" title="Marcar como resolvida">✓</button>
-                  </form>
-                  
-                  <form action="{{ url_for('main.excluir_denuncia', denuncia_id=denuncia.id) }}" method="POST" class="d-inline">
-                    <button class="icon" title="Remover">✕</button>
-                  </form>
+    <div class="btn-group">
 
-                </div>
-              </div>
-            {% else %}
-              <div class="item">
-                <div class="label">Nenhuma denúncia em aberto no momento.</div>
-              </div>
-            {% endfor %}
+        <!-- Botão Em Aberto -->
+        <a href="{{ url_for('main.tela_admin', filtro='aberto', page=1) }}"
+           class="btn btn-sm {{ 'btn-selected' if filtro=='aberto' else 'btn-unselected' }}">
+            Em Aberto
+        </a>
 
-          </div>
-          
-          <div class="d-flex justify-content-center">
-            <a class="view-all" href="#">Ver Todas (incluindo resolvidas)</a>
-          </div>
+        <!-- Botão Resolvidas -->
+        <a href="{{ url_for('main.tela_admin', filtro='resolvido', page=1) }}"
+           class="btn btn-sm {{ 'btn-selected' if filtro=='resolvido' else 'btn-unselected' }}">
+            Resolvidas
+        </a>
 
-        </div>
+        <!-- Botão Todas -->
+        <a href="{{ url_for('main.tela_admin', filtro='todas', page=1) }}"
+           class="btn btn-sm {{ 'btn-selected' if filtro=='todas' else 'btn-unselected' }}">
+            Todas
+        </a>
+
+    </div>
+  </div>
+
+  <!-- LISTA DE DENÚNCIAS -->
+<div class="list" id="reportList">
+
+{% set limite_titulo = 45 %}
+{% set limite_descricao = 180 %}
+
+{% for denuncia in denuncias %}
+
+  <div class="denuncia-card item {% if denuncia.status == 'Resolvida' %}resolved-item{% endif %}"
+       id="denuncia-{{ denuncia.id }}" role="listitem">
+
+      <div class="label">
+
+          {% set titulo_grande = denuncia.titulo|length > limite_titulo %}
+          <strong class="titulo-curto">
+              {{ denuncia.titulo[:limite_titulo] ~ ('...' if titulo_grande else '') }}
+          </strong>
+
+
+          {% if titulo_grande %}
+          <strong class="titulo-completo d-none">
+              {{ denuncia.titulo }}
+          </strong>
+          {% endif %}
+
+          {% if denuncia.status == 'Resolvida' %}
+              <span class="badge bg-success ms-2">Resolvida</span>
+          {% endif %}
+          <span class="text-muted">• {{ denuncia.data_envio.strftime('%d/%m/%Y') }}</span>
+
+          <br>
+
+ 
+          {% set desc_grande = denuncia.descricao|length > limite_descricao %}
+          <p class="mb-0 descricao-curta">
+              {{ denuncia.descricao[:limite_descricao] ~ ('...' if desc_grande else '') }}
+          </p>
+
+ 
+          {% if desc_grande %}
+          <p class="mb-0 descricao-completa d-none">
+              {{ denuncia.descricao }}
+          </p>
+          {% endif %}
+
       </div>
+
+
+      {# ---------- BOTÕES NORMAIS (RESOLVER/EXCLUIR) ---------- #}
+      {% if denuncia.status == 'Recebida' %}
+      <div class="controls mt-2">
+        
+        {% if titulo_grande or desc_grande %}
+
+        <button type="button" class="icon btn-expandir" onclick="expandir({{ denuncia.id }})">
+            <i class="bi bi-chevron-down"></i>
+        </button>
+
+        <button type="button" class="icon btn-recolher d-none" onclick="recolher({{ denuncia.id }})">
+            <i class="bi bi-chevron-up"></i>
+        </button>
+
+
+        {% endif %}        
+
+          <form action="{{ url_for('main.resolver_denuncia', denuncia_id=denuncia.id) }}"
+                method="POST" class="d-inline">
+            <button class="icon" title="Marcar como resolvida">✓</button>
+          </form>
+          
+          <form action="{{ url_for('main.excluir_denuncia', denuncia_id=denuncia.id) }}"
+                method="POST" class="d-inline">
+            <button class="icon" title="Remover">✕</button>
+          </form>
+
+      </div>
+      {% endif %}
+
+  </div>
+
+{% else %}
+  <div class="item">
+    <div class="label">Nenhuma denúncia encontrada.</div>
+  </div>
+{% endfor %}
+
+</div>
+
+  <!-- PAGINAÇÃO INTELIGENTE -->
+  <div class="d-flex justify-content-center mt-3">
+
+    {% set max_pages = total_paginas %}
+    {% set current = page %}
+    {% set window = 2 %}  {# mostra 5 páginas (2 antes, atual, 2 depois) #}
+
+    {# LIMITE INFERIOR E SUPERIOR #}
+    {% set start = current - window %}
+    {% set end = current + window %}
+
+    {% if start < 1 %}
+        {% set end = end + (1 - start) %}
+        {% set start = 1 %}
+    {% endif %}
+
+    {% if end > max_pages %}
+        {% set start = start - (end - max_pages) %}
+        {% set end = max_pages %}
+    {% endif %}
+
+    {% if start < 1 %}
+        {% set start = 1 %}
+    {% endif %}
+
+    {# --- MOSTRA PRIMEIRA PÁGINA + RETICÊNCIAS (se necessário) --- #}
+    {% if start > 1 %}
+        <a href="{{ url_for('main.tela_admin', filtro=filtro, page=1) }}" class="page-selector">1</a>
+    {% endif %}
+
+    {% if start > 2 %}
+        <span class="page-separator">...</span>
+    {% endif %}
+
+    {# --- PAGINAS CENTRAIS --- #}
+    {% for p in range(start, end + 1) %}
+        <a href="{{ url_for('main.tela_admin', filtro=filtro, page=p) }}"
+           class="page-selector {{ 'active' if p == current else '' }}">
+            {{ p }}
+        </a>
+    {% endfor %}
+
+    {# --- RETICÊNCIAS + ÚLTIMA PÁGINA (se necessário) --- #}
+    {% if end < max_pages - 1 %}
+        <span class="page-separator">...</span>
+    {% endif %}
+
+    {% if end < max_pages %}
+        <a href="{{ url_for('main.tela_admin', filtro=filtro, page=max_pages) }}" class="page-selector">
+            {{ max_pages }}
+        </a>
+    {% endif %}
+
+</div>
+</div>
 </main>
+
         {% include 'footer.html' %}
 
 <script>
@@ -131,23 +359,24 @@ function carregarUsuarios() {
     fetch("/api/usuarios")
         .then(res => res.json())
         .then(data => {
-            // Assumimos que data.usuarios é array de objetos com { id, name ou nome, matricula, is_suspenso, suspenso_ate }
             usuarios = (data.usuarios || []).map(u => {
-                // normalize field names: some APIs usam 'name' e outras 'nome'
                 const nome = u.name ?? u.nome ?? "";
                 return {
-                    ...u,
+                    ...u, // já traz id, matricula, foto_url, curso, campus, is_suspenso, suspenso_ate, motivo_suspensao
                     name: nome,
                     name_normalized: normalizeString(nome),
-                    // garantindo que matricula seja string
                     matricula: (u.matricula || "").toString(),
-                    // se suspenso_ate vier como ISO, você pode formatar depois
-                    suspenso_ate: u.suspenso_ate || null
+                    suspenso_ate: u.suspenso_ate || null,
+                    foto_url: u.foto_url || null,
+                    curso: u.curso || null,
+                    campus: u.campus || null,
+                    motivo_suspensao: u.motivo_suspensao || null
                 };
             });
         })
         .catch(err => console.error("Erro ao carregar usuários:", err));
 }
+
 
 // carrega ao abrir a página
 carregarUsuarios();
@@ -164,6 +393,8 @@ function exibirResultados(listaUsuarios) {
     listaUsuarios.slice(0, 8).forEach(u => {
         const item = document.createElement("li");
         item.className = "resultado-item";
+
+        item.addEventListener("click", () => abrirPopupUsuario(u.id));
 
         // Formata tempo de suspensão (se houver)
         let suspensoTexto = "";
@@ -247,6 +478,44 @@ barra.addEventListener("blur", () => {
         lista.style.display = "none";
     }, 150);
 });
+
+
+function expandir(id) {
+    let card = document.getElementById("denuncia-" + id);
+
+    // Esconde cards e paginação
+    document.querySelectorAll(".denuncia-card").forEach(c => {
+        if (c.id !== "denuncia-" + id) c.classList.add("d-none");
+    });
+
+    document.querySelector(".paginacao-container")?.classList.add("d-none");
+    document.querySelector(".filtro-denuncias")?.classList.add("d-none");
+
+    // Mostra campos completos
+    card.querySelectorAll(".titulo-completo, .descricao-completa").forEach(e => e.classList.remove("d-none"));
+    card.querySelectorAll(".titulo-curto, .descricao-curta").forEach(e => e.classList.add("d-none"));
+
+    // Botões
+    card.querySelector(".btn-expandir").classList.add("d-none");
+    card.querySelector(".btn-recolher").classList.remove("d-none");
+}
+
+function recolher(id) {
+    let card = document.getElementById("denuncia-" + id);
+
+    // Mostra tudo de volta
+    document.querySelectorAll(".denuncia-card").forEach(c => c.classList.remove("d-none"));
+    document.querySelector(".paginacao-container")?.classList.remove("d-none");
+    document.querySelector(".filtro-denuncias")?.classList.remove("d-none");
+
+    // Esconde campos completos
+    card.querySelectorAll(".titulo-completo, .descricao-completa").forEach(e => e.classList.add("d-none"));
+    card.querySelectorAll(".titulo-curto, .descricao-curta").forEach(e => e.classList.remove("d-none"));
+
+    // Botões
+    card.querySelector(".btn-expandir").classList.remove("d-none");
+    card.querySelector(".btn-recolher").classList.add("d-none");
+}
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -320,6 +589,128 @@ function resetAccess() {
     </div>
 </div>
 
+<!-- MODAL DE PERFIL DO USUÁRIO -->
+<div class="modal fade" id="modalUsuario" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-3">
 
+      <div class="modal-header">
+        <h5 class="modal-title">Perfil do Usuário</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="text-center mb-3">
+            <img id="userFoto" src="" class="rounded-circle" width="100" height="100" style="object-fit: cover;">
+        </div>
+
+        <h4 id="userNome" class="text-center"></h4>
+        <p id="userMatricula" class="text-center text-muted"></p>
+
+        <p><strong>Curso:</strong> <span id="userCurso"></span></p>
+        <p><strong>Campus:</strong> <span id="userCampus"></span></p>
+
+        <hr>
+
+        <!-- Se estiver suspenso -->
+        <div id="areaSuspenso" style="display: none;" class="alert alert-danger">
+          <p><strong>Usuário Suspenso</strong></p>
+          <p>Suspenso até: <span id="suspensoAte"></span></p>
+          <p>Motivo: <span id="motivoSuspensao"></span></p>
+
+          <button class="btn btn-success w-100 mt-2" id="btnRemoverSuspensao">
+            Remover Suspensão
+          </button>
+        </div>
+
+        <!-- Formulário para suspender -->
+        <div id="areaSuspender">
+
+          <label class="mt-2 fw-bold">Suspender por:</label>
+          <div class="input-group">
+              <input type="number" id="quantidade" class="form-control" min="1" value="1">
+              <select id="unidade" class="form-select">
+                <option value="horas">Horas</option>
+                <option value="dias">Dias</option>
+                <option value="semanas">Semanas</option>
+              </select>
+          </div>
+
+          <label class="fw-bold mt-3">Motivo (opcional):</label>
+          <textarea id="motivo" class="form-control" rows="2"></textarea>
+
+          <button class="btn btn-danger w-100 mt-3" id="btnSuspender">Suspender Usuário</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    let modalUsuario = new bootstrap.Modal(document.getElementById("modalUsuario"));
+let usuarioAtualID = null;
+
+
+function abrirPopupUsuario(id) {
+    usuarioAtualID = id;
+
+    fetch(`/api/usuario/${id}`)
+        .then(res => res.json())
+        .then(user => {
+
+            document.getElementById("userFoto").src = user.foto_url || "/static/img/default.png";
+            document.getElementById("userNome").textContent = user.nome;
+            document.getElementById("userMatricula").textContent = "Matrícula: " + user.matricula;
+            document.getElementById("userCurso").textContent = user.curso || "–";
+            document.getElementById("userCampus").textContent = user.campus || "–";
+
+            // se está suspenso
+            if (user.suspenso) {
+                document.getElementById("areaSuspenso").style.display = "block";
+                document.getElementById("areaSuspender").style.display = "none";
+
+                let data = new Date(user.suspenso_ate);
+                document.getElementById("suspensoAte").textContent =
+                    `${data.toLocaleDateString()} ${data.toLocaleTimeString()}`;
+                
+                document.getElementById("motivoSuspensao").textContent =
+                    user.motivo || "Sem motivo informado";
+                
+            } else {
+                document.getElementById("areaSuspenso").style.display = "none";
+                document.getElementById("areaSuspender").style.display = "block";
+            }
+
+            modalUsuario.show();
+        });
+}
+
+
+// Suspender usuário
+document.getElementById("btnSuspender").addEventListener("click", () => {
+    const body = {
+        quantidade: document.getElementById("quantidade").value,
+        unidade: document.getElementById("unidade").value,
+        motivo: document.getElementById("motivo").value
+    };
+
+    fetch(`/api/usuario/${usuarioAtualID}/suspender`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(body)
+    }).then(() => location.reload());
+});
+
+
+// Remover suspensão
+document.getElementById("btnRemoverSuspensao").addEventListener("click", () => {
+    fetch(`/api/usuario/${usuarioAtualID}/remover_suspensao`, {
+        method: "POST"
+    }).then(() => location.reload());
+});
+
+</script>
 </body>
 </html>

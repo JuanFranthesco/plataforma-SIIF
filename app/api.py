@@ -215,23 +215,72 @@ def excluir_evento(evento_id):
         return jsonify({"erro": str(e)}), 500
 
 
-# Api para buscar usuarios na parte de controle pelo admin
 @api.route("/api/usuarios")
 def api_usuarios():
-    # retorna usuários ordenados pela matrícula
     users = User.query.filter_by(is_admin=False).order_by(User.matricula.asc()).all()
 
     return {
         "usuarios": [
             {
-                "name": u.name if hasattr(u, "name") else "",
+                "id": u.id,
+                "name": u.name or "",
                 "matricula": u.matricula,
                 "is_suspenso": u.is_suspenso(),
-                "suspenso_ate": u.suspenso_ate.strftime("%d/%m/%Y %H:%M") if u.suspenso_ate else None
+                "suspenso_ate": u.suspenso_ate.isoformat() if u.suspenso_ate else None,
+                "motivo_suspensao": u.motivo_suspensao or None,
+                "foto_url": u.foto_url or None,
+                "curso": u.curso or None,
+                "campus": u.campus or None
             }
             for u in users
         ]
     }
+
+# Buscar dados completos do usuário pelo ID
+@api.route("/api/usuario/<int:user_id>")
+@login_required
+def api_usuario(user_id):
+    user = User.query.get_or_404(user_id)
+
+    return jsonify({
+        "id": user.id,
+        "nome": user.name,
+        "matricula": user.matricula,
+        "curso": user.curso,
+        "campus": user.campus,
+        "foto_url": user.foto_url,
+        "suspenso": user.is_suspenso(),
+        "suspenso_ate": user.suspenso_ate.isoformat() if user.suspenso_ate else None,
+        "motivo": user.motivo_suspensao
+    })
+
+
+# Suspender usuário
+@api.route("/api/usuario/<int:user_id>/suspender", methods=["POST"])
+@login_required
+def suspender_usuario(user_id):
+    user = User.query.get_or_404(user_id)
+
+    data = request.json
+    quantidade = int(data.get("quantidade"))
+    unidade = data.get("unidade")
+    motivo = data.get("motivo", "")
+
+    user.suspender(quantidade, unidade, motivo)
+    db.session.commit()
+
+    return jsonify({"status": "ok"})
+
+
+# ✔ Remover suspensão
+@api.route("/api/usuario/<int:user_id>/remover_suspensao", methods=["POST"])
+@login_required
+def remover_suspensao_usuario(user_id):
+    user = User.query.get_or_404(user_id)
+    user.remover_suspensao()
+    db.session.commit()
+    return jsonify({"status": "ok"})
+
 
 
 # ===================================================================

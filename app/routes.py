@@ -943,26 +943,6 @@ def tela_perfil():
     )
 
 
-@main_bp.route('/denuncias')
-@login_required
-def tela_denuncias():
-    if not current_user.is_admin:
-        flash('Acesso negado.', 'danger')
-        return redirect(url_for('main.tela_inicial'))
-
-    denuncias_abertas = Denuncia.query.filter_by(status='Recebida').order_by(Denuncia.data_envio.desc()).all()
-    total_abertas = len(denuncias_abertas)
-    total_resolvidas = Denuncia.query.filter_by(status='Resolvida').count()
-    total_denuncias = total_abertas + total_resolvidas
-
-    return render_template(
-        'tela_denuncias.html',
-        denuncias=denuncias_abertas,
-        total_abertas=total_abertas,
-        total_resolvidas=total_resolvidas,
-        total_denuncias=total_denuncias
-    )
-
 
 @main_bp.route('/denuncia/resolver/<int:denuncia_id>', methods=['POST'])
 @login_required
@@ -980,7 +960,7 @@ def resolver_denuncia(denuncia_id):
         db.session.rollback()
         flash(f'Erro: {e}', 'danger')
 
-    return redirect(url_for('main.tela_denuncias'))
+    return redirect(url_for('main.tela_admin'))
 
 
 @main_bp.route('/denuncia/excluir/<int:denuncia_id>', methods=['POST'])
@@ -998,7 +978,7 @@ def excluir_denuncia(denuncia_id):
         db.session.rollback()
         flash(f'Erro: {e}', 'danger')
 
-    return redirect(url_for('main.tela_denuncias'))
+    return redirect(url_for('main.tela_admin'))
 
 
 @main_bp.route('/materiais')
@@ -1264,31 +1244,36 @@ def excluir_material(material_id: int):
 @login_required
 def suporte():
     if request.method == 'POST':
-        assunto = request.form.get('title')
+        titulo = request.form.get('title')
         descricao = request.form.get('description')
 
+        # Validação de campos obrigatórios
         if not descricao:
             flash('Descrição obrigatória.', 'danger')
             return redirect(url_for('main.suporte'))
+        
+        if not titulo:
+            flash('Título obrigatório.', 'danger')
+            return redirect(url_for('main.suporte'))
 
-        descricao_completa = f"Assunto: {assunto}\n\n{descricao}" if assunto else descricao
-
+        # Criar a denúncia
         nova_denuncia = Denuncia(
-            tipo_denuncia="Denúncia via Página de Suporte",
-            descricao=descricao_completa,
+            titulo=titulo,
+            descricao=descricao,
             denunciante_id=current_user.id
         )
 
         try:
             db.session.add(nova_denuncia)
             db.session.commit()
-            flash('Enviado com sucesso.', 'success')
+            flash('Denúncia enviada com sucesso.', 'success')
         except Exception as e:
             db.session.rollback()
-            flash(f'Erro ao enviar: {e}', 'danger')
+            flash(f'Ocorreu um erro ao enviar a denúncia: {e}', 'danger')
 
         return redirect(url_for('main.suporte'))
 
+    # Para exibir FAQs ou outros dados
     termo_busca = request.args.get('busca', '')
     faqs_resultados = []
 
@@ -1309,7 +1294,6 @@ def suporte():
         termo_busca=termo_busca
     )
 
-
 # PARTE ADMIN IIIIINNNNNNNN
 @main_bp.route('/tela_admin')
 @login_required
@@ -1318,19 +1302,57 @@ def tela_admin():
         # Pega a quantidade exata de usuarios cadastrados
         users_count = User.query.count()
 
+        # Usuários normais
         usuarios = User.query.filter_by(is_admin=False).all()
 
-        denuncias_abertas = Denuncia.query.filter_by(status='Recebida').order_by(Denuncia.data_envio.desc()).all()
-        total_abertas = len(denuncias_abertas)
-        total_resolvidas = Denuncia.query.filter_by(status='Resolvida').count()
-        total_denuncias = total_abertas + total_resolvidas
+        # ----- SISTEMA DE FILTRO -----
+    filtro = request.args.get("filtro", "aberto")  
+    page = int(request.args.get("page", 1))
+    por_pagina = 4
 
-        return render_template('tela_admin.html', users_count=users_count, usuarios=usuarios, denuncias=denuncias_abertas,
+    # Filtragem
+    if filtro == "aberto":
+        query = Denuncia.query.filter_by(status="Recebida")
+    elif filtro == "resolvido":
+        query = Denuncia.query.filter_by(status="Resolvida")
+    else:
+        query = Denuncia.query
+
+    total = query.count()
+
+    # Paginação
+    denuncias = query.order_by(Denuncia.data_envio.desc()) \
+                     .offset((page - 1) * por_pagina) \
+                     .limit(por_pagina) \
+                     .all()
+
+    total_paginas = max(1, (total + por_pagina - 1) // por_pagina)
+
+    # Dados gerais
+    total_abertas = Denuncia.query.filter_by(status='Recebida').count()
+    total_resolvidas = Denuncia.query.filter_by(status='Resolvida').count()
+    total_denuncias = total_abertas + total_resolvidas
+
+    # Limitador de caracteres
+    limite_titulo = 40
+    limite_descricao = 60
+
+
+    return render_template(
+        "tela_admin.html",
+        users_count=users_count,
+        usuarios=usuarios,
+        denuncias=denuncias,
+        filtro=filtro,
+        page=page,
+        total_paginas=total_paginas,
         total_abertas=total_abertas,
         total_resolvidas=total_resolvidas,
-        total_denuncias=total_denuncias)
-    
-    return redirect(request.referrer)
+        total_denuncias=total_denuncias,
+        limite_titulo=limite_titulo,
+        limite_descricao=limite_descricao
+    )
+
 
 @main_bp.route('/enquete/votar/<int:opcao_id>', methods=['POST'])
 @login_required

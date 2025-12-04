@@ -72,11 +72,11 @@
             <form id="denunciaForm" method="POST" action="{{ url_for('main.suporte') }}">
               <div class="denuncia-form-wrapper">
 
-                <label for="denunciaAssunto" class="form-label">O que quer denunciar? (opcional)</label>
-                <input id="denunciaAssunto" name="title" type="text" class="form-field" placeholder="Ex: Assédio no Bloco C">
+                <label for="denunciaAssunto" class="form-label">Título da denúncia</label>
+                <input id="denunciaAssunto" name="title" type="text" class="form-field" placeholder="Ex: Assédio no Bloco 2" required maxlength="40">
 
-                <label for="denunciaDesc" class="form-label">Descreva o motivo da sua denúncia</label>
-                <textarea id="denunciaDesc" name="description" rows="5" class="form-field" placeholder="Descreva o acontecimento, local, horário..." required></textarea>
+                <label for="denunciaDesc" class="form-label">Descreva sua denúncia</label>
+                <textarea id="denunciaDesc" name="description" rows="5" class="form-field" placeholder="Descreva o acontecimento, local, horário..." required maxlength="300"></textarea>
 
                 <button type="submit" class="btn-primary" style="width: 250px;">Enviar denúncia anônima</button>
 
