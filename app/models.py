@@ -3,6 +3,8 @@ from datetime import datetime, timezone, timedelta
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from .extensions import db, login_manager
+import json
+
 
 # ===================================================================
 # LOGIN MANAGER
@@ -41,7 +43,11 @@ material_favoritos = db.Table('material_favoritos',
     db.Column('material_id', db.Integer, db.ForeignKey('material.id'), primary_key=True)
 )
 
-
+banned_users = db.Table('banned_users',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('comunidade_id', db.Integer, db.ForeignKey('comunidade.id'), primary_key=True),
+    db.Column('data_banimento', db.DateTime, default=datetime.utcnow)
+)
 # ===================================================================
 # USUÁRIOS E PERFIL
 # ===================================================================
@@ -203,6 +209,7 @@ class Comunidade(db.Model):
     categoria = db.Column(db.String(50), default='Geral') 
     tipo_acesso = db.Column(db.String(20), default='Público') 
     regras = db.Column(db.Text, nullable=True)
+    mensagem_boas_vindas = db.Column(db.Text, nullable=True)
     
     # Identidade Visual Avançada
     imagem_url = db.Column(db.String(300), default='default_community.png') # Logo Redonda
@@ -212,6 +219,7 @@ class Comunidade(db.Model):
     # Segurança e Moderação
     palavras_proibidas = db.Column(db.Text, nullable=True) # Lista separada por vírgula
     trancada = db.Column(db.Boolean, default=False) # Se True, ninguém posta
+    links_uteis = db.Column(db.Text, nullable=True)
     
     criado_em = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     criador_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -222,6 +230,16 @@ class Comunidade(db.Model):
     solicitacoes = db.relationship('SolicitacaoParticipacao', backref='comunidade', lazy=True)
     tags = db.relationship('ComunidadeTag', backref='comunidade', lazy=True)
     logs = db.relationship('AuditLog', backref='comunidade', lazy=True)
+    banidos = db.relationship('User', secondary=banned_users, backref=db.backref('banido_de', lazy='dynamic'))
+    
+    @property
+    def lista_links(self):
+        if self.links_uteis:
+            try:
+                return json.loads(self.links_uteis)
+            except:
+                return []
+        return []
 
     def __repr__(self):
         return f'<Comunidade {self.nome}>'
@@ -514,3 +532,4 @@ class Denuncia(db.Model):
 
     def __repr__(self):
         return f'<Denúncia #{self.id}>'
+
