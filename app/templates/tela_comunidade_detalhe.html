@@ -162,12 +162,20 @@
             margin-bottom: 10px;
         }
 
+        /* Sidebar Cards */
         .suggestion-card {
             background-color: white;
             border: 1px solid #eee;
             border-radius: 20px;
             padding: 20px;
-            margin-top: 0;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+        }
+        .info-card {
+            background-color: white;
+            border: 1px solid #eee;
+            border-radius: 20px;
+            padding: 20px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
         }
         
@@ -238,8 +246,12 @@
                 <div class="comment-bubble">
                     <a href="#" class="comment-author-name">
                         {{ resposta.autor.name }}
-                        {% if resposta.autor.is_admin %}<i class="bi bi-patch-check-fill text-primary ms-1" title="Admin"></i>
-                        {% elif resposta.autor in comunidade.moderadores %}<i class="bi bi-shield-check text-success ms-1" title="Moderador"></i>{% endif %}
+                        
+                        {% if resposta.autor.is_admin %}
+                            <i class="bi bi-patch-check-fill text-primary ms-1" title="Admin"></i>
+                        {% elif resposta.autor in comunidade.moderadores or resposta.autor.id == comunidade.criador_id %}
+                            <i class="bi bi-patch-check-fill text-primary ms-1" title="Moderador Verificado"></i>
+                        {% endif %}
                     </a>
                     <p class="comment-content-text">{{ resposta.conteudo }}</p>
                     {% if resposta.imagem_resposta %}<a href="{{ resposta.imagem_resposta }}" target="_blank"><img src="{{ resposta.imagem_resposta }}" class="comment-image"></a>{% endif %}
@@ -322,7 +334,20 @@
 
                 {% if tem_acesso %}
                 <div class="row g-5">
+                    
                     <div class="col-lg-8">
+
+                        {% if comunidade.mensagem_boas_vindas %}
+                        <div class="card border-0 shadow-sm rounded-4 mb-4" style="background-color: #fcfcfc; border-left: 5px solid var(--comm-color) !important;">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <i class="bi bi-stars fs-5" style="color: var(--comm-color);"></i>
+                                    <h6 class="fw-bold m-0" style="color: var(--comm-color);">Mensagem da Comunidade</h6>
+                                </div>
+                                <p class="text-secondary small mb-0 fst-italic">"{{ comunidade.mensagem_boas_vindas }}"</p>
+                            </div>
+                        </div>
+                        {% endif %}
 
                         {% if not comunidade.trancada or current_user in comunidade.moderadores %}
                         <div class="card border-0 shadow-sm rounded-4 mb-4 bg-light">
@@ -366,7 +391,13 @@
                                     <div class="d-flex align-items-center gap-2">
                                         <img src="{{ url_for('static', filename='fotos_perfil/' + topico.autor.foto_url) if topico.autor.foto_url else url_for('static', filename='img/image.png') }}" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
                                         <div>
-                                            <span class="fw-bold text-dark d-block" style="line-height: 1.2;">{{ topico.autor.name }}</span>
+                                            <span class="fw-bold text-dark d-block" style="line-height: 1.2;">
+                                                {{ topico.autor.name }}
+                                                
+                                                {% if topico.autor in comunidade.moderadores or topico.autor.id == comunidade.criador_id %}
+                                                    <i class="bi bi-patch-check-fill text-primary ms-1" title="Verificado"></i>
+                                                {% endif %}
+                                            </span>
                                             <small class="text-muted" style="font-size: 0.75rem;">
                                                 {{ topico.criado_em | format_data_br }}
                                                 {% if topico.autor in comunidade.moderadores %}<span class="text-theme fw-bold ms-1">• Mod</span>{% endif %}
@@ -529,6 +560,21 @@
                     </div>
 
                     <div class="col-lg-4 d-none d-lg-block">
+                        
+                        {% if comunidade.lista_links %}
+                        <div class="info-card mb-4">
+                            <h6 class="fw-bold text-muted small mb-3 text-uppercase"><i class="bi bi-link-45deg me-1"></i> Links Oficiais</h6>
+                            <div class="d-grid gap-2">
+                                {% for link in comunidade.lista_links %}
+                                <a href="{{ link.url }}" target="_blank" class="btn btn-light text-start border rounded-pill d-flex align-items-center justify-content-between text-dark shadow-sm">
+                                    <span class="fw-bold small ms-1">{{ link.nome }}</span>
+                                    <i class="bi bi-box-arrow-up-right text-muted" style="font-size: 0.8rem;"></i>
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
                         <div class="suggestion-card">
                             <h6 class="fw-bold text-muted small mb-3 text-uppercase">Recomendações</h6>
                             {% for sug in sugestoes %}
