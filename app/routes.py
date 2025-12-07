@@ -47,7 +47,7 @@ from app.models import (
     Material, User, FAQ, Denuncia, Noticia, Evento, Perfil,
     Topico, Resposta, PostSalvo, PostLike, Notificacao,
     Comunidade, SolicitacaoParticipacao, RespostaLike, Tag, ComunidadeTag, AuditLog,
-    EnqueteOpcao, EnqueteVoto, RelatoSuporte  # <--- CONFIRA SE ESTES NOMES ESTÃO AQUI
+    EnqueteOpcao, EnqueteVoto, RelatoSuporte,
 )
 
 # app/routes.py (Topo)
@@ -1004,17 +1004,20 @@ def tela_perfil():
 
     meus_posts = Topico.query.filter_by(autor_id=current_user.id).order_by(Topico.criado_em.desc()).all()
     meus_materiais = Material.query.filter_by(autor_id=current_user.id).order_by(Material.data_upload.desc()).all()
-
-    # Busca os Tópicos salvos
     meus_salvos_query = Topico.query.join(PostSalvo).filter(PostSalvo.user_id == current_user.id)
     meus_salvos = meus_salvos_query.order_by(desc(PostSalvo.id)).all()
-
+    minhas_comunidades = current_user.comunidades_seguidas
+    minhas_denuncias = Denuncia.query.filter_by(denunciante_id=current_user.id)\
+                                     .order_by(Denuncia.data_envio.desc())\
+                                     .all()
     return render_template(
         'tela_perfil.html',
         form=form,
         posts=meus_posts,
         materiais=meus_materiais,
-        salvos=meus_salvos
+        salvos=meus_salvos,
+        comunidades=minhas_comunidades,
+        denuncias=minhas_denuncias
     )
 
 

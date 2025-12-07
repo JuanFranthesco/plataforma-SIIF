@@ -63,7 +63,7 @@ class User(db.Model,UserMixin):
     curso = db.Column(db.String(100), nullable=True)
     campus = db.Column(db.String(100), nullable=True)
     bio = db.Column(db.Text, nullable=True)
-    foto_url = db.Column(db.String(255), nullable=True)
+    foto_perfil = db.Column(db.String(255), nullable=True)
     banner_perfil = db.Column(db.String(120), default='default_banner.jpg')
 
     # Relações com outros modelos
