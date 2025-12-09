@@ -187,6 +187,10 @@
 {% endblock %}
 
 {% block modals %}
+
+<!-- ============================= -->
+<!-- MODAL FILTROS -->
+<!-- ============================= -->
 <div class="modal fade" id="modalFiltros" tabindex="-1" aria-labelledby="modalFiltrosLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
@@ -202,11 +206,13 @@
                     <div class="mb-4">
                         <h5 class="sidebar-title">Ordenar por:</h5>
                         <div class="form-check">
-                            <input class="form-check-input custom-checkbox" type="radio" name="ordenarPor" value="relevancia" id="check-relevancia-mobile" {% if ordenacao_selecionada == 'relevancia' %}checked{% endif %}>
+                            <input class="form-check-input custom-checkbox" type="radio" name="ordenarPor" value="relevancia"
+                                id="check-relevancia-mobile" {% if ordenacao_selecionada == 'relevancia' %}checked{% endif %}>
                             <label class="form-check-label" for="check-relevancia-mobile">Relevância</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input custom-checkbox" type="radio" name="ordenarPor" value="recente" id="check-recente-mobile" {% if not ordenacao_selecionada or ordenacao_selecionada == 'recente' %}checked{% endif %}>
+                            <input class="form-check-input custom-checkbox" type="radio" name="ordenarPor" value="recente"
+                                id="check-recente-mobile" {% if not ordenacao_selecionada or ordenacao_selecionada == 'recente' %}checked{% endif %}>
                             <label class="form-check-label" for="check-recente-mobile">Mais recente</label>
                         </div>
                     </div>
@@ -230,97 +236,133 @@
             </div>
         </div>
     </div>
+</div>
 
-    <div class="modal fade" id="modalComentar" tabindex="-1" aria-labelledby="modalComentarLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-custom-verde">
-            <form class="modal-content" id="formComentario" action="" method="POST">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalComentarLabel">Escrever Comentário</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <textarea class="form-control" rows="5" placeholder="No que está pensando?" aria-label="Campo para escrever seu comentário" name="conteudo_comentario" required></textarea>
-                </div>
-                <div class="modal-footer d-flex justify-content-between">
-                    <button type="button" class="btn btn-link" style="color: #386641; text-decoration: none;"><i class="bi bi-paperclip"></i> Anexar Mídia</button>
-                    <button type="submit" class="btn btn-primary filter-btn">Comentar</button>
-                </div>
-            </form>
-        </div>
+<!-- ============================= -->
+<!-- MODAL COMENTAR -->
+<!-- ============================= -->
+<div class="modal fade" id="modalComentar" tabindex="-1" aria-labelledby="modalComentarLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-custom-verde">
+        <form class="modal-content" id="formComentario" action="" method="POST">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modalComentarLabel">Escrever Comentário</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <textarea class="form-control" rows="5" placeholder="No que está pensando?"
+                    name="conteudo_comentario" required></textarea>
+            </div>
+            <div class="modal-footer d-flex justify-content-between">
+                <button type="button" class="btn btn-link" style="color: #386641; text-decoration: none;">
+                    <i class="bi bi-paperclip"></i> Anexar Mídia
+                </button>
+                <button type="submit" class="btn btn-primary filter-btn">Comentar</button>
+            </div>
+        </form>
     </div>
+</div>
 
-    <div class="modal fade" id="modalPostar" tabindex="-1" aria-labelledby="modalPostarLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-custom-verde">
-            <form class="modal-content" action="{{ url_for('main.criar_post') }}" method="POST">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalPostarLabel">Criar Novo Post</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <textarea class="form-control" rows="5" placeholder="No que está pensando?" aria-label="Campo para escrever sua postagem" name="conteudo_post" required></textarea>
-                </div>
-                <div class="modal-footer d-flex justify-content-between">
-                    <button type="button" class="btn btn-link" style="color: #386641; text-decoration: none;"><i class="bi bi-paperclip"></i> Anexar Mídia</button>
-                    <button type="submit" class="btn btn-primary filter-btn">Postar</button>
-                </div>
-            </form>
-        </div>
+
+<!-- ============================= -->
+<!-- MODAL POSTAR -->
+<!-- ============================= -->
+<div class="modal fade" id="modalPostar" tabindex="-1" aria-labelledby="modalPostarLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-custom-verde">
+        <form class="modal-content" action="{{ url_for('main.criar_post') }}" method="POST">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modalPostarLabel">Criar Novo Post</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <textarea class="form-control" rows="5" placeholder="No que está pensando?"
+                    name="conteudo_post" required></textarea>
+            </div>
+            <div class="modal-footer d-flex justify-content-between">
+                <button type="button" class="btn btn-link" style="color: #386641; text-decoration: none;">
+                    <i class="bi bi-paperclip"></i> Anexar Mídia
+                </button>
+                <button type="submit" class="btn btn-primary filter-btn">Postar</button>
+            </div>
+        </form>
     </div>
+</div>
 
+<!-- ============================= -->
+<!-- MODAL NOTIFICAÇÕES -->
+<!-- ============================= -->
 <div class="modal fade" id="modalNotificacoes" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-custom-verde modal-lg">
         <div class="modal-content border-success">
             <div class="modal-header bg-success text-white d-flex justify-content-between align-items-center">
                 <h5 class="modal-title"><i class="bi bi-bell-fill me-2"></i> Notificações</h5>
                 <form action="{{ url_for('main.marcar_todas_notificacoes_lidas') }}" method="POST" class="mb-0">
-                    <button type="submit" class="btn btn-sm btn-light text-success">Marcar todas como vistas</button>
+                    <button type="submit" class="btn btn-sm btn-light text-success">
+                        Marcar todas como vistas
+                    </button>
                 </form>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-<div class="modal-body p-3">
-    {% if notificacoes and notificacoes|length > 0 %}
-        <h6 class="text-center fw-bold text-success mb-4">Você tem {{ notificacoes|length }} nova{{ notificacoes|length > 1 and 's' or '' }} notificação{{ notificacoes|length > 1 and 's' or '' }}</h6>
-        <div class="d-flex flex-column gap-3" style="max-height: 400px; overflow-y: auto;">
-            {% for notificacao in notificacoes %}
-                <div class="card border-success shadow-sm">
-                    <div class="card-body d-flex justify-content-between align-items-start p-3">
-                        <div class="d-flex align-items-center gap-3 flex-grow-1">
-                            <div class="icon-circle bg-success text-white d-flex justify-content-center align-items-center rounded-circle" style="width: 36px; height: 36px;">
-                                <i class="bi bi-bell-fill"></i>
-                            </div>
-                            <div>
-<div class="fw-bold notification-message" style="max-width: calc(100% - 40px);">{{ notificacao.mensagem }}</div>
-                                <a href="{{ notificacao.link_url }}" data-bs-dismiss="modal" class="stretched-link"></a>
+            <div class="modal-body p-3">
+                {% if notificacoes and notificacoes|length > 0 %}
+                    <h6 class="text-center fw-bold text-success mb-4">
+                        Você tem {{ notificacoes|length }} nova{{ notificacoes|length > 1 and 's' or '' }}
+                        notificação{{ notificacoes|length > 1 and 's' or '' }}
+                    </h6>
+                    <div class="d-flex flex-column gap-3" style="max-height: 400px; overflow-y: auto;">
+                        {% for notificacao in notificacoes %}
+                        <div class="card border-success shadow-sm">
+                            <div class="card-body d-flex justify-content-between align-items-start p-3">
+                                <div class="d-flex align-items-center gap-3 flex-grow-1">
+                                    <div class="icon-circle bg-success text-white d-flex justify-content-center align-items-center rounded-circle"
+                                        style="width: 36px; height: 36px;">
+                                        <i class="bi bi-bell-fill"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold notification-message"
+                                            style="max-width: calc(100% - 40px);">
+                                            {{ notificacao.mensagem }}
+                                        </div>
+                                        <a href="{{ notificacao.link_url }}" data-bs-dismiss="modal" class="stretched-link"></a>
+                                    </div>
+                                </div>
+                                <small class="text-muted ms-3">
+                                    {{ notificacao.data_criacao.strftime('%d/%m %H:%M') }}
+                                </small>
                             </div>
                         </div>
-                        <small class="text-muted ms-3">{{ notificacao.data_criacao.strftime('%d/%m %H:%M') }}</small>
+                        {% endfor %}
                     </div>
-                </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <p class="text-center text-muted">Sem novas notificações.</p>
-    {% endif %}
-</div>
-
-    <div class="modal fade" id="modalDenunciar" tabindex="-1" aria-labelledby="modalDenunciarLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-custom-verde">
-            <form class="modal-content" id="formDenuncia" action="" method="POST">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalDenunciarLabel">Denunciar Post</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Por favor, descreva o motivo da sua denúncia.</p>
-                    <textarea class="form-control" rows="4" placeholder="Motivo da denúncia..." name="descricao" required></textarea>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger"><i class="bi bi-flag-fill"></i> Enviar Denúncia</button>
-                </div>
-            </form>
+                {% else %}
+                    <p class="text-center text-muted">Sem novas notificações.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
+</div>
+
+
+<!-- ============================= -->
+<!-- MODAL DENUNCIAR -->
+<!-- ============================= -->
+<div class="modal fade" id="modalDenunciar" tabindex="-1" aria-labelledby="modalDenunciarLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-custom-verde">
+        <form class="modal-content" id="formDenuncia" action="" method="POST">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modalDenunciarLabel">Denunciar Post</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Por favor, descreva o motivo da sua denúncia.</p>
+                <textarea class="form-control" rows="4" placeholder="Motivo da denúncia..." name="descricao" required></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-danger"><i class="bi bi-flag-fill"></i> Enviar Denúncia</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
