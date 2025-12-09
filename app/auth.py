@@ -114,7 +114,7 @@ def suap_callback():
                 name=nome_suap,
                 password_hash=None, # Usuário SUAP não tem senha local
                 is_admin=admin,
-                foto_url=foto_suap,
+                foto_perfil=foto_suap,
                 campus=campus_suap
             )
             db.session.add(user)
