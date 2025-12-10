@@ -1,4 +1,5 @@
-from flask import render_template, request, redirect, url_for, flash, current_app, send_from_directory, Blueprint
+from flask import render_template, request, redirect, url_for, flash, current_app, send_from_directory, Blueprint, session
+import requests
 from flask_login import login_required, current_user
 from sqlalchemy import or_, desc, func, text        
 from werkzeug.utils import secure_filename
@@ -59,6 +60,7 @@ from app.models import (
 
 from app.extensions import db, limiter
 from app.forms import ProfileForm
+from app.auth import get_suap_session
 
 main_bp = Blueprint('main', __name__)
 
@@ -1068,6 +1070,153 @@ def excluir_denuncia(denuncia_id):
 
     return redirect(url_for('main.tela_admin'))
 
+@main_bp.route('/calculadora')
+@login_required
+def tela_calculadora():
+    suap_session = get_suap_session()
+    if not suap_session:
+        flash('Faça login novamente via SUAP para acessar essa funcionalidade.', 'warning')
+        return redirect(url_for('auth.login_suap'))
+    
+    try:
+        # 1. Pega os períodos para descobrir o atual
+        url_periodos = "https://suap.ifrn.edu.br/api/ensino/meus-periodos-letivos/"
+        resp_periodos = suap_session.get(url_periodos)
+        
+        boletim_data = []
+        periodo_selecionado = None
+
+        if resp_periodos.status_code == 200:
+            periodos = resp_periodos.json().get('results', [])
+            
+            if periodos:
+                # Pega o mais recente (o primeiro da lista)
+                ultimo_periodo = periodos[0]
+                ano = ultimo_periodo['ano_letivo']
+                semestre = ultimo_periodo['periodo_letivo']
+                
+                periodo_selecionado = f"{ano}.{semestre}"
+
+                # 2. Busca o boletim desse período
+                url_boletim = f"https://suap.ifrn.edu.br/api/ensino/meu-boletim/{ano}/{semestre}/"
+                resp_boletim = suap_session.get(url_boletim)
+
+                if resp_boletim.status_code == 200:
+                    boletim_json = resp_boletim.json()
+                    lista_boletim = boletim_json.get('results', [])
+                    
+                    # --- LÓGICA DE PROJEÇÃO DE NOTAS ---
+                    for disciplina in lista_boletim:
+                        # Identifica se é semestral
+                        try:
+                            qtd_avaliacoes = int(disciplina.get('quantidade_avaliacoes', 4))
+                        except:
+                            qtd_avaliacoes = 4
+                        
+                        # O usuário pediu para remover a verificação por nome ("30H") e usar apenas avaliações
+                        is_semestral = (qtd_avaliacoes == 2)
+                        disciplina['semestral'] = is_semestral
+                        
+                        # Verifica se é do segundo semestre
+                        is_segundo_semestre = disciplina.get('segundo_semestre', False)
+                        # Garante que é booleano
+                        if isinstance(is_segundo_semestre, str):
+                            is_segundo_semestre = is_segundo_semestre.lower() == 'true'
+                        
+                        disciplina['is_segundo_semestre'] = is_segundo_semestre
+
+                        # Se já está aprovado ou reprovado, não precisa calcular projeção
+                        # (Mas a gente calcula antes de dar continue pra ajeitar os campos N3/N4 se precisar)
+                        ja_finalizado = disciplina.get('situacao') in ['Aprovado', 'Reprovado']
+
+                        if is_semestral:
+                            if is_segundo_semestre:
+                                # Semestral 2º Semestre: 
+                                # As notas vêm em N1/N2, mas visualmente devem ir para N3/N4.
+                                # Pesos: N3(2), N4(3) -> Total 5.
+                                
+                                # Move os valores para as chaves corretas se ainda não estiverem lá
+                                if disciplina.get('nota_etapa_1'):
+                                    disciplina['nota_etapa_3'] = disciplina['nota_etapa_1']
+                                    disciplina['nota_etapa_1'] = None
+                                if disciplina.get('nota_etapa_2'):
+                                    disciplina['nota_etapa_4'] = disciplina['nota_etapa_2']
+                                    disciplina['nota_etapa_2'] = None
+                                    
+                                pesos = {'nota_etapa_3': 2, 'nota_etapa_4': 3}
+                            else:
+                                # Semestral 1º Semestre: Normal (N1, N2)
+                                pesos = {'nota_etapa_1': 2, 'nota_etapa_2': 3}
+                                
+                            meta_pontos = 300
+                            peso_total = 5
+                        else:
+                            # Anual: N1(2), N2(2), N3(3), N4(3) -> Total 10. Meta 60 => 600 pontos
+                            pesos = {'nota_etapa_1': 2, 'nota_etapa_2': 2, 'nota_etapa_3': 3, 'nota_etapa_4': 3}
+                            meta_pontos = 600
+                            peso_total = 10
+                        
+                        if ja_finalizado:
+                            continue
+
+                        pontos_acumulados = 0
+                        peso_restante = 0
+                        
+                        # Calcula o que já tem e o que falta
+                        for chave, peso in pesos.items():
+                            dados_nota = disciplina.get(chave)
+                            # Verifica se existe nota lançada (não é None)
+                            if dados_nota and dados_nota.get('nota') is not None:
+                                try:
+                                    valor = float(dados_nota['nota'])
+                                    pontos_acumulados += valor * peso
+                                except:
+                                    pass # Ignora erro de conversão
+                            else:
+                                peso_restante += peso
+                        
+                        # Se falta alguma nota, calcula a projeção
+                        if peso_restante > 0:
+                            pontos_necessarios = meta_pontos - pontos_acumulados
+                            
+                            if pontos_necessarios <= 0:
+                                # Já tem pontos suficientes
+                                nota_minima = 0
+                            else:
+                                import math
+                                # Divide o que falta pelo peso que resta
+                                nota_minima = math.ceil(pontos_necessarios / peso_restante)
+                                
+                                # Limita a 100
+                                if nota_minima > 100:
+                                    nota_minima = 100 
+                            
+                            # Injeta a sugestão no dicionário da disciplina
+                            disciplina['nota_sugerida'] = int(nota_minima)
+                        
+                        # Calcula Média Parcial (considerando zeros para notas não lançadas)
+                        if disciplina.get('media_disciplina') is None:
+                            try:
+                                # Divide pelo peso total correto (5 ou 10)
+                                media_parcial = pontos_acumulados / peso_total
+                                disciplina['media_parcial'] = int(media_parcial)
+                            except:
+                                pass
+                            
+                    boletim_data = lista_boletim
+                else:
+                    flash(f"Erro ao buscar boletim: {resp_boletim.status_code}", 'danger')
+            else:
+                flash("Nenhum período letivo encontrado.", 'info')
+            #print(boletim_data)
+            return render_template('calculadora.html', boletim=boletim_data, periodo=periodo_selecionado)
+        else:
+            flash(f"Erro ao buscar períodos: {resp_periodos.status_code}", 'danger')
+            return render_template('calculadora.html', boletim=[], periodo=None)
+            
+    except Exception as e:
+        flash(f"Erro na conexão com SUAP: {e}", 'danger')
+        return render_template('calculadora.html', boletim=[], periodo=None)
 
 @main_bp.route('/materiais')
 @login_required

@@ -65,7 +65,7 @@ class User(db.Model,UserMixin):
     bio = db.Column(db.Text, nullable=True)
     foto_perfil = db.Column(db.String(255), nullable=True)
     banner_perfil = db.Column(db.String(120), default='default_banner.jpg')
-
+    
     # Relações com outros modelos
     perfil = db.relationship('Perfil', backref='user', uselist=False, lazy=True)
     topicos = db.relationship('Topico', backref='autor', lazy=True)

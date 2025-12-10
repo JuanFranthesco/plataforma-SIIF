@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Calculadora de Notas - SIIF{% endblock %}
+
+{% block content %}
+<div class="container py-5 main-container">
+    <h2 class="mb-4 text-primary">
+        <i class="bi bi-journal-text me-2"></i>Calculadora de Notas {% if periodo %}<span
+            class="badge bg-secondary ms-2">{{
+            periodo }}</span>{% endif %}
+    </h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            {% if boletim %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Disciplina</th>
+                            <th class="text-center">Frequência</th>
+                            <th class="text-center">N1</th>
+                            <th class="text-center">N2</th>
+                            <th class="text-center">N3</th>
+                            <th class="text-center">N4</th>
+                            <th class="text-center">Média</th>
+                            <th class="text-center">Situação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for disciplina in boletim %}
+                        <tr>
+                            <td class="fw-bold text-truncate" style="max-width: 250px;"
+                                title="{{ disciplina.disciplina }}">
+                                {{ disciplina.disciplina }}
+                            </td>
+                            <td class="text-center">{{ disciplina.percentual_carga_horaria_frequentada }}%</td>
+                            <td class="text-center">
+                                {% if disciplina.semestral and disciplina.is_segundo_semestre %}
+
+                                {% elif disciplina.nota_etapa_1 and disciplina.nota_etapa_1.nota is not none %}
+                                {{ disciplina.nota_etapa_1.nota }}
+                                {% elif disciplina.nota_sugerida is not none %}
+                                <span class="badge bg-warning text-dark" title="Nota sugerida para aprovação">{{
+                                    disciplina.nota_sugerida }}</span>
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if disciplina.semestral and disciplina.is_segundo_semestre %}
+
+                                {% elif disciplina.nota_etapa_2 and disciplina.nota_etapa_2.nota is not none %}
+                                {{ disciplina.nota_etapa_2.nota }}
+                                {% elif disciplina.nota_sugerida is not none %}
+                                <span class="badge bg-warning text-dark" title="Nota sugerida para aprovação">{{
+                                    disciplina.nota_sugerida }}</span>
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if disciplina.semestral and not disciplina.is_segundo_semestre %}
+
+                                {% elif disciplina.nota_etapa_3 and disciplina.nota_etapa_3.nota is not none %}
+                                {{ disciplina.nota_etapa_3.nota }}
+                                {% elif disciplina.nota_sugerida is not none %}
+                                <span class="badge bg-warning text-dark" title="Nota sugerida para aprovação">{{
+                                    disciplina.nota_sugerida }}</span>
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if disciplina.semestral and not disciplina.is_segundo_semestre %}
+
+                                {% elif disciplina.nota_etapa_4 and disciplina.nota_etapa_4.nota is not none %}
+                                {{ disciplina.nota_etapa_4.nota }}
+                                {% elif disciplina.nota_sugerida is not none %}
+                                <span class="badge bg-warning text-dark" title="Nota sugerida para aprovação">{{
+                                    disciplina.nota_sugerida }}</span>
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                            <td class="text-center fw-bold">
+                                {% if disciplina.media_disciplina %}
+                                {{ disciplina.media_disciplina }}
+                                {% elif disciplina.media_parcial %}
+                                <span class="badge bg-info text-dark" title="Média baseada nas notas lançadas">{{
+                                    disciplina.media_parcial }}</span>
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if disciplina.situacao == 'Aprovado' %}
+                                <span class="badge bg-success">Aprovado</span>
+                                {% elif disciplina.situacao == 'Reprovado' %}
+                                <span class="badge bg-danger">Reprovado</span>
+                                {% elif disciplina.situacao == 'Cursando' %}
+                                <span class="badge bg-primary">Cursando</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ disciplina.situacao }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-file-earmark-x fs-1 mb-3"></i>
+                <p>Nenhum dado de boletim encontrado para o período atual.</p>
+                <a href="{{ url_for('auth.login_suap') }}" class="btn btn-outline-primary mt-3">
+                    Reconectar com SUAP
+                </a>
+            </div>
+            {% endif %}
+
+        </div>
+        <div class="card-footer bg-white">
+            <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-md-start">
+                <span class="badge bg-warning text-dark">Nota Mínima Necessária</span>
+                <span class="badge bg-info text-dark">Média Parcial</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -63,6 +63,30 @@ def login():
     return render_template('tela_login.html', form=form)
 
 
+# --- FUNÇÃO AUXILIAR PARA SESSÃO COM REFRESH AUTOMÁTICO ---
+def token_updater(token):
+    session['suap_token'] = token
+
+def get_suap_session():
+    token = session.get('suap_token')
+    if not token:
+        return None
+    
+    extra = {
+        'client_id': SUAP_CLIENT_ID,
+        'client_secret': SUAP_CLIENT_SECRET,
+    }
+    
+    suap_session = OAuth2Session(
+        client_id=SUAP_CLIENT_ID,
+        token=token,
+        auto_refresh_kwargs=extra,
+        auto_refresh_url=SUAP_TOKEN_URL,
+        token_updater=token_updater
+    )
+    return suap_session
+
+
 @auth_bp.route('/login/suap')
 def login_suap():
     session.clear()
@@ -86,7 +110,11 @@ def suap_callback():
         
         # 2. Usa o token para pegar os dados do aluno/servidor
         user_data = suap.get(SUAP_API_URL).json()
-        print(user_data)
+        session['suap_token'] = token
+        
+        # O token agora está na sessão para ser usado em outras rotas
+        # user_data = suap.get(SUAP_API_URL).json()
+        #print(user_data)
         # Exemplo de resposta do SUAP: {'matricula': '2020...', 'nome_usual': 'Fulano', 'email': '...'}
         matricula_suap = user_data.get('identificacao') # Ou 'matricula', depende da versão do SUAP da sua escola
         email_suap = user_data.get('email')
