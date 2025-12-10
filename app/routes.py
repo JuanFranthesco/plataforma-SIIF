@@ -587,14 +587,19 @@ def tela_foruns():
     # Carrega notificações
     notificacoes = Notificacao.query.filter_by(usuario_id=current_user.id, lida=False).order_by(desc(Notificacao.data_criacao)).limit(30).all()
 
+    # Carrega comunidades do usuário para o modal de postagem
+    comunidades = current_user.comunidades_seguidas
+
     # Passamos 'votos_usuario' vazio pois não mostramos enquetes aqui, evita erro no template se ele tentar ler
     return render_template(
-        'tela_foruns.html', 
-        topicos=topicos, 
-        likes_usuario=likes_usuario, 
-        salvos_usuario=salvos_usuario, 
+        'tela_foruns.html',
+        topicos=topicos,
+        likes_usuario=likes_usuario,
+        salvos_usuario=salvos_usuario,
         notificacoes=notificacoes,
-        votos_usuario=[] 
+        votos_usuario=[],
+        comunidades=comunidades,
+        filtro_selecionado=filtro
     )
 
 @main_bp.route('/forum/notificacoes/mark_all_seen', methods=['POST'])
@@ -629,6 +634,8 @@ def marcar_todas_notificacoes_lidas():
 @login_required
 def criar_post():
     comunidade_id = request.form.get('comunidade_id')
+    if comunidade_id == '':
+        comunidade_id = None
     tag_id = request.form.get('tag_id')
     tipo_selecionado = request.form.get('tipo_post_selecionado', 'geral') 
     
@@ -738,7 +745,10 @@ def criar_post():
         db.session.commit()
 
     flash('Publicação criada com sucesso!', 'success')
-    return redirect(url_for('main.ver_comunidade', comunidade_id=comunidade_id))
+    if comunidade_id:
+        return redirect(url_for('main.ver_comunidade', comunidade_id=comunidade_id))
+    else:
+        return redirect(url_for('main.tela_foruns'))
 
 @main_bp.route('/forum/<int:topico_id>/comentar', methods=['POST'])
 @login_required

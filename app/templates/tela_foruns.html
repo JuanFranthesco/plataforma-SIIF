@@ -31,7 +31,7 @@
                                     <h5 class="mb-0 fw-bold text-success">Menu Feed</h5>
                                 </div>
                                 <div class="sidebar-menu">
-                                    <a href="{{ url_for('main.tela_foruns') }}" class="sidebar-link {% if not filtro_selecionado == 'salvos' %}active{% endif %}">
+                                    <a href="{{ url_for('main.tela_foruns') }}" class="sidebar-link {% if not filtro_selecionado %}active{% endif %}">
                                         <i class="bi bi-house-door-fill"></i>
                                         <span>Feed</span>
                                     </a>
@@ -89,7 +89,15 @@
                                 <img class="contact-avatar" src="https://placehold.co/45x45/386641/fff?text={{ topico.autor.name[0] }}" alt="Avatar">
                                 <div class="d-flex flex-column">
                                     <h3 class="post-author text-dark mb-0">{{ topico.autor.name }}</h3>
-                                    <small class="text-muted" style="font-size: 0.75rem;">Postado recentemente</small>
+                                    <small class="text-muted" style="font-size: 0.75rem;">
+                                        {% if topico.comunidade_id %}
+                                            {% for comunidade in comunidades %}
+                                                {% if comunidade.id == topico.comunidade_id %}
+                                                    Comunidade: {{ comunidade.nome }}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    </small>
                                 </div>
                             </a>
                             <div class="post-options-container">
@@ -274,8 +282,24 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <textarea class="form-control" rows="5" placeholder="No que está pensando?"
-                    name="conteudo_post" required></textarea>
+                <div class="mb-3">
+                    <label for="titulo_post" class="form-label">Título</label>
+                    <input type="text" class="form-control" id="titulo_post" name="titulo_post" placeholder="Digite o título do post" required>
+                </div>
+                <div class="mb-3">
+                    <label for="comunidade_id" class="form-label">Comunidade (opcional)</label>
+                    <select class="form-select" id="comunidade_id" name="comunidade_id">
+                        <option value="">Feed Geral</option>
+                        {% for comunidade in comunidades %}
+                        <option value="{{ comunidade.id }}">{{ comunidade.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="conteudo_post" class="form-label">Conteúdo</label>
+                    <textarea class="form-control" rows="5" placeholder="No que está pensando?"
+                        name="conteudo_post" required></textarea>
+                </div>
             </div>
             <div class="modal-footer d-flex justify-content-between">
                 <button type="button" class="btn btn-link" style="color: #386641; text-decoration: none;">
@@ -470,6 +494,43 @@
             });
         };
 
+        // Mobile sidebar toggle
+        const openSidebarBtn = document.getElementById('open-sidebar-btn');
+        const sidebarWrapper = document.getElementById('sidebar-wrapper');
+        let sidebarBackdrop = document.getElementById('sidebar-backdrop');
+
+        if (!sidebarBackdrop) {
+            sidebarBackdrop = document.createElement('div');
+            sidebarBackdrop.id = 'sidebar-backdrop';
+            sidebarBackdrop.className = 'sidebar-backdrop';
+            sidebarBackdrop.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1040; display: none;';
+            document.body.appendChild(sidebarBackdrop);
+        }
+
+        function showSidebarMobile() {
+            if (sidebarWrapper) {
+                sidebarWrapper.classList.remove('d-none');
+                sidebarWrapper.classList.add('sidebar-mobile-open');
+                sidebarBackdrop.style.display = 'block';
+            }
+        }
+
+        function hideSidebarMobile() {
+            if (sidebarWrapper) {
+                sidebarWrapper.classList.add('d-none');
+                sidebarWrapper.classList.remove('sidebar-mobile-open');
+                sidebarBackdrop.style.display = 'none';
+            }
+        }
+
+        if (openSidebarBtn) {
+            openSidebarBtn.addEventListener('click', showSidebarMobile);
+        }
+
+        if (sidebarBackdrop) {
+            sidebarBackdrop.addEventListener('click', hideSidebarMobile);
+        }
+
         // Close sidebar on escape (mobile)
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') hideSidebarMobile();
@@ -478,11 +539,10 @@
         // Init: collapse sidebar wrapper on small screens
         function initSidebarState() {
             if (window.innerWidth <= 991) {
-                sidebarWrapper && sidebarWrapper.classList.add('collapsed');
+                if (sidebarWrapper) sidebarWrapper.classList.add('d-none');
             } else {
-                sidebarWrapper && sidebarWrapper.classList.remove('collapsed');
-                const backdrop = document.getElementById('sidebar-backdrop');
-                if (backdrop) backdrop.style.display = 'none';
+                if (sidebarWrapper) sidebarWrapper.classList.remove('d-none', 'sidebar-mobile-open');
+                if (sidebarBackdrop) sidebarBackdrop.style.display = 'none';
             }
         }
         initSidebarState();
