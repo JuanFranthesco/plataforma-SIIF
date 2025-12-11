@@ -1,0 +1,400 @@
+{% extends "base.html" %}
+
+{% block title %}Quadro Kanban - SIIF{% endblock %}
+
+{% block head_extras %}
+<style>
+    /* Layout Geral */
+    .kanban-container {
+        display: flex;
+        gap: 25px;
+        overflow-x: auto;
+        padding-bottom: 20px;
+        min-height: 600px;
+    }
+
+    /* Colunas */
+    .kanban-col {
+        flex: 1;
+        min-width: 300px;
+        background-color: #f4f6f8; /* Cinza bem suave */
+        border-radius: 16px;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #e1e4e8;
+    }
+
+    /* Cabeçalho da Coluna */
+    .kanban-header {
+        padding: 15px 20px;
+        border-bottom: 2px solid;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-radius: 16px 16px 0 0;
+        background: #fff;
+    }
+
+    /* Cores Específicas das Colunas */
+    .header-todo { border-color: #dc3545; color: #dc3545; }
+    .header-doing { border-color: #ffc107; color: #b48605; }
+    .header-done { border-color: #386641; color: #386641; }
+
+    /* Área de Drop */
+    .kanban-body {
+        padding: 15px;
+        flex-grow: 1;
+        transition: background 0.2s;
+    }
+    
+    .kanban-body.drag-over {
+        background-color: rgba(0,0,0,0.03);
+        border: 2px dashed #ccc;
+    }
+
+    /* Cards das Tarefas */
+    .kanban-card {
+        background: white;
+        padding: 15px;
+        border-radius: 12px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        margin-bottom: 12px;
+        cursor: grab;
+        border-left: 4px solid transparent;
+        transition: transform 0.2s, box-shadow 0.2s;
+        position: relative;
+    }
+
+    .kanban-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .kanban-card:active {
+        cursor: grabbing;
+    }
+
+    /* Bordas coloridas nos cards baseadas na coluna */
+    #col-todo .kanban-card { border-left-color: #dc3545; }
+    #col-doing .kanban-card { border-left-color: #ffc107; }
+    #col-done .kanban-card { border-left-color: #386641; opacity: 0.8; }
+
+    /* Detalhes do Card */
+    .card-title { font-weight: 600; color: #333; margin-bottom: 5px; }
+    .card-desc { font-size: 0.85rem; color: #666; margin-bottom: 10px; line-height: 1.4; }
+    
+    .card-footer-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #eee;
+    }
+
+    .btn-delete-task {
+        color: #dc3545;
+        background: none;
+        border: none;
+        padding: 5px;
+        border-radius: 50%;
+        transition: bg 0.2s;
+    }
+    .btn-delete-task:hover { background-color: #fee2e2; }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="home-dashboard">
+    <div class="container py-4">
+        
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <div class="d-flex align-items-center">
+                <a href="{{ url_for('main.tela_ferramentas') }}" class="btn btn-outline-secondary rounded-circle me-3 border-0 bg-white shadow-sm">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <div>
+                    <h2 class="fw-bold mb-0" style="color: #386641;">Quadro de Tarefas</h2>
+                    <small class="text-muted">Organize seus estudos e projetos.</small>
+                </div>
+            </div>
+            
+            <button class="btn btn-success fw-bold px-4 rounded-pill shadow-sm" style="background-color: #386641;" data-bs-toggle="modal" data-bs-target="#modalAddTask">
+                <i class="bi bi-plus-lg me-2"></i>Nova Tarefa
+            </button>
+        </div>
+
+        <div class="kanban-container">
+            
+            <div class="kanban-col">
+                <div class="kanban-header header-todo">
+                    <i class="bi bi-circle"></i> A Fazer <span class="badge bg-danger bg-opacity-10 text-danger ms-auto count-badge" id="count-todo">{{ todo|length }}</span>
+                </div>
+                <div class="kanban-body" id="col-todo" ondrop="drop(event, 'todo')" ondragover="allowDrop(event)">
+                    {% for task in todo %}
+                        {% include 'partials/kanban_card.html' %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="kanban-col">
+                <div class="kanban-header header-doing">
+                    <i class="bi bi-play-circle"></i> Em Andamento <span class="badge bg-warning bg-opacity-10 text-warning ms-auto count-badge" id="count-doing">{{ doing|length }}</span>
+                </div>
+                <div class="kanban-body" id="col-doing" ondrop="drop(event, 'doing')" ondragover="allowDrop(event)">
+                    {% for task in doing %}
+                        {% include 'partials/kanban_card.html' %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="kanban-col">
+                <div class="kanban-header header-done">
+                    <i class="bi bi-check-circle-fill"></i> Concluído <span class="badge bg-success bg-opacity-10 text-success ms-auto count-badge" id="count-done">{{ done|length }}</span>
+                </div>
+                <div class="kanban-body" id="col-done" ondrop="drop(event, 'done')" ondragover="allowDrop(event)">
+                    {% for task in done %}
+                        {% include 'partials/kanban_card.html' %}
+                    {% endfor %}
+                </div>
+                <div class="p-3 mt-auto">
+                    <button class="btn btn-outline-secondary btn-sm w-100 rounded-pill" onclick="clearDone()">
+                        Limpar Concluídas
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<div class="modal fade" id="modalAddTask" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-success">Criar Nova Tarefa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formAddTask">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Título</label>
+                        <input type="text" class="form-control bg-light border-0 py-2" id="inputTitulo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Detalhes</label>
+                        <textarea class="form-control bg-light border-0" id="inputDetalhes" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Prazo</label>
+                        <input type="date" class="form-control bg-light border-0 py-2" id="inputPrazo">
+                    </div>
+                    <button type="submit" class="btn btn-success w-100 rounded-pill py-2 fw-bold" style="background-color: #386641;">Adicionar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script id="card-template" type="text/template">
+    <div class="kanban-card" draggable="true" ondragstart="drag(event)" id="task-{id}" data-id="{id}">
+        <div class="card-title">{titulo}</div>
+        <div class="card-desc">{detalhes}</div>
+        <div class="card-footer-meta">
+            <span class="badge bg-light text-dark border">{prazo}</span>
+            <button class="btn-delete-task" onclick="deleteTask({id})"><i class="bi bi-trash"></i></button>
+        </div>
+    </div>
+</script>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // --- FUNÇÕES AUXILIARES DE CONTAGEM ---
+    function updateCounts() {
+        ['todo', 'doing', 'done'].forEach(s => {
+            const col = document.getElementById(`col-${s}`);
+            const badge = document.getElementById(`count-${s}`);
+            if (col && badge) {
+                // Conta apenas os elementos que são cards (filtra texto ou espaços vazios)
+                const count = col.querySelectorAll('.kanban-card').length;
+                badge.textContent = count;
+            }
+        });
+    }
+
+    // --- LÓGICA DE DRAG & DROP ---
+    function allowDrop(ev) { 
+        ev.preventDefault(); 
+        ev.currentTarget.classList.add('drag-over'); 
+    }
+    
+    document.querySelectorAll('.kanban-body').forEach(zone => {
+        zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    });
+
+    function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.id);
+        ev.dataTransfer.effectAllowed = "move";
+    }
+
+    function drop(ev, newStatus) {
+        ev.preventDefault();
+        const data = ev.dataTransfer.getData("text");
+        const card = document.getElementById(data);
+        const dropZone = document.getElementById('col-' + newStatus);
+        
+        // Remove visual de "arrastando em cima"
+        document.querySelectorAll('.kanban-body').forEach(el => el.classList.remove('drag-over'));
+
+        if (card && dropZone) {
+            dropZone.appendChild(card);
+            updateCounts();
+            
+            const taskId = card.getAttribute('data-id');
+            fetch(`/api/kanban/move/${taskId}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ status: newStatus })
+            }).catch(err => console.error("Erro ao mover:", err));
+        }
+    }
+
+    // --- ADICIONAR TAREFA ---
+    document.getElementById('formAddTask').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const payload = {
+            titulo: document.getElementById('inputTitulo').value,
+            detalhes: document.getElementById('inputDetalhes').value,
+            prazo: document.getElementById('inputPrazo').value
+        };
+
+        const btnSubmit = this.querySelector('button[type="submit"]');
+        const btnText = btnSubmit.innerHTML;
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = 'Salvando...';
+
+        fetch('/api/kanban/add', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        })
+        .then(res => {
+            if(!res.ok) throw new Error("Erro no servidor");
+            return res.json();
+        })
+        .then(task => {
+            // Formata a data para exibir
+            let prazoHtml = '';
+            if (task.prazo) {
+                const parts = task.prazo.split('-'); // YYYY-MM-DD
+                const diaMes = `${parts[2]}/${parts[1]}`;
+                prazoHtml = `<span class="badge bg-light text-dark border"><i class="bi bi-calendar-event me-1"></i> ${diaMes}</span>`;
+            } else {
+                prazoHtml = '<span></span>'; // Espaço vazio para manter layout
+            }
+
+            const html = `
+            <div class="kanban-card" draggable="true" ondragstart="drag(event)" id="task-${task.id}" data-id="${task.id}">
+                <div class="card-title">${task.titulo}</div>
+                <div class="card-desc">${task.detalhes || ''}</div>
+                <div class="card-footer-meta">
+                    ${prazoHtml}
+                    <button class="btn-delete" onclick="deleteTask(${task.id})"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>`;
+
+            // Adiciona na primeira coluna
+            document.getElementById('col-todo').insertAdjacentHTML('beforeend', html);
+            
+            // Fecha modal e reseta
+            bootstrap.Modal.getInstance(document.getElementById('modalAddTask')).hide();
+            e.target.reset();
+            updateCounts();
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Não foi possível criar a tarefa.");
+        })
+        .finally(() => {
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = btnText;
+        });
+    });
+
+    // --- DELETAR TAREFA (CORRIGIDO) ---
+    function deleteTask(id) {
+        if(!confirm('Tem certeza que deseja excluir esta tarefa?')) return;
+
+        // Tenta remover visualmente ANTES para dar sensação de rapidez
+        const card = document.getElementById(`task-${id}`);
+        if (card) {
+            card.style.opacity = '0.5'; // Feedback visual
+        }
+
+        fetch(`/api/kanban/delete/${id}`, { 
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json'}
+        })
+        .then(res => {
+            if (!res.ok) throw new Error("Falha ao deletar");
+            return res.json();
+        })
+        .then(data => {
+            if(data.msg === 'ok') {
+                if(card) card.remove();
+                updateCounts();
+            } else {
+                alert("Erro ao excluir no servidor.");
+                if(card) card.style.opacity = '1'; // Restaura se falhou
+            }
+        })
+        .catch(err => {
+            console.error("Erro delete:", err);
+            alert("Erro de conexão ao excluir.");
+            if(card) card.style.opacity = '1';
+        });
+    }
+
+    // --- LIMPAR CONCLUÍDAS (CORRIGIDO) ---
+    function clearDone() {
+        if(!confirm('Isso apagará permanentemente todas as tarefas da coluna "Concluído". Continuar?')) return;
+
+        const colDone = document.getElementById('col-done');
+        const originalContent = colDone.innerHTML;
+        
+        // Feedback visual imediato
+        colDone.innerHTML = '<div class="text-center p-3 text-muted">Limpando...</div>';
+
+        fetch('/api/kanban/clear_done', { 
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        })
+        .then(res => {
+            if (!res.ok) throw new Error("Falha ao limpar");
+            return res.json();
+        })
+        .then(data => {
+            if (data.msg === 'ok') {
+                colDone.innerHTML = ''; // Limpa de verdade
+                updateCounts();
+            } else {
+                colDone.innerHTML = originalContent; // Restaura em caso de erro lógico
+                alert("Não foi possível limpar.");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            colDone.innerHTML = originalContent; // Restaura em caso de erro de rede
+            alert("Erro de conexão.");
+        });
+    }
+
+    // Inicializa contadores ao carregar
+    document.addEventListener('DOMContentLoaded', updateCounts);
+</script>
+{% endblock %}
