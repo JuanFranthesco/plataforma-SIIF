@@ -533,3 +533,25 @@ class Denuncia(db.Model):
     def __repr__(self):
         return f'<Denúncia #{self.id}>'
 
+class KanbanTask(db.Model):
+    __tablename__ = 'kanban_task'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    titulo = db.Column(db.String(150), nullable=False)
+    detalhes = db.Column(db.Text, nullable=True)
+    prazo = db.Column(db.Date, nullable=True)
+    status = db.Column(db.String(20), default='todo') # todo, doing, done
+    
+    # Vincula a tarefa ao usuário logado
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    
+    criado_em = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "titulo": self.titulo,
+            "detalhes": self.detalhes,
+            "prazo": self.prazo.isoformat() if self.prazo else None,
+            "status": self.status
+        }
