@@ -1,1 +1,22 @@
-
+<div class="kanban-card" draggable="true" ondragstart="drag(event)" id="task-{{ task.id }}" data-id="{{ task.id }}">
+    <div class="card-title">{{ task.titulo }}</div>
+    
+    {% if task.detalhes %}
+        <div class="card-desc">{{ task.detalhes }}</div>
+    {% endif %}
+    
+    <div class="card-footer-meta">
+        {% if task.prazo %}
+            {% set hoje = namespace(date=task.criado_em.date()) %} 
+            <span class="badge bg-light text-dark border">
+                <i class="bi bi-calendar-event me-1"></i> {{ task.prazo.strftime('%d/%m') }}
+            </span>
+        {% else %}
+            <span></span>
+        {% endif %}
+        
+        <button class="btn-delete-task" onclick="deleteTask({{ task.id }})">
+            <i class="bi bi-trash"></i>
+        </button>
+    </div>
+</div>
