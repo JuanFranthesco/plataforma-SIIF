@@ -1,0 +1,413 @@
+{% extends "base.html" %}
+
+{% block title %}Gerador ABNT - SIIF{% endblock %}
+
+{% block head_extras %}
+<style>
+    /* Estilo do Card de Resultado */
+    .result-box {
+        background-color: #f8f9fa;
+        border-left: 5px solid #386641;
+        padding: 20px;
+        border-radius: 8px;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .result-text {
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 1.1rem;
+        color: #000;
+        line-height: 1.5;
+        word-wrap: break-word; /* Evita que links longos quebrem o layout */
+    }
+
+    .fade-in { animation: fadeIn 0.5s ease-in-out; }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .history-item {
+        border-bottom: 1px solid #eee;
+        padding: 10px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .history-item:last-child { border-bottom: none; }
+    
+    .history-text {
+        font-size: 0.9rem;
+        color: #555;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 80%;
+    }
+
+    /* Estilo dos Botões de Seleção de Tipo */
+    .type-selector .btn-check:checked + .btn {
+        background-color: #386641;
+        color: white;
+        border-color: #386641;
+    }
+    .type-selector .btn {
+        border-color: #386641;
+        color: #386641;
+        font-weight: 500;
+    }
+    .type-selector .btn:hover {
+        background-color: #e8f5e9;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="home-dashboard" style="background-color: #f4f6f8; min-height: 90vh;">
+    <div class="container py-4">
+        
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <div class="d-flex align-items-center">
+                <a href="{{ url_for('main.tela_ferramentas') }}" class="btn btn-white rounded-circle shadow-sm me-3 text-dark bg-white">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <div>
+                    <h2 class="fw-bold mb-0" style="color: #386641;">Gerador ABNT</h2>
+                    <p class="text-muted small mb-0">Livros, Sites e Imagens (NBR 6023).</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-4 p-md-5">
+                        
+                        <div class="btn-group w-100 mb-4 type-selector" role="group">
+                            <input type="radio" class="btn-check" name="tipoRef" id="optLivro" value="livro" checked onchange="mudarFormulario()">
+                            <label class="btn py-2" for="optLivro"><i class="bi bi-book me-2"></i>Livro</label>
+
+                            <input type="radio" class="btn-check" name="tipoRef" id="optSite" value="site" onchange="mudarFormulario()">
+                            <label class="btn py-2" for="optSite"><i class="bi bi-globe me-2"></i>Site/Artigo</label>
+
+                            <input type="radio" class="btn-check" name="tipoRef" id="optImagem" value="imagem" onchange="mudarFormulario()">
+                            <label class="btn py-2" for="optImagem"><i class="bi bi-image me-2"></i>Imagem</label>
+                        </div>
+
+                        <form id="abntForm">
+                            <h5 class="fw-bold text-secondary mb-4" id="tituloSecao"><i class="bi bi-pencil-square me-2"></i>Dados do Livro</h5>
+                            
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-muted">Sobrenome / Entidade</label>
+                                    <input type="text" class="form-control bg-light border-0 py-2" id="sobrenome" placeholder="Ex: SILVA ou IFRN" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-muted">Nome do Autor (Opcional)</label>
+                                    <input type="text" class="form-control bg-light border-0 py-2" id="nome" placeholder="Ex: João">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-muted">Título Principal</label>
+                                <input type="text" class="form-control bg-light border-0 py-2" id="titulo" placeholder="Ex: Engenharia de Software" required>
+                            </div>
+
+                            <div id="camposLivro">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-muted">Subtítulo (Opcional)</label>
+                                    <input type="text" class="form-control bg-light border-0 py-2" id="subtitulo" placeholder="Ex: Princípios e Práticas">
+                                </div>
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-bold small text-muted">Cidade</label>
+                                        <input type="text" class="form-control bg-light border-0 py-2" id="cidade" placeholder="Ex: São Paulo">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-bold small text-muted">Editora</label>
+                                        <input type="text" class="form-control bg-light border-0 py-2" id="editora" placeholder="Ex: Novatec">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-bold small text-muted">Ano</label>
+                                        <input type="number" class="form-control bg-light border-0 py-2" id="anoLivro" placeholder="Ex: 2024">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="camposWeb" style="display: none;">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-muted" id="labelNomeSite">Nome do Site / Portal</label>
+                                    <input type="text" class="form-control bg-light border-0 py-2" id="nomeSite" placeholder="Ex: G1, Portal IFRN, Wikipédia">
+                                </div>
+                                
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-bold small text-muted">Ano de Publicação</label>
+                                        <input type="number" class="form-control bg-light border-0 py-2" id="anoWeb" placeholder="Ex: 2023">
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label class="form-label fw-bold small text-muted">Link (URL)</label>
+                                        <input type="url" class="form-control bg-light border-0 py-2" id="urlLink" placeholder="https://...">
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold small text-muted">Data de Acesso</label>
+                                    <div class="d-flex gap-2">
+                                        <input type="number" class="form-control bg-light border-0 text-center" id="diaAcesso" placeholder="Dia" style="width: 80px;">
+                                        <select class="form-select bg-light border-0" id="mesAcesso">
+                                            <option value="jan.">Janeiro</option>
+                                            <option value="fev.">Fevereiro</option>
+                                            <option value="mar.">Março</option>
+                                            <option value="abr.">Abril</option>
+                                            <option value="maio">Maio</option>
+                                            <option value="jun.">Junho</option>
+                                            <option value="jul.">Julho</option>
+                                            <option value="ago.">Agosto</option>
+                                            <option value="set.">Setembro</option>
+                                            <option value="out.">Outubro</option>
+                                            <option value="nov.">Novembro</option>
+                                            <option value="dez.">Dezembro</option>
+                                        </select>
+                                        <input type="number" class="form-control bg-light border-0 text-center" id="anoAcesso" placeholder="Ano" style="width: 100px;">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="button" class="btn btn-light text-muted" onclick="limparForm()">Limpar</button>
+                                <button type="submit" class="btn btn-success fw-bold px-5 rounded-pill" style="background-color: #386641;">
+                                    <i class="bi bi-magic me-2"></i>Gerar
+                                </button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+
+                <div id="resultadoArea" class="card border-0 shadow-sm rounded-4 mb-4 fade-in" style="display: none;">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold text-success mb-0">Referência Gerada</h6>
+                            <span class="badge bg-success bg-opacity-10 text-success">Pronto</span>
+                        </div>
+                        
+                        <div class="result-box mb-3">
+                            <div id="textoFormatado" class="result-text"></div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button class="btn btn-outline-success" onclick="copiarReferencia()">
+                                <i class="bi bi-clipboard me-2"></i>Copiar Referência
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-header bg-white border-0 pt-4 px-4">
+                        <h6 class="fw-bold mb-0 text-muted"><i class="bi bi-clock-history me-2"></i>Histórico Recente</h6>
+                    </div>
+                    <div class="card-body px-4 pb-4">
+                        <div id="historicoLista">
+                            <p class="text-muted small fst-italic text-center py-3">Nada por aqui ainda.</p>
+                        </div>
+                        <div class="text-center mt-2">
+                            <button onclick="limparHistorico()" class="btn btn-link btn-sm text-decoration-none text-danger" style="font-size: 0.8rem;">Limpar Histórico</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const STORAGE_KEY = 'siif_abnt_history_v2';
+
+    // --- TROCA DE FORMULÁRIO ---
+    function mudarFormulario() {
+        const tipo = document.querySelector('input[name="tipoRef"]:checked').value;
+        const camposLivro = document.getElementById('camposLivro');
+        const camposWeb = document.getElementById('camposWeb');
+        const tituloSecao = document.getElementById('tituloSecao');
+        const labelNomeSite = document.getElementById('labelNomeSite');
+
+        // Reseta visibilidade
+        if (tipo === 'livro') {
+            camposLivro.style.display = 'block';
+            camposWeb.style.display = 'none';
+            tituloSecao.innerHTML = '<i class="bi bi-book me-2"></i>Dados do Livro';
+            
+            // Requeridos do Livro
+            document.getElementById('cidade').required = true;
+            document.getElementById('editora').required = true;
+            document.getElementById('anoLivro').required = true;
+            
+            // Remove requeridos da Web
+            document.getElementById('urlLink').required = false;
+            
+        } else {
+            camposLivro.style.display = 'none';
+            camposWeb.style.display = 'block';
+            
+            // Remove requeridos do Livro
+            document.getElementById('cidade').required = false;
+            document.getElementById('editora').required = false;
+            document.getElementById('anoLivro').required = false;
+
+            // Requeridos da Web
+            document.getElementById('urlLink').required = true;
+
+            if (tipo === 'site') {
+                tituloSecao.innerHTML = '<i class="bi bi-globe me-2"></i>Dados do Site/Artigo';
+                labelNomeSite.textContent = 'Nome do Site / Portal';
+            } else { // Imagem
+                tituloSecao.innerHTML = '<i class="bi bi-image me-2"></i>Dados da Imagem';
+                labelNomeSite.textContent = 'Onde a imagem está hospedada (Site)';
+            }
+        }
+        
+        // Seta data de hoje automaticamente se estiver vazio
+        const hoje = new Date();
+        if(!document.getElementById('diaAcesso').value) {
+            document.getElementById('diaAcesso').value = hoje.getDate();
+            const meses = ["jan.", "fev.", "mar.", "abr.", "maio", "jun.", "jul.", "ago.", "set.", "out.", "nov.", "dez."];
+            document.getElementById('mesAcesso').value = meses[hoje.getMonth()];
+            document.getElementById('anoAcesso').value = hoje.getFullYear();
+        }
+    }
+
+    // --- GERAR ---
+    document.getElementById('abntForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const tipo = document.querySelector('input[name="tipoRef"]:checked').value;
+        
+        // Dados Comuns
+        const autorSobre = document.getElementById('sobrenome').value.trim().toUpperCase();
+        const autorNome = document.getElementById('nome').value.trim();
+        const titulo = document.getElementById('titulo').value.trim();
+        
+        let referencia = '';
+        
+        // Constrói Autor
+        if (autorNome) {
+            referencia += `<b>${autorSobre}</b>, ${autorNome}. `;
+        } else {
+            referencia += `<b>${autorSobre}</b>. `; // Entidade (ex: IFRN)
+        }
+
+        if (tipo === 'livro') {
+            const subtitulo = document.getElementById('subtitulo').value.trim();
+            const cidade = document.getElementById('cidade').value.trim();
+            const editora = document.getElementById('editora').value.trim();
+            const ano = document.getElementById('anoLivro').value.trim();
+
+            referencia += `<b>${titulo}</b>`;
+            if (subtitulo) referencia += `: ${subtitulo}`;
+            referencia += `. ${cidade}: ${editora}, ${ano}.`;
+
+        } else {
+            // Site ou Imagem
+            const nomeSite = document.getElementById('nomeSite').value.trim();
+            const anoWeb = document.getElementById('anoWeb').value.trim();
+            const url = document.getElementById('urlLink').value.trim();
+            const dia = document.getElementById('diaAcesso').value;
+            const mes = document.getElementById('mesAcesso').value;
+            const anoAcesso = document.getElementById('anoAcesso').value;
+
+            // No padrão site, o título do artigo não é negrito, o nome do site que é destaque (em alguns casos)
+            // Mas para simplificar uso escolar: Título da matéria em negrito.
+            referencia += `<b>${titulo}</b>`;
+            
+            if (tipo === 'imagem') {
+                referencia += ` (Imagem).`;
+            }
+
+            if (nomeSite) referencia += `. ${nomeSite}`;
+            if (anoWeb) referencia += `, ${anoWeb}`;
+            
+            referencia += `. Disponível em: <${url}>. Acesso em: ${dia} ${mes} ${anoAcesso}.`;
+        }
+
+        // Exibe
+        const resultArea = document.getElementById('resultadoArea');
+        document.getElementById('textoFormatado').innerHTML = referencia;
+        resultArea.style.display = 'block';
+        resultArea.scrollIntoView({ behavior: 'smooth' });
+
+        // Salva histórico (Remove tags HTML para o preview)
+        const textoPuro = referencia.replace(/<\/?[^>]+(>|$)/g, "");
+        salvarNoHistorico(textoPuro, referencia);
+    });
+
+    // --- COPIAR ---
+    function copiarReferencia() {
+        const elemento = document.getElementById('textoFormatado');
+        const range = document.createRange();
+        range.selectNode(elemento);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+        document.execCommand('copy');
+        window.getSelection().removeAllRanges();
+        alert('Copiado!');
+    }
+
+    // --- HISTÓRICO ---
+    function salvarNoHistorico(textoPuro, htmlCompleto) {
+        let historico = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        historico.unshift({ texto: textoPuro, html: htmlCompleto });
+        if (historico.length > 5) historico.pop();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(historico));
+        carregarHistorico();
+    }
+
+    function carregarHistorico() {
+        const historico = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        const container = document.getElementById('historicoLista');
+        if (historico.length === 0) {
+            container.innerHTML = '<p class="text-muted small fst-italic text-center py-3">Nada recente.</p>';
+            return;
+        }
+        let html = '';
+        historico.forEach((item, index) => {
+            html += `
+            <div class="history-item">
+                <div class="history-text" title="${item.texto}">${item.texto}</div>
+                <button class="btn btn-sm btn-light text-primary" onclick="restaurarHistorico(${index})"><i class="bi bi-arrow-up-circle"></i></button>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    function restaurarHistorico(index) {
+        const historico = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        if(historico[index]) {
+            document.getElementById('textoFormatado').innerHTML = historico[index].html;
+            document.getElementById('resultadoArea').style.display = 'block';
+        }
+    }
+
+    function limparHistorico() {
+        localStorage.removeItem(STORAGE_KEY);
+        carregarHistorico();
+    }
+
+    function limparForm() {
+        document.getElementById('abntForm').reset();
+        document.getElementById('resultadoArea').style.display = 'none';
+        mudarFormulario(); // reseta visibilidade
+    }
+
+    // Inicializa
+    document.addEventListener('DOMContentLoaded', () => {
+        carregarHistorico();
+        mudarFormulario();
+    });
+</script>
+{% endblock %}
