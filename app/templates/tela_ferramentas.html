@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Ferramentas - SIIF{% endblock %}
+
+{% block content %}
+<main class="home-dashboard" style="min-height: 90vh;">
+    <div class="container py-4">
+        
+        <div class="text-center mb-5">
+            <h2 class="page-title" style="justify-content: center; font-size: 2rem;">
+                <i class="bi bi-grid-fill me-2"></i>Central de Ferramentas
+            </h2>
+            <p class="text-muted" style="font-size: 1.1rem;">
+                Utilitários acadêmicos para facilitar sua jornada no IFRN.
+            </p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+
+            <div class="col-lg-4 col-md-6">
+                <a href="{{ url_for('main.tela_calculadora') }}" class="text-decoration-none h-100">
+                    <div class="card-custom h-100 p-4 text-center d-flex flex-column align-items-center justify-content-center">
+                        <div class="mb-3 p-3 rounded-circle" style="background-color: #e8f5e9; color: #386641; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-calculator-fill fs-1"></i>
+                        </div>
+                        <h4 class="fw-bold mb-2" style="color: #386641;">Calculadora SUAP</h4>
+                        <p class="text-muted mb-4 small">
+                            Simule suas notas bimestrais e descubra quanto precisa na prova final.
+                        </p>
+                        <button class="btn-action w-auto px-4">
+                            Acessar Calculadora <i class="bi bi-arrow-right-short"></i>
+                        </button>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <a href="{{ url_for('main.tela_mapa') }}" class="text-decoration-none h-100">
+                    <div class="card-custom h-100 p-4 text-center d-flex flex-column align-items-center justify-content-center">
+                        <div class="mb-3 p-3 rounded-circle" style="background-color: #fff3e0; color: #f57c00; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-geo-alt-fill fs-1"></i>
+                        </div>
+                        <h4 class="fw-bold mb-2" style="color: #386641;">Mapa dos Campi</h4>
+                        <p class="text-muted mb-4 small">
+                            Localize os campi do IFRN, veja contatos telefônicos e endereços.
+                        </p>
+                        <button class="btn-action w-auto px-4" style="background-color: #f57c00;">
+                            Ver Mapa <i class="bi bi-arrow-right-short"></i>
+                        </button>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <a href="{{ url_for('main.tela_abnt') }}" class="text-decoration-none h-100">
+                    <div class="card-custom h-100 p-4 text-center d-flex flex-column align-items-center justify-content-center">
+                        <div class="mb-3 p-3 rounded-circle" style="background-color: #e3f2fd; color: #1976d2; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-journal-bookmark-fill fs-1"></i>
+                        </div>
+                        <h4 class="fw-bold mb-2" style="color: #386641;">Gerador ABNT</h4>
+                        <p class="text-muted mb-4 small">
+                            Formate referências bibliográficas de livros automaticamente.
+                        </p>
+                        <button class="btn-action w-auto px-4" style="background-color: #1976d2;">
+                            Gerar Referência <i class="bi bi-arrow-right-short"></i>
+                        </button>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <a href="{{ url_for('main.tela_esquematizador') }}" class="text-decoration-none h-100">
+                    <div class="card-custom h-100 p-4 text-center d-flex flex-column align-items-center justify-content-center">
+                        <div class="mb-3 p-3 rounded-circle" style="background-color: #f3e5f5; color: #8e24aa; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-diagram-3-fill fs-1"></i>
+                        </div>
+                        <h4 class="fw-bold mb-2" style="color: #386641;">Mapas Mentais</h4>
+                        <p class="text-muted mb-4 small">
+                            Transforme listas de tópicos em diagramas visuais e organogramas.
+                        </p>
+                        <button class="btn-action w-auto px-4" style="background-color: #8e24aa;">
+                            Criar Esquema <i class="bi bi-arrow-right-short"></i>
+                        </button>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <a href="{{ url_for('main.tela_kanban') }}" class="text-decoration-none h-100">
+                    <div class="card-custom h-100 p-4 text-center d-flex flex-column align-items-center justify-content-center">
+                        <div class="mb-3 p-3 rounded-circle" style="background-color: #e0f2f1; color: #00897b; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-kanban-fill fs-1"></i>
+                        </div>
+                        <h4 class="fw-bold mb-2" style="color: #386641;">Minhas Tarefas</h4>
+                        <p class="text-muted mb-4 small">
+                            Quadro estilo Kanban (A Fazer, Fazendo, Feito) salvo no seu navegador.
+                        </p>
+                        <button class="btn-action w-auto px-4" style="background-color: #00897b;">
+                            Organizar <i class="bi bi-arrow-right-short"></i>
+                        </button>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <a href="#" class="text-decoration-none h-100" onclick="alert('Em breve: Cole um link e gere um QR Code para projetar na TV.')">
+                    <div class="card-custom h-100 p-4 text-center d-flex flex-column align-items-center justify-content-center">
+                        <div class="mb-3 p-3 rounded-circle" style="background-color: #212121; color: #fff; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-qr-code fs-1"></i>
+                        </div>
+                        <h4 class="fw-bold mb-2" style="color: #386641;">Gerador QR Code</h4>
+                        <p class="text-muted mb-4 small">
+                            Crie códigos rápidos para compartilhar links de slides ou listas.
+                        </p>
+                        <button class="btn-action w-auto px-4" style="background-color: #333;">
+                            Em Breve <i class="bi bi-arrow-right-short"></i>
+                        </button>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</main>
+{% endblock %}
