@@ -48,7 +48,7 @@ from app.models import (
     Material, User, FAQ, Denuncia, Noticia, Evento, Perfil,
     Topico, Resposta, PostSalvo, PostLike, Notificacao,
     Comunidade, SolicitacaoParticipacao, RespostaLike, Tag, ComunidadeTag, AuditLog,
-    EnqueteOpcao, EnqueteVoto, RelatoSuporte,
+    EnqueteOpcao, EnqueteVoto, RelatoSuporte, KanbanTask
 )
 
 # app/routes.py (Topo)
@@ -946,10 +946,10 @@ def tela_divulgacao():
     return render_template('tela_divulgacao.html')
 
 
-@main_bp.route('/mapa')
+@main_bp.route('/ferramentas')
 @login_required
-def tela_mapa():
-    return render_template('tela_mapa.html')
+def tela_ferramentas():
+    return render_template('tela_ferramentas.html')
 
 def salvar_imagem_perfil(imagem_enviada):
     """Salva a imagem com código aleatório e retorna o nome do arquivo."""
@@ -979,6 +979,101 @@ def deletar_imagem_antiga(nome_arquivo):
                 os.remove(caminho_arquivo)
             except Exception as e:
                 print(f"Erro ao excluir imagem antiga: {e}")
+
+@main_bp.route('/ferramentas/abnt')
+@login_required
+def tela_abnt():
+    return render_template('tela_abnt.html')
+
+# 3. Rota específica para o Mapa (Reativando a rota antiga)
+@main_bp.route('/mapa')
+@login_required
+def tela_mapa():
+    return render_template('tela_mapa.html')
+
+@main_bp.route('/ferramentas/esquema')
+@login_required
+def tela_esquematizador():
+    return render_template('tela_esquematizador.html')
+
+# Rota específica para o Kanban
+@main_bp.route('/ferramentas/kanban')
+@login_required
+def tela_kanban():
+    # Busca apenas as tarefas do usuário logado
+    tasks = KanbanTask.query.filter_by(user_id=current_user.id).all()
+    
+    # Separa as tarefas por status para enviar fácil para o HTML
+    todo = [t for t in tasks if t.status == 'todo']
+    doing = [t for t in tasks if t.status == 'doing']
+    done = [t for t in tasks if t.status == 'done']
+    
+    return render_template('tela_kanban.html', todo=todo, doing=doing, done=done)
+
+# --- API: ADICIONAR TAREFA ---
+@main_bp.route('/api/kanban/add', methods=['POST'])
+@login_required
+def api_add_task():
+    data = request.json
+    
+    # Converte string de data para objeto date (se existir)
+    prazo_val = None
+    if data.get('prazo'):
+        try:
+            prazo_val = datetime.datetime.strptime(data.get('prazo'), '%Y-%m-%d').date()
+        except:
+            pass
+
+    nova_task = KanbanTask(
+        titulo=data.get('titulo'),
+        detalhes=data.get('detalhes'),
+        status='todo', # Sempre começa em 'A Fazer'
+        prazo=prazo_val,
+        user_id=current_user.id
+    )
+        
+    db.session.add(nova_task)
+    db.session.commit()
+    return jsonify(nova_task.to_dict())
+
+# --- API: MOVER TAREFA (Drag & Drop) ---
+@main_bp.route('/api/kanban/move/<int:task_id>', methods=['POST'])
+@login_required
+def api_move_task(task_id):
+    task = KanbanTask.query.get_or_404(task_id)
+    
+    # Segurança: garante que a tarefa é do usuário logado
+    if task.user_id != current_user.id:
+        return jsonify({'erro': 'Acesso negado'}), 403
+        
+    novo_status = request.json.get('status')
+    if novo_status in ['todo', 'doing', 'done']:
+        task.status = novo_status
+        db.session.commit()
+        return jsonify({'msg': 'Movido com sucesso'})
+    return jsonify({'erro': 'Status inválido'}), 400
+
+# --- API: DELETAR TAREFA ---
+@main_bp.route('/api/kanban/delete/<int:task_id>', methods=['DELETE'])
+@login_required
+def api_delete_task(task_id):
+    task = KanbanTask.query.get_or_404(task_id)
+    if task.user_id != current_user.id:
+        return jsonify({'erro': 'Acesso negado'}), 403
+        
+    db.session.delete(task)
+    db.session.commit()
+    return jsonify({'msg': 'Deletado'})
+
+# --- API: LIMPAR CONCLUÍDAS ---
+@main_bp.route('/api/kanban/clear_done', methods=['POST'])
+@login_required
+def api_clear_done():
+    # Deleta todas as tarefas 'done' deste usuário
+    KanbanTask.query.filter_by(user_id=current_user.id, status='done').delete()
+    db.session.commit()
+    return jsonify({'msg': 'Limpeza concluída'})
+
 @main_bp.route('/perfil', methods=['GET', 'POST'])
 @login_required
 def tela_perfil():
