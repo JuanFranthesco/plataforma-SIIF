@@ -109,7 +109,14 @@ def suap_callback():
         )
         
         # 2. Usa o token para pegar os dados do aluno/servidor
-        user_data = suap.get(SUAP_API_URL).json()
+        resp_user = suap.get(SUAP_API_URL)
+        
+        try:
+            user_data = resp_user.json()
+        except Exception:
+            flash(f"Erro ao decodificar JSON do SUAP. Body: {resp_user.text}", 'danger')
+            return redirect(url_for('auth.login'))
+
         session['suap_token'] = token
         
         # O token agora está na sessão para ser usado em outras rotas
@@ -121,11 +128,17 @@ def suap_callback():
         nome_suap = user_data.get('nome')
         foto_suap = user_data.get('foto')
         campus_suap = user_data.get('campus')
-        if user_data.get("tipo_usuario") == "Aluno":
-            admin = False
+        tipo_usuario = user_data.get('tipo_usuario')
+        if tipo_usuario == "Aluno":
+            resp_aluno = suap.get(SUAP_BASE_URL + '/api/ensino/meus-dados-aluno/')
+            try:
+                dados_aluno = resp_aluno.json()
+                curso = dados_aluno.get('curso')[(dados_aluno.get('curso').index('- ')+2):dados_aluno.get('curso').index(" (")]
+            except:
+                 curso = None
         else:
-            admin = True
-
+            tipo_usuario = "Servidor"
+            curso = "Servidor"
 
         if not matricula_suap:
             flash('Erro ao ler dados do SUAP.', 'danger')
@@ -141,9 +154,10 @@ def suap_callback():
                 email=email_suap,
                 name=nome_suap,
                 password_hash=None, # Usuário SUAP não tem senha local
-                is_admin=admin,
-                foto_perfil=foto_suap,
-                campus=campus_suap
+                #foto_perfil=foto_suap,
+                campus=campus_suap,
+                tipo_usuario=tipo_usuario,
+                curso=curso
             )
             db.session.add(user)
             db.session.commit()
