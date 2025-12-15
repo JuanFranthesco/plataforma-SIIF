@@ -65,7 +65,7 @@ def criar_noticia():
         link_externo=link_externo,
         imagem_url=imagem_url,
         arquivo_url=arquivo_url,
-        data_postagem=datetime.now(timezone.utc),
+        data_publicacao=datetime.now(timezone.utc),
         autor_id=1
     )
 
@@ -91,7 +91,7 @@ def listar_noticias():
             "link_externo": n.link_externo,
             "campus": n.campus,
             "categoria": n.categoria,
-            "data_postagem": n.data_postagem.isoformat(),
+            "data_postagem": n.data_publicacao.isoformat(),
             "autor_id": n.autor_id
         })
 
@@ -383,5 +383,6 @@ def criar_comentario(material_id: int):
     except Exception as e:
         db.session.rollback()
         return jsonify({"erro": f"Erro ao criar comentário: {str(e)}"}), 500
+
 
 
