@@ -78,7 +78,7 @@ def criar_noticia():
 # Para que corresponda ao JavaScript
 @api.route("/api/noticias", methods=["GET"])
 def listar_noticias():
-    noticias = Noticia.query.order_by(Noticia.data_postagem.desc()).all()
+    noticias = Noticia.query.order_by(Noticia.data_publicacao.desc()).all()
 
     resultado = []
     for n in noticias:
@@ -383,6 +383,7 @@ def criar_comentario(material_id: int):
     except Exception as e:
         db.session.rollback()
         return jsonify({"erro": f"Erro ao criar comentário: {str(e)}"}), 500
+
 
 
 
