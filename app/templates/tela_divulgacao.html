@@ -10,7 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="/static/css/style.css">
 
     <style>
         /* --- ESTILOS GERAIS E UTILS --- */
@@ -174,19 +174,170 @@
     </style>
 
     <script>
-        const IS_ADMIN = {{ current_user.is_admin | tojson }};
         const API_URL_NOTICIAS = "/api/noticias";
         const API_URL_EVENTOS = "/api/eventos";
+
+        // --- DADOS DINÂMICOS DO FLASK ---
+
+        // 1. Pega o ID do usuário (ou null se não estiver logado)
+        const CURRENT_USER_ID = {{ current_user.id if current_user.is_authenticated else 'null' }};
+
+        // 2. Verifica se é Admin usando a coluna 'is_admin' que você confirmou
+        const IS_ADMIN = {{ 'true' if current_user.is_authenticated and current_user.is_admin else 'false' }};
 
         // Variável global para armazenar eventos carregados
         let listaEventosGlobais = [];
     </script>
 </head>
 
-<body class="{% if current_user.is_admin %}role-admin{% else %}role-user{% endif %}">
+<body class="role-user">
     <div class="page-container d-flex flex-column min-vh-100">
 
-        {% include 'header.html' %}
+        <nav class="navbar navbar-expand-lg navbar-custom py-3"
+    style="background-color: #386641">
+    <div class="container-fluid px-4">
+
+        <a class="navbar-brand d-flex align-items-center" href="/tela-inicial">
+            <img src="/static/img/LOGO.png" alt="Logo SIIF" height="40">
+            <span class="ms-2 fw-bold text-white tracking-wide d-none d-sm-block">SIIF</span>
+        </a>
+
+        <button class="navbar-toggler border-0 text-white focus-ring-0" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarNav">
+            <i class="bi bi-list fs-1"></i>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-lg-3 ms-lg-4">
+                <li class="nav-item">
+                    <a class="nav-link nav-link-animated "
+                        href="/tela-inicial">
+                        <i class="bi bi-house-door-fill"></i> Início
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-animated "
+                        href="/forum">
+                        <i class="bi bi-chat-left-dots-fill"></i> Feed
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-animated active"
+                        href="/divulgacao">
+                        <i class="bi bi-megaphone-fill"></i> Divulgação
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-animated "
+                        href="/materiais">
+                        <i class="bi bi-file-earmark-text-fill"></i> Materiais
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-animated "
+                        href="/ferramentas">
+                        <i class="bi bi-geo-alt-fill"></i> Ferramentas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-animated "
+                        href="/comunidades">
+                        <i class="bi bi-people-fill"></i> Comunidades
+                    </a>
+                </li>
+
+
+            </ul>
+
+            <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
+
+                <button type="button" class="btn btn-icon-nav position-relative" data-bs-toggle="modal"
+                    data-bs-target="#modalNotificacoes">
+                    <i class="bi bi-bell-fill text-white fs-5"></i>
+
+                </button>
+
+                <div class="dropdown">
+    <a href="#"
+        class="d-flex align-items-center text-white text-decoration-none dropdown-toggle profile-trigger"
+        id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+
+        <div class="text-end me-2 d-none d-md-block line-height-sm">
+            <div class="fw-bold small">
+                {{ current_user.name if current_user.name else current_user.matricula }}
+            </div>
+            <div class="text-white-50" style="font-size: 0.75rem;">Online</div>
+        </div>
+
+        <div class="profile-pic-header">
+            {% if current_user.foto_perfil %}
+                <img src="{{ url_for('static', filename='uploads/' + current_user.foto_perfil) }}"
+                     alt="Foto de {{ current_user.name }}"
+                     style="object-fit: cover;">
+            {% else %}
+                <img src="{{ url_for('static', filename='img/image.png') }}"
+                     alt="Foto Padrão">
+            {% endif %}
+        </div>
+    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2" aria-labelledby="dropdownUser">
+                        <li>
+                            <h6 class="dropdown-header">Minha Conta</h6>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2"
+                                href="/perfil">
+                                <i class="bi bi-person-circle"></i> Perfil
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2"
+                                href="/suporte">
+                                <i class="bi bi-life-preserver"></i> Suporte
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-danger d-flex align-items-center gap-2"
+                                href="/logout">
+                                <i class="bi bi-box-arrow-right"></i> Sair
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="modal fade" id="modalNotificacoes" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-light border-bottom-0">
+                <h5 class="modal-title fw-bold text-success"><i class="bi bi-bell"></i> Notificações</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="list-group list-group-flush">
+
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-bell-slash display-4 mb-3 d-block opacity-50"></i>
+                        <p>Nenhuma notificação nova.</p>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer border-top-0 bg-light">
+                <button type="button" class="btn btn-sm text-muted" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
         <main id="conteudo-principal" role="main" class="divulgacao-dashboard container-fluid py-4 flex-grow-1">
             <a href="#conteudo-principal" class="visually-hidden-focusable skip-link">Pular para o conteúdo principal</a>
@@ -211,43 +362,50 @@
 
                             <h5 class="fw-bold text-muted fs-6 mb-3">Filtros Avançados</h5>
 
-                            <form class="divulgacao-filters d-flex flex-column gap-3" onsubmit="event.preventDefault(); aplicarFiltros();">
-                                <div>
-                                    <label for="filtrar-campus" class="form-label fw-bold small text-success">CAMPUS</label>
-                                    <select id="filtrar-campus" name="campus" class="form-select bg-light border-0" onchange="aplicarFiltros()">
-                                        <option value="">Todos os Campus</option>
-                                        <option value="apodi">Apodi</option>
-                                        <option value="caico">Caicó</option>
-                                        <option value="canguaretama">Canguaretama</option>
-                                        <option value="cearamirim">Ceará-Mirim</option>
-                                        <option value="curraisnovos">Currais Novos</option>
-                                        <option value="ipanguacu">Ipanguaçu</option>
-                                        <option value="joaocamara">João Câmara</option>
-                                        <option value="jucurutu">Jucurutu</option>
-                                        <option value="lajes">Lajes</option>
-                                        <option value="macau">Macau</option>
-                                        <option value="mossoro">Mossoró</option>
-                                        <option value="natalcentral">Natal Central</option>
-                                        <option value="natalcidadealta">Natal Cidade Alta</option>
-                                        <option value="natalzonaleste">Natal Zona Leste</option>
-                                        <option value="natalzonanorte">Natal Zona Norte</option>
-                                        <option value="novacruz">Nova Cruz</option>
-                                        <option value="parelhas">Parelhas</option>
-                                        <option value="parnamirim">Parnamirim</option>
-                                        <option value="paudosferros">Pau dos Ferros</option>
-                                        <option value="santacruz">Santa Cruz</option>
-                                        <option value="saogoncalo">São Gonçalo do Amarante</option>
-                                        <option value="saopaulo">São Paulo do Potengi</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label for="filtrar-categoria" class="form-label fw-bold small text-success">CATEGORIA</label>
-                                    <select id="filtrar-categoria" name="categoria" class="form-select bg-light border-0" onchange="aplicarFiltros()">
-                                        <option value="">Todas as Categorias</option>
-                                        <option value="eventos">Eventos</option>
-                                        <option value="pesquisa">Pesquisa</option>
-                                    </select>
-                                </div>
+                         <form class="divulgacao-filters d-flex flex-column gap-3" onsubmit="event.preventDefault(); aplicarFiltros();">
+
+    <div class="mb-3">
+        <label for="filtrar-campus" class="form-label fw-bold small text-success">CAMPUS</label>
+        <select id="filtrar-campus" name="campus" class="form-select bg-light border-0" onchange="aplicarFiltros()">
+            <option value="">Todos os Campus</option>
+            <option value="Reitoria">Reitoria</option>
+
+            <option value="Apodi">Apodi</option>
+            <option value="Caicó">Caicó</option>
+            <option value="Canguaretama">Canguaretama</option>
+            <option value="Ceará-Mirim">Ceará-Mirim</option>
+            <option value="Currais Novos">Currais Novos</option>
+            <option value="Ipanguaçu">Ipanguaçu</option>
+            <option value="João Câmara">João Câmara</option>
+            <option value="Jucurutu">Jucurutu</option>
+            <option value="Lajes">Lajes</option>
+            <option value="Macau">Macau</option>
+            <option value="Mossoró">Mossoró</option>
+            <option value="Natal Central">Natal Central</option>
+            <option value="Natal Cidade Alta">Natal Cidade Alta</option>
+            <option value="Natal Zona Leste">Natal Zona Leste</option>
+            <option value="Natal Zona Norte">Natal Zona Norte</option>
+            <option value="Nova Cruz">Nova Cruz</option>
+            <option value="Parelhas">Parelhas</option>
+            <option value="Parnamirim">Parnamirim</option>
+            <option value="Pau dos Ferros">Pau dos Ferros</option>
+            <option value="Santa Cruz">Santa Cruz</option>
+            <option value="São Gonçalo do Amarante">São Gonçalo do Amarante</option>
+            <option value="São Paulo do Potengi">São Paulo do Potengi</option>
+        </select>
+    </div>
+
+    <div>
+        <label for="filtrar-categoria" class="form-label fw-bold small text-success">CATEGORIA</label>
+        <select id="filtrar-categoria" name="categoria" class="form-select bg-light border-0" onchange="aplicarFiltros()">
+            <option value="">Todas as Categorias</option>
+            <option value="Notícia Portal">Notícia Portal</option>
+            <option value="Eventos">Eventos</option>
+            <option value="Pesquisa">Pesquisa</option>
+        </select>
+    </div>
+
+</form>
                             </form>
                         </div>
                     </div>
@@ -256,29 +414,19 @@
                 <div class="col-lg-9 col-md-12">
 
                     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
-                        <div>
-                             <h1 class="fw-bold text-success mb-0" style="font-size: 1.8rem;">Divulgação</h1>
-                             <p class="text-muted mb-0">Fique por dentro das novidades do campus</p>
-                        </div>
+    <div>
+         <h1 class="fw-bold text-success mb-0" style="font-size: 1.8rem;">Divulgação</h1>
+         <p class="text-muted mb-0">Fique por dentro das novidades do campus</p>
+    </div>
 
-                        <button class="btn btn-outline-success d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilters" aria-controls="offcanvasFilters">
-                            <i class="bi bi-filter"></i> Filtros
-                        </button>
-                    </div>
+    <a href="/editor" id="btnCriarPublicacao" class="btn btn-success text-white fw-bold shadow-sm rounded-pill px-4" style="display: none;">
+        <i class="bi bi-plus-circle-dotted me-2"></i> Criar Publicação
+    </a>
 
-                    {% if current_user.is_admin %}
-                    <div class="card-custom bg-white shadow-sm mb-4 p-3 border-start border-5 border-success">
-                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
-                            <div>
-                                <h5 class="fw-bold mb-0"><i class="bi bi-shield-lock"></i> Painel Administrativo</h5>
-                                <small class="text-muted">Gerencie as notícias e eventos do portal.</small>
-                            </div>
-                            <button class="btn btn-success rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#modalPostarNoticia">
-                                <i class="bi bi-plus-lg"></i> <span class="d-none d-sm-inline">Nova Notícia</span>
-                            </button>
-                        </div>
-                    </div>
-                    {% endif %}
+    <button class="btn btn-outline-success d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilters" aria-controls="offcanvasFilters">
+        <i class="bi bi-filter"></i> Filtros
+    </button>
+</div>
 
                     <div class="row g-4">
 
@@ -300,11 +448,7 @@
                                         <h3 id="upcoming-events-title" class="fs-5 mb-0 fw-bold text-success">
                                             <i class="bi bi-calendar-event"></i> Próximos Eventos
                                         </h3>
-                                        {% if current_user.is_admin %}
-                                        <button class="btn btn-sm btn-outline-success rounded-circle" data-bs-toggle="modal" data-bs-target="#modalAdicionarEvento" title="Adicionar Evento">
-                                            <i class="bi bi-plus-lg"></i>
-                                        </button>
-                                        {% endif %}
+
                                     </div>
                                     <div class="card-body-custom pt-0">
                                         <ul id="upcoming-events-list" class="list-unstyled m-0">
@@ -346,7 +490,62 @@
             </div>
         </main>
 
-        {% include 'footer.html' %}
+        <footer class="site-footer">
+    <div class="container py-5"> <div class="row g-4">
+
+            <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                <a href="/tela-inicial" class="footer-brand d-flex align-items-center mb-3 text-decoration-none">
+                    <img src="/static/img/LOGO.png" alt="Logo SIIF" height="50">
+                    <span class="ms-2 fs-4 fw-bold" style="color: #386641;">SIIF</span>
+                </a>
+                <p class="text-muted pe-lg-4">
+                    O Sistema de Interação do Instituto Federal é a ponte digital para conectar alunos, professores e a comunidade acadêmica do IFRN Campus Apodi.
+                </p>
+                <div class="social-icons mt-3">
+                    <a href="#" class="me-2"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="me-2"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="me-2"><i class="bi bi-twitter-x"></i></a>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+                <h6 class="text-uppercase fw-bold mb-3" style="color: #386641;">Navegação</h6>
+                <ul class="list-unstyled footer-links">
+                    <li><a href="/tela-inicial">Página Inicial</a></li>
+                    <li><a href="/forum">Feed</a></li>
+                    <li><a href="/divulgacao">Divulgação</a></li>
+                    <li><a href="/materiais">Materiais</a></li>
+                    <li><a href="/ferramentas">Ferramentas</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+                <h6 class="text-uppercase fw-bold mb-3" style="color: #386641;">Institucional</h6>
+                <ul class="list-unstyled footer-links">
+                    <li><a href="https://portal.ifrn.edu.br" target="_blank">Portal IFRN <i class="bi bi-box-arrow-up-right small"></i></a></li>
+                    <li><a href="https://suap.ifrn.edu.br/" target="_blank">Acessar SUAP <i class="bi bi-box-arrow-up-right small"></i></a></li>
+                    <li><a href="/suporte">Central de Ajuda</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <h6 class="text-uppercase fw-bold mb-3" style="color: #386641;">Contato</h6>
+                <ul class="list-unstyled text-muted">
+                    <li class="mb-2"><i class="bi bi-geo-alt-fill me-2" style="color: #386641;"></i> Apodi — RN</li>
+                    <li class="mb-2"><i class="bi bi-envelope-fill me-2" style="color: #386641;"></i> contato@siif.com</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom py-3">
+        <div class="container text-center">
+            <small class="text-muted">
+                &copy; 2025 <strong>SIIF</strong>. Desenvolvido por alunos do IFRN.
+            </small>
+        </div>
+    </div>
+</footer>
 
     </div>
 
@@ -430,29 +629,34 @@
             </div>
         </div>
     </div>
-
-    <div class="modal fade" id="modalVerNoticia" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg modal-custom-verde">
+<div class="modal fade" id="modalVerNoticia" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg modal-custom-verde">
             <div class="modal-content">
                 <div class="modal-header border-0 pb-0">
                     <h5 class="modal-title fw-bold text-success fs-4">Notícia</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
+
                 <div class="modal-body">
-                    <img src="" id="modalVerNoticiaImagem" class="img-fluid rounded-3 mb-4 shadow-sm w-100" style="display: none; object-fit: cover; max-height: 400px;">
+                    <div class="text-center mb-3 bg-light rounded-3 d-flex justify-content-center align-items-center" style="width: 100%;">
+    <img src=""
+         id="modalVerNoticiaImagem"
+         class="img-fluid rounded-3"
+         style="display: none; width: auto; max-width: 100%; height: auto; max-height: 35vh; object-fit: contain;">
+</div>
+                    <h2 id="modalVerNoticiaTitulo" class="fw-bold mb-3 text-dark fs-3"></h2>
 
-                    <h2 id="modalVerNoticiaTitulo" class="fw-bold mb-3 text-dark"></h2>
+                    <div class="text-muted mb-4" style="white-space: pre-wrap; line-height: 1.7; font-size: 1rem;" id="modalVerNoticiaConteudo"></div>
+                </div>
 
-                    <div class="text-muted mb-4" style="white-space: pre-wrap; line-height: 1.7;" id="modalVerNoticiaConteudo"></div>
-
-                    <div class="d-flex flex-wrap gap-2 pt-3 border-top">
-                        <a href="#" id="modalVerNoticiaLinkExterno" class="btn btn-outline-success rounded-pill" target="_blank" style="display: none;">
-                            <i class="bi bi-link-45deg"></i> Acessar Link
-                        </a>
-                        <a href="#" id="modalVerNoticiaArquivo" class="btn btn-outline-dark rounded-pill" target="_blank" style="display: none;">
-                            <i class="bi bi-file-earmark-arrow-down"></i> Baixar Anexo
-                        </a>
-                    </div>
+                <div class="modal-footer border-top pt-2">
+                    <a href="#" id="modalVerNoticiaLinkExterno" class="btn btn-outline-success rounded-pill btn-sm" target="_blank" style="display: none;">
+                        <i class="bi bi-link-45deg"></i> Acessar Link
+                    </a>
+                    <a href="#" id="modalVerNoticiaArquivo" class="btn btn-outline-dark rounded-pill btn-sm" target="_blank" style="display: none;">
+                        <i class="bi bi-file-earmark-arrow-down"></i> Baixar Anexo
+                    </a>
+                    <button type="button" class="btn btn-secondary btn-sm rounded-pill" data-bs-dismiss="modal">Fechar</button>
                 </div>
             </div>
         </div>
@@ -1079,6 +1283,10 @@
                 alert('Erro de conexão ao tentar excluir o evento.');
             }
         }
+      if (IS_ADMIN) {
+    const btn = document.getElementById('btnCriarPublicacao');
+    if (btn) btn.style.display = 'inline-flex';
+}
     </script>
 </body>
 </html>
