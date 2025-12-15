@@ -175,7 +175,7 @@ def tela_inicial():
         )
 
     # Ordena por data e pega as 4 mais recentes
-    noticias = query_noticias.order_by(Noticia.data_postagem.desc()).limit(4).all()
+    noticias = query_noticias.order_by(Noticia.data_publicacao.desc()).limit(4).all()
 
     # --- LÓGICA DE EVENTOS (EVENTOS FUTUROS) ---
     agora = datetime.datetime.now(datetime.timezone.utc)
@@ -351,7 +351,7 @@ def ver_comunidade(comunidade_id):
             solicitacao_pendente = True
 
     sugestoes = Comunidade.query.filter(Comunidade.id != comunidade.id).limit(3).all()
-    recent_noticias = Noticia.query.order_by(desc(Noticia.data_postagem)).limit(10).all()
+    recent_noticias = Noticia.query.order_by(desc(Noticia.data_publicacao)).limit(10).all()
     recent_materiais = Material.query.order_by(desc(Material.data_upload)).limit(10).all()
 
     return render_template('tela_comunidade_detalhe.html', 
