@@ -36,5 +36,6 @@ better_profanity==0.7.0
 Flask-Limiter==3.5.0
 Unidecode==1.4.0
 feedparser
+bs4
 
 
