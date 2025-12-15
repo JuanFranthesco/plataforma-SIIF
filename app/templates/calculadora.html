@@ -1,118 +1,166 @@
 {% extends "base.html" %}
 
-{% block title %}Calculadora de Notas - SIIF{% endblock %}
+{% block title %}Calculadora SUAP - SIIF{% endblock %}
+
+{% block head_extras %}
+<style>
+    /* Ajustes específicos para a tabela de notas */
+    .nota-input {
+        width: 70px;
+        text-align: center;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        padding: 4px;
+        font-weight: 600;
+        color: #386641;
+        background-color: #f8f9fa;
+        transition: all 0.2s;
+    }
+
+    .nota-input:focus {
+        outline: none;
+        border-color: #386641;
+        box-shadow: 0 0 0 3px rgba(56, 102, 65, 0.1);
+        background-color: #fff;
+    }
+
+    .table-custom thead th {
+        background-color: #386641;
+        color: white;
+        font-weight: 500;
+        border: none;
+    }
+    
+    .table-custom thead th:first-child { border-top-left-radius: 12px; }
+    .table-custom thead th:last-child { border-top-right-radius: 12px; }
+
+    .badge-situacao {
+        min-width: 100px;
+        font-weight: 500;
+        padding: 8px 12px;
+        border-radius: 20px;
+    }
+    
+    .nn-highlight {
+        color: #d63384; /* Rosa destaque para NN */
+        font-weight: 700;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container py-5 main-container">
-    <h2 class="mb-4 text-primary">
-        <i class="bi bi-journal-text me-2"></i>Calculadora de Notas {% if periodo %}<span
-            class="badge bg-secondary ms-2">{{
-            periodo }}</span>{% endif %}
-    </h2>
+<main class="home-dashboard" style="min-height: 90vh;">
+    <div class="container py-4">
+        
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <div class="d-flex align-items-center">
+                <a href="{{ url_for('main.tela_ferramentas') }}" class="btn btn-outline-secondary rounded-circle me-3 border-0 bg-white shadow-sm" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-arrow-left fs-5"></i>
+                </a>
+                <div>
+                    <h2 class="fw-bold mb-0" style="color: #386641;">
+                        <i class="bi bi-calculator-fill me-2"></i>Simulador de Notas
+                    </h2>
+                    <p class="text-muted mb-0 small">
+                        {% if periodo %}Período: <strong>{{ periodo }}</strong>{% else %}Simulação de Rendimento{% endif %}
+                    </p>
+                </div>
+            </div>
+            
+            <a href="{{ url_for('auth.login_suap') }}" class="btn btn-sm btn-outline-success rounded-pill px-3">
+                <i class="bi bi-arrow-repeat me-1"></i> Atualizar do SUAP
+            </a>
+        </div>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm border-0 rounded-3 mb-4" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
 
-    <div class="card shadow-sm">
-        <div class="card-body">
+        <div class="card-custom p-0 overflow-hidden">
             {% if boletim %}
             <div class="table-responsive">
-                <table class="table table-striped table-hover align-middle">
-                    <thead class="table-dark">
+                <table class="table table-hover align-middle mb-0 table-custom" id="tabela-notas">
+                    <thead>
                         <tr>
-                            <th>Disciplina</th>
-                            <th class="text-center">Frequência</th>
+                            <th class="ps-4 py-3">Disciplina</th>
                             <th class="text-center">N1</th>
                             <th class="text-center">N2</th>
                             <th class="text-center">N3</th>
                             <th class="text-center">N4</th>
                             <th class="text-center">Média</th>
-                            <th class="text-center">Situação</th>
+                            <th class="text-center bg-warning text-dark bg-opacity-25" title="Quanto precisa na Final">Na Final (NN)</th>
+                            <th class="text-center pe-4">Situação</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for disciplina in boletim %}
-                        <tr>
-                            <td class="fw-bold text-truncate" style="max-width: 250px;"
-                                title="{{ disciplina.disciplina }}">
-                                {{ disciplina.disciplina }}
+                        {% for d in boletim %}
+                        <tr class="linha-disciplina" 
+                            data-peso="{{ 5 if d.semestral else 10 }}"
+                            data-semestral="{{ 'true' if d.semestral else 'false' }}">
+                            
+                            <td class="ps-4 py-3">
+                                <div class="fw-bold text-dark">{{ d.disciplina }}</div>
+                                <small class="text-muted" style="font-size: 0.75rem;">Freq: {{ d.percentual_carga_horaria_frequentada }}%</small>
                             </td>
-                            <td class="text-center">{{ disciplina.percentual_carga_horaria_frequentada }}%</td>
-                            <td class="text-center">
-                                {% if disciplina.semestral and disciplina.is_segundo_semestre %}
 
-                                {% elif disciplina.nota_etapa_1 and disciplina.nota_etapa_1.nota is not none %}
-                                {{ disciplina.nota_etapa_1.nota }}
-                                {% elif disciplina.nota_sugerida is not none %}
-                                <span class="badge bg-warning text-dark" title="Nota sugerida para aprovação">{{
-                                    disciplina.nota_sugerida }}</span>
-                                {% else %}
-                                -
-                                {% endif %}
-                            </td>
                             <td class="text-center">
-                                {% if disciplina.semestral and disciplina.is_segundo_semestre %}
+                                <div class="nota-valor n1-val" data-valor="{{ d.nota_etapa_1.nota if d.nota_etapa_1 and d.nota_etapa_1.nota != None else '' }}">
+                                    {{ d.nota_etapa_1.nota if d.nota_etapa_1 and d.nota_etapa_1.nota != None else '-' }}
+                                </div>
+                            </td>
 
-                                {% elif disciplina.nota_etapa_2 and disciplina.nota_etapa_2.nota is not none %}
-                                {{ disciplina.nota_etapa_2.nota }}
-                                {% elif disciplina.nota_sugerida is not none %}
-                                <span class="badge bg-warning text-dark" title="Nota sugerida para aprovação">{{
-                                    disciplina.nota_sugerida }}</span>
-                                {% else %}
-                                -
-                                {% endif %}
-                            </td>
                             <td class="text-center">
-                                {% if disciplina.semestral and not disciplina.is_segundo_semestre %}
+                                <div class="nota-valor n2-val" data-valor="{{ d.nota_etapa_2.nota if d.nota_etapa_2 and d.nota_etapa_2.nota != None else '' }}">
+                                    {{ d.nota_etapa_2.nota if d.nota_etapa_2 and d.nota_etapa_2.nota != None else '-' }}
+                                </div>
+                            </td>
 
-                                {% elif disciplina.nota_etapa_3 and disciplina.nota_etapa_3.nota is not none %}
-                                {{ disciplina.nota_etapa_3.nota }}
-                                {% elif disciplina.nota_sugerida is not none %}
-                                <span class="badge bg-warning text-dark" title="Nota sugerida para aprovação">{{
-                                    disciplina.nota_sugerida }}</span>
+                            <td class="text-center">
+                                {% if d.semestral and d.is_segundo_semestre %}
+                                    <div class="nota-valor n3-val" data-valor="{{ d.nota_etapa_1.nota if d.nota_etapa_1 else '' }}">
+                                        {{ d.nota_etapa_1.nota if d.nota_etapa_1 else '-' }}
+                                    </div>
+                                {% elif d.semestral and not d.is_segundo_semestre %}
+                                    <span class="text-muted">-</span>
                                 {% else %}
-                                -
+                                    <input type="number" class="nota-input n3-input" placeholder="-" 
+                                           value="{{ d.nota_etapa_3.nota if d.nota_etapa_3 and d.nota_etapa_3.nota != None else '' }}"
+                                           oninput="calcularLinha(this)">
                                 {% endif %}
                             </td>
-                            <td class="text-center">
-                                {% if disciplina.semestral and not disciplina.is_segundo_semestre %}
 
-                                {% elif disciplina.nota_etapa_4 and disciplina.nota_etapa_4.nota is not none %}
-                                {{ disciplina.nota_etapa_4.nota }}
-                                {% elif disciplina.nota_sugerida is not none %}
-                                <span class="badge bg-warning text-dark" title="Nota sugerida para aprovação">{{
-                                    disciplina.nota_sugerida }}</span>
-                                {% else %}
-                                -
-                                {% endif %}
-                            </td>
-                            <td class="text-center fw-bold">
-                                {% if disciplina.media_disciplina %}
-                                {{ disciplina.media_disciplina }}
-                                {% elif disciplina.media_parcial %}
-                                <span class="badge bg-info text-dark" title="Média baseada nas notas lançadas">{{
-                                    disciplina.media_parcial }}</span>
-                                {% else %}
-                                -
-                                {% endif %}
-                            </td>
                             <td class="text-center">
-                                {% if disciplina.situacao == 'Aprovado' %}
-                                <span class="badge bg-success">Aprovado</span>
-                                {% elif disciplina.situacao == 'Reprovado' %}
-                                <span class="badge bg-danger">Reprovado</span>
-                                {% elif disciplina.situacao == 'Cursando' %}
-                                <span class="badge bg-primary">Cursando</span>
+                                {% if d.semestral %}
+                                    <span class="text-muted">-</span>
                                 {% else %}
-                                <span class="badge bg-secondary">{{ disciplina.situacao }}</span>
+                                    <input type="number" class="nota-input n4-input" placeholder="-" 
+                                           value="{{ d.nota_etapa_4.nota if d.nota_etapa_4 and d.nota_etapa_4.nota != None else '' }}"
+                                           oninput="calcularLinha(this)">
+                                {% endif %}
+                            </td>
+
+                            <td class="text-center fw-bold fs-5 text-primary media-display">
+                                {{ d.media_disciplina if d.media_disciplina else '-' }}
+                            </td>
+
+                            <td class="text-center bg-warning bg-opacity-10">
+                                <span class="nn-display fw-bold text-muted">-</span>
+                            </td>
+
+                            <td class="text-center pe-4">
+                                {% if d.situacao == 'Aprovado' %}
+                                    <span class="badge bg-success badge-situacao">Aprovado</span>
+                                {% elif d.situacao == 'Reprovado' %}
+                                    <span class="badge bg-danger badge-situacao">Reprovado</span>
+                                {% else %}
+                                    <span class="badge bg-secondary badge-situacao situacao-badge">Cursando</span>
                                 {% endif %}
                             </td>
                         </tr>
@@ -121,22 +169,170 @@
                 </table>
             </div>
             {% else %}
-            <div class="text-center py-5 text-muted">
-                <i class="bi bi-file-earmark-x fs-1 mb-3"></i>
-                <p>Nenhum dado de boletim encontrado para o período atual.</p>
-                <a href="{{ url_for('auth.login_suap') }}" class="btn btn-outline-primary mt-3">
-                    Reconectar com SUAP
+            <div class="text-center py-5">
+                <div class="mb-3 p-3 rounded-circle bg-light d-inline-flex">
+                    <i class="bi bi-journal-x text-muted" style="font-size: 3rem;"></i>
+                </div>
+                <h5 class="text-muted fw-bold">Nenhum dado encontrado</h5>
+                <p class="text-muted mb-4">Não conseguimos carregar seu boletim do SUAP.</p>
+                <a href="{{ url_for('auth.login_suap') }}" class="btn btn-success rounded-pill px-4">
+                    <i class="bi bi-plug-fill"></i> Reconectar Conta
                 </a>
             </div>
             {% endif %}
-
         </div>
-        <div class="card-footer bg-white">
-            <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-md-start">
-                <span class="badge bg-warning text-dark">Nota Mínima Necessária</span>
-                <span class="badge bg-info text-dark">Média Parcial</span>
-            </div>
+
+        <div class="mt-4 text-center">
+            <small class="text-muted bg-white px-3 py-2 rounded-pill border shadow-sm">
+                <i class="bi bi-info-circle me-1"></i> 
+                Edite os campos <strong>N3</strong> e <strong>N4</strong> para simular sua aprovação.
+            </small>
         </div>
     </div>
-</div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    /**
+     * Função principal de cálculo chamada a cada digitação
+     */
+    function calcularLinha(inputElement) {
+        // Encontra a linha pai (tr) do input alterado
+        const row = inputElement.closest('tr');
+        
+        // 1. Obter Valores (Pesos e Tipo)
+        const isSemestral = row.dataset.semestral === 'true';
+        
+        // Pesos Padrão IFRN:
+        // Anual: N1(2), N2(2), N3(3), N4(3) -> Soma pesos = 10
+        // Semestral: N1(2), N2(3) -> Soma pesos = 5
+        let p1=2, p2=2, p3=3, p4=3; 
+        if(isSemestral) { p2=3; } // Se semestral, só usa N1(2) e N2(3)
+
+        // 2. Ler Notas (Do HTML estático ou do Input digitado)
+        let n1 = getNota(row, '.n1-val');
+        let n2 = getNota(row, '.n2-val');
+        let n3 = 0, n4 = 0;
+
+        if(!isSemestral) {
+            // Se for anual, pega dos inputs (se existirem) ou valores estáticos
+            n3 = getNotaInput(row, '.n3-input') || getNota(row, '.n3-val');
+            n4 = getNotaInput(row, '.n4-input') || getNota(row, '.n4-val');
+        }
+
+        // 3. Calcular Pontos Acumulados
+        let pontosAtuais = 0;
+        let pesosUsados = 0;
+
+        // Soma N1
+        if(n1 !== null) { pontosAtuais += n1 * p1; pesosUsados += p1; }
+        // Soma N2
+        if(n2 !== null) { pontosAtuais += n2 * p2; pesosUsados += p2; }
+        
+        if(!isSemestral) {
+            // Soma N3 e N4 apenas se anual
+            if(n3 !== null) { pontosAtuais += n3 * p3; pesosUsados += p3; }
+            if(n4 !== null) { pontosAtuais += n4 * p4; pesosUsados += p4; }
+        }
+
+        // 4. Calcular Média Parcial
+        let divisor = isSemestral ? 5 : 10;
+        let media = pontosAtuais / divisor;
+
+        // Atualiza na tela
+        const mediaDisplay = row.querySelector('.media-display');
+        mediaDisplay.textContent = media.toFixed(0); // IFRN usa inteiro
+
+        // 5. Calcular Nota Necessária (NN) na Prova Final
+        // Regra: (Media * 60 + Final * 40) / 100 >= 50
+        // Simplificando: Precisamos chegar a 50 na média final.
+        // A Média Parcial tem peso 6, a Prova Final tem peso 4.
+        
+        const nnDisplay = row.querySelector('.nn-display');
+        const situacaoBadge = row.querySelector('.situacao-badge');
+        
+        // Se já passou por média (>= 60)
+        if (media >= 60) {
+            mediaDisplay.classList.add('text-success');
+            mediaDisplay.classList.remove('text-danger', 'text-primary');
+            nnDisplay.textContent = "-";
+            if(situacaoBadge) {
+                situacaoBadge.className = "badge bg-success badge-situacao situacao-badge";
+                situacaoBadge.textContent = "Aprovado";
+            }
+        } else {
+            // Precisa de final?
+            // Formula Final: (MediaParcial * 6 + NotaFinal * 4) / 10 >= 50
+            // NotaFinal * 4 >= 500 - (MediaParcial * 6)
+            // NotaFinal >= (500 - (MediaParcial * 6)) / 4
+            
+            // Mas antes, verifica se ainda é possível passar por média (simulação)
+            // Se o aluno ainda não preencheu tudo, mostramos quanto falta para 60
+            if (pesosUsados < divisor) {
+                // Modo Simulação: Quanto preciso tirar nas próximas pra fechar 60?
+                let pontosRestantesMeta = (60 * divisor) - pontosAtuais;
+                let pesosRestantes = divisor - pesosUsados;
+                
+                if (pesosRestantes > 0) {
+                    let notaNecessariaEtapa = Math.ceil(pontosRestantesMeta / pesosRestantes);
+                    if(notaNecessariaEtapa > 100) notaNecessariaEtapa = 100; // Cap
+                    if(notaNecessariaEtapa < 0) notaNecessariaEtapa = 0;
+
+                    nnDisplay.textContent = "Tirar " + notaNecessariaEtapa + " na prox.";
+                    nnDisplay.classList.remove('nn-highlight');
+                }
+            } else {
+                // Todas notas lançadas e média < 60. Calculando Prova Final.
+                mediaDisplay.classList.add('text-danger');
+                mediaDisplay.classList.remove('text-success', 'text-primary');
+                
+                let pontosMediaPonderada = media * 6;
+                let faltaPara500 = 500 - pontosMediaPonderada;
+                let notaFinalNecessaria = Math.ceil(faltaPara500 / 4);
+
+                if (notaFinalNecessaria > 100) {
+                    nnDisplay.textContent = "Sem Chance";
+                    if(situacaoBadge) {
+                        situacaoBadge.className = "badge bg-danger badge-situacao situacao-badge";
+                        situacaoBadge.textContent = "Reprovado";
+                    }
+                } else if (media < 20) {
+                    // Algumas regras reprovam direto com média muito baixa, verificar regra local
+                     nnDisplay.textContent = "Reprovado";
+                } else {
+                    nnDisplay.textContent = notaFinalNecessaria;
+                    nnDisplay.classList.add('nn-highlight');
+                    if(situacaoBadge) {
+                        situacaoBadge.className = "badge bg-warning text-dark badge-situacao situacao-badge";
+                        situacaoBadge.textContent = "Prova Final";
+                    }
+                }
+            }
+        }
+    }
+
+    // Helpers
+    function getNota(row, selector) {
+        const el = row.querySelector(selector);
+        if (!el) return null;
+        let val = el.getAttribute('data-valor');
+        if (!val || val === '' || val === 'None') return null;
+        return parseFloat(val);
+    }
+
+    function getNotaInput(row, selector) {
+        const el = row.querySelector(selector);
+        if (!el) return null;
+        if (el.value === '') return null;
+        return parseFloat(el.value);
+    }
+
+    // Inicializa calculando todas as linhas ao carregar
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll('.linha-disciplina').forEach(row => {
+            calcularLinha(row.querySelector('td')); // Passa qualquer elemento filho pra triggar
+        });
+    });
+</script>
 {% endblock %}
