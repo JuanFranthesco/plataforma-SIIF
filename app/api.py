@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, render_template, current_app
-from app.models import Noticia, Evento, db, User, Material, Comentario
+from app.models import Noticia, Evento, db, User, Material, Comentario, NoticiaAgregada
 from datetime import datetime, timezone
 import os
 from werkzeug.utils import secure_filename
@@ -32,6 +32,7 @@ def validate_comment_text(texto: str) -> Tuple[bool, str]:
 
 
 @api.route("/api/noticias", methods=["POST"])
+@login_required
 def criar_noticia():
     titulo = request.form.get("titulo")
     conteudo = request.form.get("conteudo")
@@ -63,10 +64,10 @@ def criar_noticia():
         campus=campus,
         categoria=categoria,
         link_externo=link_externo,
-        imagem_url=imagem_url,
+        imagem=imagem_url, # Model usa 'imagem', mas variável local é 'imagem_url'
         arquivo_url=arquivo_url,
         data_publicacao=datetime.now(timezone.utc),
-        autor_id=1
+        user_id=current_user.id
     )
 
     db.session.add(noticia)
@@ -78,23 +79,59 @@ def criar_noticia():
 # Para que corresponda ao JavaScript
 @api.route("/api/noticias", methods=["GET"])
 def listar_noticias():
-    noticias = Noticia.query.order_by(Noticia.data_publicacao.desc()).all()
+    # 1. Notícias Internas (Do Banco)
+    noticias = Noticia.query.all()
+    
+    # 2. Notícias Externas (Do Agregador)
+    agregadas = NoticiaAgregada.query.all()
 
     resultado = []
+
+    # Processa Internas
     for n in noticias:
+        # Tenta pegar campos de forma segura (lidando com inconsistências de nome)
+        # Model: imagem | API antiga: imagem_url
+        img = getattr(n, 'imagem_url', getattr(n, 'imagem', None))
+        
+        # Model: user_id | API antiga: autor_id
+        autor = getattr(n, 'autor_id', getattr(n, 'user_id', None))
+        
+        # Outros campos opcionais
+        link = getattr(n, 'link_externo', None)
+        arquivo = getattr(n, 'arquivo_url', None)
+
         resultado.append({
             "id": n.id,
             "titulo": n.titulo,
             "conteudo": n.conteudo,
-            "imagem_url": n.imagem_url,
-            "arquivo_url": n.arquivo_url,
-            "link_externo": n.link_externo,
+            "imagem_url": img,
+            "arquivo_url": arquivo,
+            "link_externo": link,
             "campus": n.campus,
             "categoria": n.categoria,
             "data_postagem": n.data_publicacao.isoformat(),
-            "autor_id": n.autor_id
+            "autor_id": autor,
+            "tipo": "interna"
         })
 
+    # Processa Externas (Agregadas)
+    for na in agregadas:
+        resultado.append({
+            "id": f"ext_{na.id}", # Prefixo para evitar colisão com IDs de Noticia (int) e exclusão acidental
+            "titulo": na.titulo,
+            "conteudo": na.conteudo,
+            "imagem_url": na.imagem_url, # Model NoticiaAgregada tem imagem_url
+            "arquivo_url": None,
+            "link_externo": na.link_externo,
+            "campus": na.campus,
+            "categoria": na.categoria,
+            "data_postagem": na.data_publicacao.isoformat() if na.data_publicacao else datetime.now().isoformat(),
+            "autor_id": None, # Sem autor específico
+            "tipo": "externa"
+        })
+
+    # Ordena tudo por data (mais recente primeiro)
+    resultado.sort(key=lambda x: x['data_postagem'], reverse=True)
 
     return jsonify(resultado)
 

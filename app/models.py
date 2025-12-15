@@ -420,6 +420,9 @@ class Noticia(db.Model):
 
     # Campo novo da imagem
     imagem = db.Column(db.String(500), nullable=True)
+    
+    arquivo_url = db.Column(db.String(500), nullable=True)
+    link_externo = db.Column(db.String(500), nullable=True)
 
     campus = db.Column(db.String(50), nullable=False, default='Geral')
     categoria = db.Column(db.String(50), nullable=False, default='Geral')
