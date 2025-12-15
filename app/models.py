@@ -414,21 +414,19 @@ class Evento(db.Model):
 
 
 class Noticia(db.Model):
-    __tablename__ = 'noticia'
-
     id = db.Column(db.Integer, primary_key=True)
-    titulo = db.Column(db.String(200), nullable=False)
+    titulo = db.Column(db.String(100), nullable=False)
     conteudo = db.Column(db.Text, nullable=False)
-    imagem_url = db.Column(db.String(300), nullable=True)
-    arquivo_url = db.Column(db.String(300), nullable=True)
-    link_externo = db.Column(db.String(300), nullable=True)
-    campus = db.Column(db.String(100), nullable=True)
-    categoria = db.Column(db.String(100), nullable=True)
-    data_postagem = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
-    autor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-    def __repr__(self):
-        return f'<Notícia {self.titulo}>'
+    # Campo novo da imagem
+    imagem = db.Column(db.String(500), nullable=True)
+
+    campus = db.Column(db.String(50), nullable=False, default='Geral')
+    categoria = db.Column(db.String(50), nullable=False, default='Geral')
+    data_publicacao = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    # Relacionamento com Usuário
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 
 # ===================================================================
@@ -557,3 +555,18 @@ class KanbanTask(db.Model):
             "prazo": self.prazo.isoformat() if self.prazo else None,
             "status": self.status
         }
+
+class NoticiaAgregada(db.Model):
+    """Notícias vindas automaticamente do RSS do IFRN"""
+    __tablename__ = 'noticia_agregada'
+
+    id = db.Column(db.Integer, primary_key=True)
+    titulo = db.Column(db.String(300), nullable=False)
+    conteudo = db.Column(db.Text, nullable=True)  # Geralmente vem um resumo
+    link_externo = db.Column(db.String(500), unique=True, nullable=False)  # Link original para a notícia no portal
+    imagem_url = db.Column(db.String(500), nullable=True)
+    data_publicacao = db.Column(db.DateTime, nullable=True)
+
+    # Campos para compatibilidade com o frontend
+    campus = db.Column(db.String(100), default="IFRN Portal")
+    categoria = db.Column(db.String(100), default="Notícia Externa")
