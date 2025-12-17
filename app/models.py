@@ -77,7 +77,7 @@ class User(db.Model,UserMixin):
     denuncias = db.relationship('Denuncia', backref='denunciante', lazy=True)
     relatos = db.relationship('RelatoSuporte', backref='relator', lazy=True)
     notificacoes = db.relationship('Notificacao', backref='usuario', lazy=True)
-    
+    redes_sociais = db.relationship('RedeSocial', backref='user', lazy=True, cascade="all, delete-orphan")
     # NOVA RELAÇÃO: Materiais favoritados pelo usuário
     materiais_favoritos_rel = db.relationship('Material', secondary=material_favoritos, backref=db.backref('favoritado_por', lazy='dynamic'))
     
@@ -135,6 +135,21 @@ class User(db.Model,UserMixin):
         return f'<User {self.matricula}>'
 
 
+class Perfil(db.Model):
+    __tablename__ = 'perfil'
+
+    id = db.Column(db.Integer, primary_key=True)
+    curso = db.Column(db.String(100), nullable=True)
+    bio = db.Column(db.Text, nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True, nullable=False)
+    
+    # Seus colegas usaram foto_perfil aqui? O User já tem foto_url. 
+    # Vou manter o que estava no seu User original para garantir.
+    # Se tiver conflito, avise.
+
+    def __repr__(self):
+        return f'<Perfil do usuário {self.user_id}>'
+
 class RedeSocial(db.Model):
     __tablename__ = 'rede_social'
 
@@ -148,12 +163,18 @@ class RedeSocial(db.Model):
 
     @property
     def logo_path(self):
+        """
+        Gera o caminho da logo baseado no nome da rede.
+        Ex: Se nome for 'Linkedin', retorna 'img/logos/linkedin.png'
+        """
         # Remove espaços e deixa minúsculo para garantir compatibilidade com o nome do arquivo
         nome_arquivo = self.nome.lower().strip().replace(" ", "")
-        return f'img/logos/{nome_arquivo}.png'
+        return f'logos/{nome_arquivo}.png'
 
     def __repr__(self):
         return f'<RedeSocial {self.nome} de {self.user_id}>'
+
+
 
 
 class Notificacao(db.Model):

@@ -46,10 +46,10 @@ def sanitize_input(text: str) -> str:
 
 # Imports completos dos modelos (Incluindo as novas tabelas)
 from app.models import (
-    Material, User, FAQ, Denuncia, Noticia, Evento, Perfil,
+    Material, User, FAQ, Denuncia, Noticia, Evento,
     Topico, Resposta, PostSalvo, PostLike, Notificacao,
     Comunidade, SolicitacaoParticipacao, RespostaLike, Tag, ComunidadeTag, AuditLog,
-    EnqueteOpcao, EnqueteVoto, RelatoSuporte, KanbanTask
+    EnqueteOpcao, EnqueteVoto, RelatoSuporte, KanbanTask, RedeSocial,
 )
 
 # app/routes.py (Topo)
@@ -1120,7 +1120,51 @@ def tela_perfil():
         denuncias=minhas_denuncias
     )
 
+@main_bp.route('/perfil/social/adicionar', methods=['POST'])
+@login_required
+def adicionar_rede_social():
+    nome = request.form.get('rede_nome')
+    url = request.form.get('rede_url')
 
+    if not nome or not url:
+        flash('Preencha o nome e a URL.', 'warning')
+        return redirect(url_for('main.tela_perfil'))
+
+    # Verifica se já tem 5 redes (limite opcional para não quebrar layout)
+    if len(current_user.redes_sociais) >= 5:
+        flash('Limite de redes sociais atingido.', 'warning')
+        return redirect(url_for('main.tela_perfil'))
+
+    nova_rede = RedeSocial(nome=nome, perfil_url=url, user_id=current_user.id)
+    
+    try:
+        db.session.add(nova_rede)
+        db.session.commit()
+        flash('Rede social adicionada!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('Erro ao adicionar rede.', 'danger')
+
+    return redirect(url_for('main.tela_perfil'))
+
+@main_bp.route('/perfil/social/remover/<int:rede_id>')
+@login_required
+def remover_rede_social(rede_id):
+    rede = RedeSocial.query.get_or_404(rede_id)
+
+    if rede.user_id != current_user.id:
+        flash('Sem permissão.', 'danger')
+        return redirect(url_for('main.tela_perfil'))
+
+    try:
+        db.session.delete(rede)
+        db.session.commit()
+        flash('Rede social removida.', 'info')
+    except:
+        db.session.rollback()
+        flash('Erro ao remover.', 'danger')
+
+    return redirect(url_for('main.tela_perfil'))
 
 @main_bp.route('/denuncia/resolver/<int:denuncia_id>', methods=['POST'])
 @login_required
