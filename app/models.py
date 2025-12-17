@@ -135,20 +135,25 @@ class User(db.Model,UserMixin):
         return f'<User {self.matricula}>'
 
 
-class Perfil(db.Model):
-    __tablename__ = 'perfil'
+class RedeSocial(db.Model):
+    __tablename__ = 'rede_social'
 
     id = db.Column(db.Integer, primary_key=True)
-    curso = db.Column(db.String(100), nullable=True)
-    bio = db.Column(db.Text, nullable=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True, nullable=False)
+    # O nome deve ser padronizado (ex: 'Linkedin', 'Github', 'Lattes', 'Discord')
+    nome = db.Column(db.String(50), nullable=False) 
+    # A URL do perfil do usuário
+    perfil_url = db.Column(db.String(300), nullable=False)
     
-    # Seus colegas usaram foto_perfil aqui? O User já tem foto_url. 
-    # Vou manter o que estava no seu User original para garantir.
-    # Se tiver conflito, avise.
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    @property
+    def logo_path(self):
+        # Remove espaços e deixa minúsculo para garantir compatibilidade com o nome do arquivo
+        nome_arquivo = self.nome.lower().strip().replace(" ", "")
+        return f'img/logos/{nome_arquivo}.png'
 
     def __repr__(self):
-        return f'<Perfil do usuário {self.user_id}>'
+        return f'<RedeSocial {self.nome} de {self.user_id}>'
 
 
 class Notificacao(db.Model):
