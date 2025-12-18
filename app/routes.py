@@ -12,6 +12,7 @@ import bleach
 from unidecode import unidecode  # <--- IMPORTANTE: Adicione isso
 from .lista_proibida import PALAVRAS_GLOBAIS
 import json
+from app.models import Noticia, Evento, NoticiaAgregada
 # app/routes.py (Topo do arquivo)
 
 
@@ -146,53 +147,45 @@ def index():
     return redirect(url_for('main.tela_inicial'))
 
 
+@main_bp.route('/')
 @main_bp.route('/home')
-@main_bp.route('/tela-inicial')
-@login_required
 def tela_inicial():
-    """
-    Tela inicial com dados reais do banco:
-    - Últimas notícias (FILTRADAS POR CAMPUS)
-    - Próximos eventos
-    """
-    # Se for admin, redireciona para o painel dele
-    if current_user.is_admin:
-        return redirect(url_for('main.tela_admin'))
+    # 1. Pegar notícias manuais (apenas as 4 ultimas para garantir, ou todas se preferir filtrar depois)
+    manuais = Noticia.query.order_by(Noticia.data_publicacao.desc()).limit(10).all()
 
-    # --- LÓGICA DE FILTRO POR CAMPUS (CORRIGIDA) ---
-    query_noticias = Noticia.query
+    # 2. Pegar notícias agregadas (IFRN)
+    agregadas = NoticiaAgregada.query.order_by(NoticiaAgregada.data_publicacao.desc()).limit(10).all()
 
-    # Verifica se o usuário tem campus definido (vem do SUAP)
-    if current_user.campus:
-        termo_campus = current_user.campus
+    # 3. Unificar as listas num formato comum
+    lista_mista = []
 
-        # Filtra: Notícias do campus do usuário OU notícias Gerais/IFRN
-        query_noticias = query_noticias.filter(
-            or_(
-                Noticia.campus.ilike(f'%{termo_campus}%'),
-                Noticia.campus.in_(['IFRN', 'Geral', 'Todos'])
-            )
-        )
+    for n in manuais:
+        lista_mista.append({
+            'tipo': 'manual',
+            'id': n.id,
+            'titulo': n.titulo,
+            'data': n.data_publicacao,
+            'imagem': n.imagem if n.imagem else url_for('static', filename='img/default-news.png'),
+            'conteudo': n.conteudo,
+            'link': url_for('main.ver_noticia', id=n.id)  # Link interno
+        })
 
-    # Ordena por data e pega as 4 mais recentes
-    noticias = query_noticias.order_by(Noticia.data_publicacao.desc()).limit(4).all()
+    for n in agregadas:
+        lista_mista.append({
+            'tipo': 'externa',
+            'id': n.id,
+            'titulo': n.titulo,
+            'data': n.data_publicacao,
+            'imagem': n.imagem_url if n.imagem_url else url_for('static', filename='img/default-news.png'),
+            'conteudo': n.conteudo,
+            'link': n.link_externo  # Link externo
+        })
 
-    # --- LÓGICA DE EVENTOS (EVENTOS FUTUROS) ---
-    agora = datetime.datetime.now(datetime.timezone.utc)
+    # 4. Ordenar tudo por data (mais recente primeiro) e pegar só 4
+    lista_mista.sort(key=lambda x: x['data'], reverse=True)
+    noticias_recentes = lista_mista[:4]
 
-    eventos = (
-        Evento.query
-        .filter(Evento.data_hora_inicio >= agora)
-        .order_by(Evento.data_hora_inicio.asc())
-        .limit(4)
-        .all()
-    )
-
-    return render_template(
-        'tela_inicial.html',
-        noticias=noticias,
-        eventos=eventos
-    )
+    return render_template('tela_inicial.html', noticias=noticias_recentes)
 
 
 # ===================================================================
@@ -1753,3 +1746,9 @@ def ver_post_individual(topico_id):
         likes_respostas_usuario=likes_respostas_usuario,
         votos_usuario=votos_usuario
     )
+
+@main_bp.route('/noticia/<int:id>')
+def ver_noticia(id):
+    # Busca a notícia pelo ID. Se não achar, dá erro 404.
+    noticia = Noticia.query.get_or_404(id)
+    return render_template('ver_noticia.html', noticia=noticia)

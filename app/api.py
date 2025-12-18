@@ -200,40 +200,41 @@ def criar_evento():
 
 
 # ROTA PARA EXCLUIR NOTÍCIA
-@api.route("/api/noticias/<int:noticia_id>", methods=["DELETE"])
-def excluir_noticia(noticia_id):
-    # TODO: Adicionar verificação de admin (ex: if not current_user.is_admin: return jsonify(...), 403)
-    
-    noticia = Noticia.query.get_or_404(noticia_id)
-    
-    try:
-        # 1. Excluir arquivos físicos (imagem e anexo)
-        if noticia.imagem_url:
-            try:
-                # Converte a URL (ex: /static/uploads/img.png) para um caminho de arquivo (ex: app/static/uploads/img.png)
-                caminho_img = os.path.join(current_app.root_path, noticia.imagem_url.lstrip('/'))
-                if os.path.exists(caminho_img):
-                    os.remove(caminho_img)
-            except Exception as e:
-                print(f"Erro ao excluir imagem: {e}") # Loga o erro, mas continua
+@api.route("/api/noticias/<int:id>", methods=["DELETE"])
+@login_required
+def excluir_noticia(id):
+    # 1. Tenta excluir da Manual (Notícia do Banco)
+    noticia_manual = Noticia.query.get(id)
+    if noticia_manual:
+        # Verifica permissão (apenas admin ou o dono)
+        if not current_user.is_admin and noticia_manual.user_id != current_user.id:
+            return jsonify({'error': 'Sem permissão'}), 403
 
-        if noticia.arquivo_url:
+        # Remove imagem física se existir
+        if noticia_manual.imagem and 'static/uploads' in noticia_manual.imagem:
             try:
-                caminho_arq = os.path.join(current_app.root_path, noticia.arquivo_url.lstrip('/'))
-                if os.path.exists(caminho_arq):
-                    os.remove(caminho_arq)
+                caminho_relativo = noticia_manual.imagem.lstrip('/')
+                path = os.path.join(current_app.root_path, caminho_relativo)
+                if os.path.exists(path):
+                    os.remove(path)
             except Exception as e:
-                print(f"Erro ao excluir arquivo: {e}") # Loga o erro, mas continua
+                print(f"Erro ao apagar arquivo de imagem: {e}")
 
-        # 2. Excluir do banco de dados
-        db.session.delete(noticia)
+        db.session.delete(noticia_manual)
         db.session.commit()
-        
-        return jsonify({"msg": "Notícia excluída com sucesso!"}), 200
+        return jsonify({"msg": "Notícia manual excluída"}), 200
 
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"erro": str(e)}), 500
+    # 2. Se não achou manual, tenta excluir do RSS (Notícia Agregada)
+    noticia_rss = NoticiaAgregada.query.get(id)
+    if noticia_rss:
+        if not current_user.is_admin:
+            return jsonify({'error': 'Apenas admin exclui notícias externas'}), 403
+
+        db.session.delete(noticia_rss)
+        db.session.commit()
+        return jsonify({"msg": "Notícia RSS excluída"}), 200
+
+    return jsonify({"erro": "Notícia não encontrada"}), 404
 
 
 # ROTA PARA EXCLUIR EVENTO
