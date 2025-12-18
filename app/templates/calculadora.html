@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %}Calculadora SUAP - SIIF{% endblock %}
+{% block title %}Simulador de Notas - SIIF{% endblock %}
 
 {% block head_extras %}
 <style>
-    /* Ajustes específicos para a tabela de notas */
+    /* Estilos dos Inputs de Nota */
     .nota-input {
-        width: 70px;
+        width: 65px;
         text-align: center;
         border: 1px solid #ced4da;
         border-radius: 8px;
-        padding: 4px;
+        padding: 5px;
         font-weight: 600;
         color: #386641;
         background-color: #f8f9fa;
@@ -20,148 +20,168 @@
     .nota-input:focus {
         outline: none;
         border-color: #386641;
-        box-shadow: 0 0 0 3px rgba(56, 102, 65, 0.1);
+        box-shadow: 0 0 0 3px rgba(56, 102, 65, 0.15);
         background-color: #fff;
     }
 
+    /* Input modificado pelo usuário (destaque visual) */
+    .nota-input.modificado {
+        background-color: #e8f5e9;
+        border-color: #66bb6a;
+    }
+
+    /* Cabeçalho da Tabela */
     .table-custom thead th {
         background-color: #386641;
         color: white;
         font-weight: 500;
         border: none;
+        vertical-align: middle;
+        text-align: center;
     }
     
-    .table-custom thead th:first-child { border-top-left-radius: 12px; }
+    .table-custom thead th:first-child { 
+        border-top-left-radius: 12px; 
+        text-align: left; 
+        padding-left: 20px;
+    }
     .table-custom thead th:last-child { border-top-right-radius: 12px; }
 
-    .badge-situacao {
-        min-width: 100px;
-        font-weight: 500;
-        padding: 8px 12px;
-        border-radius: 20px;
-    }
-    
-    .nn-highlight {
-        color: #d63384; /* Rosa destaque para NN */
+    /* Células de Resultado */
+    .media-valor {
+        font-size: 1.1rem;
         font-weight: 700;
+    }
+
+    .msg-situacao {
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: block;
+        white-space: nowrap;
+    }
+
+    .badge-situacao {
+        font-size: 0.85rem;
+        padding: 6px 12px;
+        border-radius: 20px;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<main class="home-dashboard" style="min-height: 90vh;">
-    <div class="container py-4">
-        
-        <div class="d-flex align-items-center justify-content-between mb-4">
-            <div class="d-flex align-items-center">
-                <a href="{{ url_for('main.tela_ferramentas') }}" class="btn btn-outline-secondary rounded-circle me-3 border-0 bg-white shadow-sm" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
-                    <i class="bi bi-arrow-left fs-5"></i>
-                </a>
-                <div>
-                    <h2 class="fw-bold mb-0" style="color: #386641;">
-                        <i class="bi bi-calculator-fill me-2"></i>Simulador de Notas
-                    </h2>
-                    <p class="text-muted mb-0 small">
-                        {% if periodo %}Período: <strong>{{ periodo }}</strong>{% else %}Simulação de Rendimento{% endif %}
-                    </p>
-                </div>
-            </div>
-            
-            <a href="{{ url_for('auth.login_suap') }}" class="btn btn-sm btn-outline-success rounded-pill px-3">
+<div class="container py-5 main-container">
+    
+    <div class="d-flex flex-column flex-md-row align-items-center justify-content-between mb-4 gap-3">
+        <div>
+            <h2 class="fw-bold mb-0 text-primary" style="color: #386641 !important;">
+                <i class="bi bi-calculator me-2"></i>Simulador de Notas
+            </h2>
+            <p class="text-muted mb-0">
+                {% if periodo %}Período: <strong>{{ periodo }}</strong>{% else %}Simulação de Rendimento{% endif %}
+            </p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary btn-sm rounded-pill" onclick="window.location.reload()">
+                <i class="bi bi-arrow-counterclockwise"></i> Restaurar Originais
+            </button>
+            <a href="{{ url_for('auth.login_suap') }}" class="btn btn-success btn-sm rounded-pill px-3" style="background-color: #386641;">
                 <i class="bi bi-arrow-repeat me-1"></i> Atualizar do SUAP
             </a>
         </div>
+    </div>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-            <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm border-0 rounded-3 mb-4" role="alert">
-                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            {% endfor %}
-        {% endif %}
-        {% endwith %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm border-0 rounded-3 mb-4" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
 
-        <div class="card-custom p-0 overflow-hidden">
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        <div class="card-body p-0">
             {% if boletim %}
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 table-custom" id="tabela-notas">
+                <table class="table table-hover align-middle mb-0 table-custom">
                     <thead>
                         <tr>
-                            <th class="ps-4 py-3">Disciplina</th>
-                            <th class="text-center">N1</th>
-                            <th class="text-center">N2</th>
-                            <th class="text-center">N3</th>
-                            <th class="text-center">N4</th>
-                            <th class="text-center">Média</th>
-                            <th class="text-center bg-warning text-dark bg-opacity-25" title="Quanto precisa na Final">Na Final (NN)</th>
-                            <th class="text-center pe-4">Situação</th>
+                            <th style="width: 30%;">Disciplina</th>
+                            <th style="width: 10%;">N1 <small class="d-block fw-light opacity-75">(Peso 2)</small></th>
+                            <th style="width: 10%;">N2 <small class="d-block fw-light opacity-75">(Peso 2)</small></th>
+                            <th style="width: 10%;">N3 <small class="d-block fw-light opacity-75">(Peso 3)</small></th>
+                            <th style="width: 10%;">N4 <small class="d-block fw-light opacity-75">(Peso 3)</small></th>
+                            <th style="width: 10%;">Média</th>
+                            <th style="width: 20%;">Diagnóstico / Final</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for d in boletim %}
                         <tr class="linha-disciplina" 
-                            data-peso="{{ 5 if d.semestral else 10 }}"
-                            data-semestral="{{ 'true' if d.semestral else 'false' }}">
+                            data-semestral="{{ 'true' if d.semestral else 'false' }}"
+                            data-segundo-semestre="{{ 'true' if d.is_segundo_semestre else 'false' }}">
                             
                             <td class="ps-4 py-3">
                                 <div class="fw-bold text-dark">{{ d.disciplina }}</div>
-                                <small class="text-muted" style="font-size: 0.75rem;">Freq: {{ d.percentual_carga_horaria_frequentada }}%</small>
-                            </td>
-
-                            <td class="text-center">
-                                <div class="nota-valor n1-val" data-valor="{{ d.nota_etapa_1.nota if d.nota_etapa_1 and d.nota_etapa_1.nota != None else '' }}">
-                                    {{ d.nota_etapa_1.nota if d.nota_etapa_1 and d.nota_etapa_1.nota != None else '-' }}
-                                </div>
-                            </td>
-
-                            <td class="text-center">
-                                <div class="nota-valor n2-val" data-valor="{{ d.nota_etapa_2.nota if d.nota_etapa_2 and d.nota_etapa_2.nota != None else '' }}">
-                                    {{ d.nota_etapa_2.nota if d.nota_etapa_2 and d.nota_etapa_2.nota != None else '-' }}
-                                </div>
+                                <small class="text-muted" style="font-size: 0.75rem;">
+                                    Freq: {{ d.percentual_carga_horaria_frequentada }}%
+                                </small>
                             </td>
 
                             <td class="text-center">
                                 {% if d.semestral and d.is_segundo_semestre %}
-                                    <div class="nota-valor n3-val" data-valor="{{ d.nota_etapa_1.nota if d.nota_etapa_1 else '' }}">
-                                        {{ d.nota_etapa_1.nota if d.nota_etapa_1 else '-' }}
-                                    </div>
-                                {% elif d.semestral and not d.is_segundo_semestre %}
-                                    <span class="text-muted">-</span>
+                                    <span class="text-muted opacity-25">-</span>
                                 {% else %}
-                                    <input type="number" class="nota-input n3-input" placeholder="-" 
-                                           value="{{ d.nota_etapa_3.nota if d.nota_etapa_3 and d.nota_etapa_3.nota != None else '' }}"
-                                           oninput="calcularLinha(this)">
+                                    <input type="number" step="1" min="0" max="100" class="nota-input n1"
+                                        placeholder="-"
+                                        value="{{ d.nota_etapa_1.nota if d.nota_etapa_1 and d.nota_etapa_1.nota != None else '' }}"
+                                        oninput="calcularLinha(this)">
                                 {% endif %}
                             </td>
 
                             <td class="text-center">
-                                {% if d.semestral %}
-                                    <span class="text-muted">-</span>
+                                {% if d.semestral and d.is_segundo_semestre %}
+                                    <span class="text-muted opacity-25">-</span>
                                 {% else %}
-                                    <input type="number" class="nota-input n4-input" placeholder="-" 
-                                           value="{{ d.nota_etapa_4.nota if d.nota_etapa_4 and d.nota_etapa_4.nota != None else '' }}"
-                                           oninput="calcularLinha(this)">
+                                    <input type="number" step="1" min="0" max="100" class="nota-input n2"
+                                        placeholder="-"
+                                        value="{{ d.nota_etapa_2.nota if d.nota_etapa_2 and d.nota_etapa_2.nota != None else '' }}"
+                                        oninput="calcularLinha(this)">
                                 {% endif %}
                             </td>
 
-                            <td class="text-center fw-bold fs-5 text-primary media-display">
-                                {{ d.media_disciplina if d.media_disciplina else '-' }}
+                            <td class="text-center">
+                                {% if d.semestral and not d.is_segundo_semestre %}
+                                    <span class="text-muted opacity-25">-</span>
+                                {% else %}
+                                    <input type="number" step="1" min="0" max="100" class="nota-input n3"
+                                        placeholder="-"
+                                        value="{{ d.nota_etapa_3.nota if d.nota_etapa_3 and d.nota_etapa_3.nota != None else '' }}"
+                                        oninput="calcularLinha(this)">
+                                {% endif %}
                             </td>
 
-                            <td class="text-center bg-warning bg-opacity-10">
-                                <span class="nn-display fw-bold text-muted">-</span>
+                            <td class="text-center">
+                                {% if d.semestral and not d.is_segundo_semestre %}
+                                    <span class="text-muted opacity-25">-</span>
+                                {% else %}
+                                    <input type="number" step="1" min="0" max="100" class="nota-input n4"
+                                        placeholder="-"
+                                        value="{{ d.nota_etapa_4.nota if d.nota_etapa_4 and d.nota_etapa_4.nota != None else '' }}"
+                                        oninput="calcularLinha(this)">
+                                {% endif %}
+                            </td>
+
+                            <td class="text-center">
+                                <span class="media-valor text-muted">-</span>
                             </td>
 
                             <td class="text-center pe-4">
-                                {% if d.situacao == 'Aprovado' %}
-                                    <span class="badge bg-success badge-situacao">Aprovado</span>
-                                {% elif d.situacao == 'Reprovado' %}
-                                    <span class="badge bg-danger badge-situacao">Reprovado</span>
-                                {% else %}
-                                    <span class="badge bg-secondary badge-situacao situacao-badge">Cursando</span>
-                                {% endif %}
+                                <div class="resultado-box">
+                                    <span class="badge badge-situacao bg-light text-dark border">...</span>
+                                </div>
                             </td>
                         </tr>
                         {% endfor %}
@@ -171,167 +191,185 @@
             {% else %}
             <div class="text-center py-5">
                 <div class="mb-3 p-3 rounded-circle bg-light d-inline-flex">
-                    <i class="bi bi-journal-x text-muted" style="font-size: 3rem;"></i>
+                    <i class="bi bi-emoji-frown text-muted" style="font-size: 3rem;"></i>
                 </div>
-                <h5 class="text-muted fw-bold">Nenhum dado encontrado</h5>
-                <p class="text-muted mb-4">Não conseguimos carregar seu boletim do SUAP.</p>
+                <h5 class="text-muted fw-bold">Nenhum boletim encontrado</h5>
+                <p class="text-muted mb-4">Tente atualizar seus dados com o SUAP.</p>
                 <a href="{{ url_for('auth.login_suap') }}" class="btn btn-success rounded-pill px-4">
-                    <i class="bi bi-plug-fill"></i> Reconectar Conta
+                    <i class="bi bi-plug-fill"></i> Reconectar
                 </a>
             </div>
             {% endif %}
         </div>
-
-        <div class="mt-4 text-center">
-            <small class="text-muted bg-white px-3 py-2 rounded-pill border shadow-sm">
-                <i class="bi bi-info-circle me-1"></i> 
-                Edite os campos <strong>N3</strong> e <strong>N4</strong> para simular sua aprovação.
+        <div class="card-footer bg-light text-center py-3">
+            <small class="text-muted">
+                <i class="bi bi-info-circle me-1"></i> Digite notas nos campos vazios para simular. O cálculo segue a norma do IFRN (60 para aprovação).
             </small>
         </div>
     </div>
-</main>
+</div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-    /**
-     * Função principal de cálculo chamada a cada digitação
-     */
     function calcularLinha(inputElement) {
-        // Encontra a linha pai (tr) do input alterado
+        // Marca o input como modificado visualmente
+        if (inputElement.value !== inputElement.defaultValue) {
+            inputElement.classList.add('modificado');
+        }
+
         const row = inputElement.closest('tr');
-        
-        // 1. Obter Valores (Pesos e Tipo)
         const isSemestral = row.dataset.semestral === 'true';
-        
-        // Pesos Padrão IFRN:
-        // Anual: N1(2), N2(2), N3(3), N4(3) -> Soma pesos = 10
-        // Semestral: N1(2), N2(3) -> Soma pesos = 5
-        let p1=2, p2=2, p3=3, p4=3; 
-        if(isSemestral) { p2=3; } // Se semestral, só usa N1(2) e N2(3)
+        const isSegundoSemestre = row.dataset.segundoSemestre === 'true';
 
-        // 2. Ler Notas (Do HTML estático ou do Input digitado)
-        let n1 = getNota(row, '.n1-val');
-        let n2 = getNota(row, '.n2-val');
-        let n3 = 0, n4 = 0;
+        // 1. Pegar valores dos inputs (tratando vazio como null)
+        const getVal = (cls) => {
+            const el = row.querySelector('.' + cls);
+            if (!el || el.value === '') return null;
+            return parseFloat(el.value);
+        };
 
-        if(!isSemestral) {
-            // Se for anual, pega dos inputs (se existirem) ou valores estáticos
-            n3 = getNotaInput(row, '.n3-input') || getNota(row, '.n3-val');
-            n4 = getNotaInput(row, '.n4-input') || getNota(row, '.n4-val');
-        }
+        let n1 = getVal('n1');
+        let n2 = getVal('n2');
+        let n3 = getVal('n3');
+        let n4 = getVal('n4');
 
-        // 3. Calcular Pontos Acumulados
-        let pontosAtuais = 0;
-        let pesosUsados = 0;
+        // Configuração de Pesos
+        let p1=2, p2=2, p3=3, p4=3;
+        let divisor = 10;
+        let notasUsadas = []; // Para saber quantas notas faltam
 
-        // Soma N1
-        if(n1 !== null) { pontosAtuais += n1 * p1; pesosUsados += p1; }
-        // Soma N2
-        if(n2 !== null) { pontosAtuais += n2 * p2; pesosUsados += p2; }
-        
-        if(!isSemestral) {
-            // Soma N3 e N4 apenas se anual
-            if(n3 !== null) { pontosAtuais += n3 * p3; pesosUsados += p3; }
-            if(n4 !== null) { pontosAtuais += n4 * p4; pesosUsados += p4; }
-        }
-
-        // 4. Calcular Média Parcial
-        let divisor = isSemestral ? 5 : 10;
-        let media = pontosAtuais / divisor;
-
-        // Atualiza na tela
-        const mediaDisplay = row.querySelector('.media-display');
-        mediaDisplay.textContent = media.toFixed(0); // IFRN usa inteiro
-
-        // 5. Calcular Nota Necessária (NN) na Prova Final
-        // Regra: (Media * 60 + Final * 40) / 100 >= 50
-        // Simplificando: Precisamos chegar a 50 na média final.
-        // A Média Parcial tem peso 6, a Prova Final tem peso 4.
-        
-        const nnDisplay = row.querySelector('.nn-display');
-        const situacaoBadge = row.querySelector('.situacao-badge');
-        
-        // Se já passou por média (>= 60)
-        if (media >= 60) {
-            mediaDisplay.classList.add('text-success');
-            mediaDisplay.classList.remove('text-danger', 'text-primary');
-            nnDisplay.textContent = "-";
-            if(situacaoBadge) {
-                situacaoBadge.className = "badge bg-success badge-situacao situacao-badge";
-                situacaoBadge.textContent = "Aprovado";
+        // Ajuste para Semestrais
+        if (isSemestral) {
+            divisor = 5;
+            if (isSegundoSemestre) {
+                // No 2º semestre, usamos os campos N3 e N4 visualmente como as duas notas
+                // Pesos IFRN Semestral: Nota1 (2) + Nota2 (3)
+                p3 = 2; p4 = 3; 
+                notasUsadas = [
+                    {val: n3, peso: p3, nome: 'N3'}, 
+                    {val: n4, peso: p4, nome: 'N4'}
+                ];
+            } else {
+                // 1º Semestre: N1(2) e N2(3)
+                p1 = 2; p2 = 3;
+                notasUsadas = [
+                    {val: n1, peso: p1, nome: 'N1'}, 
+                    {val: n2, peso: p2, nome: 'N2'}
+                ];
             }
         } else {
-            // Precisa de final?
-            // Formula Final: (MediaParcial * 6 + NotaFinal * 4) / 10 >= 50
-            // NotaFinal * 4 >= 500 - (MediaParcial * 6)
-            // NotaFinal >= (500 - (MediaParcial * 6)) / 4
-            
-            // Mas antes, verifica se ainda é possível passar por média (simulação)
-            // Se o aluno ainda não preencheu tudo, mostramos quanto falta para 60
-            if (pesosUsados < divisor) {
-                // Modo Simulação: Quanto preciso tirar nas próximas pra fechar 60?
-                let pontosRestantesMeta = (60 * divisor) - pontosAtuais;
-                let pesosRestantes = divisor - pesosUsados;
-                
-                if (pesosRestantes > 0) {
-                    let notaNecessariaEtapa = Math.ceil(pontosRestantesMeta / pesosRestantes);
-                    if(notaNecessariaEtapa > 100) notaNecessariaEtapa = 100; // Cap
-                    if(notaNecessariaEtapa < 0) notaNecessariaEtapa = 0;
+            // Anual
+            notasUsadas = [
+                {val: n1, peso: p1, nome: 'N1'}, 
+                {val: n2, peso: p2, nome: 'N2'}, 
+                {val: n3, peso: p3, nome: 'N3'}, 
+                {val: n4, peso: p4, nome: 'N4'}
+            ];
+        }
 
-                    nnDisplay.textContent = "Tirar " + notaNecessariaEtapa + " na prox.";
-                    nnDisplay.classList.remove('nn-highlight');
-                }
+        // 2. Calcular Pontos Atuais e Pesos Restantes
+        let pontosAtuais = 0;
+        let pesosGastos = 0;
+        let inputsVazios = 0;
+
+        notasUsadas.forEach(nota => {
+            if (nota.val !== null) {
+                pontosAtuais += nota.val * nota.peso;
+                pesosGastos += nota.peso;
             } else {
-                // Todas notas lançadas e média < 60. Calculando Prova Final.
-                mediaDisplay.classList.add('text-danger');
-                mediaDisplay.classList.remove('text-success', 'text-primary');
-                
-                let pontosMediaPonderada = media * 6;
-                let faltaPara500 = 500 - pontosMediaPonderada;
-                let notaFinalNecessaria = Math.ceil(faltaPara500 / 4);
+                inputsVazios++;
+            }
+        });
 
-                if (notaFinalNecessaria > 100) {
-                    nnDisplay.textContent = "Sem Chance";
-                    if(situacaoBadge) {
-                        situacaoBadge.className = "badge bg-danger badge-situacao situacao-badge";
-                        situacaoBadge.textContent = "Reprovado";
-                    }
-                } else if (media < 20) {
-                    // Algumas regras reprovam direto com média muito baixa, verificar regra local
-                     nnDisplay.textContent = "Reprovado";
+        // 3. Exibir Média Parcial (se tiver pelo menos uma nota)
+        const mediaEl = row.querySelector('.media-valor');
+        let mediaAtual = 0;
+
+        if (pesosGastos > 0) {
+            // No IFRN a média é a soma ponderada dividida pelo total de pesos (10 ou 5)
+            // Mas enquanto não fecha, mostramos a projeção atual ou a divisão simples?
+            // Vamos mostrar a divisão por 10 (ou 5) para o aluno ver quanto já acumulou de verdade na média global.
+            mediaAtual = Math.round(pontosAtuais / divisor); 
+            mediaEl.textContent = mediaAtual;
+            
+            // Cores da Média
+            mediaEl.classList.remove('text-success', 'text-danger', 'text-warning', 'text-muted');
+            if (mediaAtual >= 60) mediaEl.classList.add('text-success');
+            else if (inputsVazios === 0) mediaEl.classList.add('text-danger');
+            else mediaEl.classList.add('text-muted');
+        } else {
+            mediaEl.textContent = "-";
+        }
+
+        // 4. Lógica de Diagnóstico (O Pulo do Gato)
+        const resultBox = row.querySelector('.badge-situacao');
+        const META_MEDIA = 60;
+        const META_PONTOS_TOTAL = META_MEDIA * divisor; // 600 ou 300 pontos totais ponderados
+
+        if (inputsVazios > 0) {
+            // --- CENÁRIO: AINDA FALTAM NOTAS (Simulação) ---
+            
+            let pontosFaltam = META_PONTOS_TOTAL - pontosAtuais;
+            let pesosRestantes = divisor - pesosGastos;
+
+            if (pontosFaltam <= 0) {
+                // Já passou matematicamente
+                updateBadge(resultBox, 'Aprovado (Matemático)', 'success');
+            } else {
+                // Quanto precisa tirar em média nas provas que faltam?
+                let notaNecessaria = Math.ceil(pontosFaltam / pesosRestantes);
+
+                if (notaNecessaria > 100) {
+                    // Impossível passar por média, vai pra final
+                    updateBadge(resultBox, 'Vai p/ Final (Média inalcançável)', 'warning');
+                } else if (notaNecessaria < 0) {
+                    updateBadge(resultBox, 'Já passou', 'success');
                 } else {
-                    nnDisplay.textContent = notaFinalNecessaria;
-                    nnDisplay.classList.add('nn-highlight');
-                    if(situacaoBadge) {
-                        situacaoBadge.className = "badge bg-warning text-dark badge-situacao situacao-badge";
-                        situacaoBadge.textContent = "Prova Final";
+                    // Mostra quanto precisa
+                    updateBadge(resultBox, `Tirar média ${notaNecessaria} nas próximas`, 'info');
+                }
+            }
+
+        } else {
+            // --- CENÁRIO: TODAS AS NOTAS PREENCHIDAS ---
+            
+            if (mediaAtual >= 60) {
+                updateBadge(resultBox, 'Aprovado', 'success');
+            } else {
+                // Reprovado por média? Vamos ver a PROVA FINAL.
+                // Regra Final: (Media * 6 + Final * 4) / 10 >= 50
+                // Final * 4 >= 500 - (Media * 6)
+                
+                // Algumas regras do IFRN barram se a média for < 20 (verifique se aplica)
+                if (mediaAtual < 20) {
+                     updateBadge(resultBox, 'Reprovado Direto (< 20)', 'danger');
+                } else {
+                    let pontosMediaPonderada = mediaAtual * 6;
+                    let faltaPara500 = 500 - pontosMediaPonderada;
+                    let notaFinalNecessaria = Math.ceil(faltaPara500 / 4);
+
+                    if (notaFinalNecessaria > 100) {
+                        updateBadge(resultBox, 'Reprovado (Sem chance na final)', 'danger');
+                    } else {
+                        updateBadge(resultBox, `Precisa de ${notaFinalNecessaria} na Final`, 'warning');
                     }
                 }
             }
         }
     }
 
-    // Helpers
-    function getNota(row, selector) {
-        const el = row.querySelector(selector);
-        if (!el) return null;
-        let val = el.getAttribute('data-valor');
-        if (!val || val === '' || val === 'None') return null;
-        return parseFloat(val);
+    function updateBadge(el, text, color) {
+        el.className = `badge badge-situacao bg-${color} ${color === 'warning' || color === 'info' ? 'text-dark' : ''}`;
+        el.textContent = text;
     }
 
-    function getNotaInput(row, selector) {
-        const el = row.querySelector(selector);
-        if (!el) return null;
-        if (el.value === '') return null;
-        return parseFloat(el.value);
-    }
-
-    // Inicializa calculando todas as linhas ao carregar
+    // Calcular tudo ao carregar a página
     document.addEventListener("DOMContentLoaded", function() {
         document.querySelectorAll('.linha-disciplina').forEach(row => {
-            calcularLinha(row.querySelector('td')); // Passa qualquer elemento filho pra triggar
+            // Pega um input qualquer pra disparar o cálculo da linha
+            const input = row.querySelector('input');
+            if(input) calcularLinha(input);
         });
     });
 </script>
