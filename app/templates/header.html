@@ -80,7 +80,11 @@
                         class="d-flex align-items-center text-white text-decoration-none dropdown-toggle profile-trigger"
                         id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="text-end me-2 d-none d-md-block line-height-sm">
-                            <div class="fw-bold small">{{ current_user.name.split()[0] }}</div>
+                            {% if current_user.is_authenticated %}
+    <div class="fw-bold small">{{ current_user.name.split()[0] if current_user.name else 'Usuário' }}</div>
+{% else %}
+    <div class="fw-bold small">Visitante</div>
+    {% endif %}
                             <div class="text-white-50" style="font-size: 0.75rem;">Online</div>
                         </div>
                         <div class="profile-pic-header">
