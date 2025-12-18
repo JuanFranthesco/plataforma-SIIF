@@ -1,3 +1,11 @@
+import sys
+import os
+
+# --- CORREÇÃO DE CAMINHO ---
+# Isso adiciona a pasta anterior (raiz do projeto) ao sistema do Python
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# ---------------------------
+
 import requests
 from bs4 import BeautifulSoup
 import datetime
@@ -8,7 +16,6 @@ import re
 from app import create_app
 from app.extensions import db
 from app.models import NoticiaAgregada
-
 # URL da página de notícias da Reitoria
 URL_ALVO = "https://portal.ifrn.edu.br/campus/reitoria/noticias/"
 DOMINIO = "https://portal.ifrn.edu.br"
