@@ -1,7 +1,7 @@
-from flask import render_template, request, redirect, url_for, flash, current_app, send_from_directory, Blueprint, session
+from flask import render_template, request, redirect, url_for, flash, current_app, send_from_directory, Blueprint, session, abort
 import requests
 from flask_login import login_required, current_user
-from sqlalchemy import or_, desc, func, text        
+from sqlalchemy import or_, desc, func, text
 from werkzeug.utils import secure_filename
 import os
 import datetime
@@ -9,11 +9,18 @@ import secrets
 from PIL import Image
 from thefuzz import fuzz
 import bleach
-from unidecode import unidecode  # <--- IMPORTANTE: Adicione isso
-from .lista_proibida import PALAVRAS_GLOBAIS
+from unidecode import unidecode
 import json
-from app.models import Noticia, Evento, NoticiaAgregada
-# app/routes.py (Topo do arquivo)
+
+# --- IMPORTS DO APP (MODELOS E EXTENSÕES) ---
+from app.models import (
+    User, Noticia, Evento, NoticiaAgregada,
+    Topico, Comunidade, PostLike, RespostaLike, EnqueteVoto,
+    Resposta, SolicitacaoParticipacao, Material, Comentario, Tag,
+    RelatoSuporte, Denuncia, Perfil, RedeSocial, Notificacao
+)
+from app.extensions import db
+from .lista_proibida import PALAVRAS_GLOBAIS
 
 
 
@@ -150,13 +157,19 @@ def index():
 @main_bp.route('/')
 @main_bp.route('/home')
 def tela_inicial():
-    # 1. Pegar notícias manuais (apenas as 4 ultimas para garantir, ou todas se preferir filtrar depois)
+    # --- 1. SEGURANÇA: Redireciona para Login se não estiver logado ---
+    if not current_user.is_authenticated:
+        return redirect(url_for('auth.login'))
+
+    # --- 2. LÓGICA DE NOTÍCIAS (MISTURA MANUAIS E EXTERNAS) ---
+
+    # Pegar notícias manuais
     manuais = Noticia.query.order_by(Noticia.data_publicacao.desc()).limit(10).all()
 
-    # 2. Pegar notícias agregadas (IFRN)
+    # Pegar notícias agregadas (IFRN)
     agregadas = NoticiaAgregada.query.order_by(NoticiaAgregada.data_publicacao.desc()).limit(10).all()
 
-    # 3. Unificar as listas num formato comum
+    # Unificar as listas
     lista_mista = []
 
     for n in manuais:
@@ -167,7 +180,7 @@ def tela_inicial():
             'data': n.data_publicacao,
             'imagem': n.imagem if n.imagem else url_for('static', filename='img/default-news.png'),
             'conteudo': n.conteudo,
-            'link': url_for('main.ver_noticia', id=n.id)  # Link interno
+            'link': url_for('main.ver_noticia', id=n.id)
         })
 
     for n in agregadas:
@@ -178,15 +191,20 @@ def tela_inicial():
             'data': n.data_publicacao,
             'imagem': n.imagem_url if n.imagem_url else url_for('static', filename='img/default-news.png'),
             'conteudo': n.conteudo,
-            'link': n.link_externo  # Link externo
+            'link': n.link_externo
         })
 
-    # 4. Ordenar tudo por data (mais recente primeiro) e pegar só 4
+    # Ordenar por data (mais recente primeiro) e pegar só as 4 primeiras
     lista_mista.sort(key=lambda x: x['data'], reverse=True)
     noticias_recentes = lista_mista[:4]
 
-    return render_template('tela_inicial.html', noticias=noticias_recentes)
+    # --- 3. LÓGICA DE EVENTOS (PARA NÃO QUEBRAR O HTML) ---
+    agora = datetime.datetime.now()
+    eventos_proximos = Evento.query.filter(Evento.data_evento >= agora).order_by(Evento.data_evento.asc()).limit(
+        3).all()
 
+    # --- 4. RENDERIZAÇÃO ---
+    return render_template('tela_inicial.html', noticias=noticias_recentes, eventos=eventos_proximos)
 
 # ===================================================================
 # COMUNIDADES (NOVA FUNCIONALIDADE)
