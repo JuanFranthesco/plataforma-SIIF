@@ -198,10 +198,12 @@ def tela_inicial():
     lista_mista.sort(key=lambda x: x['data'], reverse=True)
     noticias_recentes = lista_mista[:4]
 
-    # --- 3. LÓGICA DE EVENTOS (PARA NÃO QUEBRAR O HTML) ---
+    # --- 3. LÓGICA DE EVENTOS CORRIGIDA ---
     agora = datetime.datetime.now()
-    eventos_proximos = Evento.query.filter(Evento.data_evento >= agora).order_by(Evento.data_evento.asc()).limit(
-        3).all()
+
+    # AQUI ESTAVA O ERRO: Mudamos de Evento.data_evento para Evento.data_hora_inicio
+    eventos_proximos = Evento.query.filter(Evento.data_hora_inicio >= agora).order_by(
+        Evento.data_hora_inicio.asc()).limit(3).all()
 
     # --- 4. RENDERIZAÇÃO ---
     return render_template('tela_inicial.html', noticias=noticias_recentes, eventos=eventos_proximos)
